@@ -1,0 +1,117 @@
+<div id="container">
+  @if (niveau === 0) {
+    @if (structureCatalogue | async; as structure) {
+      @for (categorie of structure.nodes; track i; let i = $index) {
+        <a class="cat" [routerLink]="['/catalogue', categorie.value.label]"
+          routerLinkActive="router-link-active">
+          {{ categorie.value.label }}
+          <img default="" [src]="environment.photoReel + categorie.value.photo + '.jpg'" />
+        </a>
+      }
+    }
+  }
+
+  @if (niveau === 1) {
+    @if (structureCatalogue | async; as structure) {
+      @for (categorie of structure.nodes; track i; let i = $index) {
+        @if (categorie.value.label===chemin.niv1) {
+          @for (sub_categorie of categorie.nodes; track i; let i = $index) {
+            @if (sub_categorie.nodes != null && sub_categorie.nodes.length >= 1) {
+              <div class="cat">
+                <a class="overlay" [routerLink]="['/catalogue', categorie.value.label, sub_categorie.value.label]">
+                </a>
+                <div>
+                  {{ sub_categorie.value.label }}
+                  <img default="" [src]="environment.photoReel + sub_categorie.value.photo + '.jpg'" />
+                </div>
+                <a class="affichage"
+                  [routerLink]="['/catalogue', categorie.value.label, sub_categorie.value.label, 'unique']"
+                routerLinkActive="router-link-active">Voir tout</a>
+              </div>
+            } @else {
+              <div class="cat">
+                <a class="overlay" [routerLink]="['/catalogue', categorie.value.label, sub_categorie.value.label, 'unique']">
+                </a>
+                <div>
+                  {{ sub_categorie.value.label }}
+                  <img default="" [src]="environment.photoReel + sub_categorie.value.photo + '.jpg'" />
+                </div>
+                <a class="affichage"
+                  [routerLink]="['/catalogue', categorie.value.label, sub_categorie.value.label, 'unique']"
+                routerLinkActive="router-link-active">Voir tout</a>
+              </div>
+            }
+          }
+          <!-- CYBERSECURITE -->
+          @if (categorie.value.label == 'Cybersécurité') {
+            <!--<div class="cat blueshadow">
+            <a class="overlay" [routerLink]="['/licences-cybersecurite']">
+            </a>
+            <div>
+              Espace Licences et Logiciels Cybersécurité
+              <fa-icon transform="flip-h" [icon]="['fas', 'cogs']"></fa-icon>
+            </div>
+          </div>
+          <div class="cat blueshadow">
+            <a class="overlay" [routerLink]="['/configurateur', 'zyxel']">
+            </a>
+            <div>
+              Configurateur Firewall
+              <img [src]="environment.configurateurZyxel + 'img/zyxel-networks-logo-black.png'" />
+            </div>
+          </div>
+          <div class="cat blueshadow">
+            <a class="overlay" [routerLink]="['/configurateur', 'sonicwall']">
+            </a>
+            <div>
+              Configurateur Firewall
+              &lt;!&ndash; <svg [innerHTML]="SonicwallIcon" preserveAspectRatio="xMinYMin slice" viewBox="0 0 310 50"></svg> &ndash;&gt;
+              <img [src]="environment.configurateurSonicWall + 'img/SONI.gif'" />
+            </div>
+          </div>-->
+        }
+        <!-- FORMATIONS -->
+        @if (categorie.value.label == 'Formations') {
+          <div class="cat blueshadow">
+            <a class="overlay" href="http://blog.actn.fr/?post_type=tribe_events&eventDisplay=list&tribe-bar-search=formation" target="_blank">
+            </a>
+            <div>
+              Voir le calendrier des évènements
+              <fa-icon transform="flip-h" [icon]="faCalendarAlt"></fa-icon>
+            </div>
+          </div>
+        }
+      }
+    }
+  }
+}
+
+@if (niveau === 2) {
+  @if (structureCatalogue | async; as structure) {
+    @for (categorie of structure.nodes; track i; let i = $index) {
+      @if (categorie.value.label===chemin.niv1) {
+        @for (sub_categorie of categorie.nodes; track i; let i = $index) {
+          @if (sub_categorie.value.label===chemin.niv2) {
+            <div class="page">
+              <div class="toutVoir size-big">
+                <a class="raised-button" [routerLink]="['/catalogue', categorie.value.label, sub_categorie.value.label, 'unique']"
+                  routerLinkActive="router-link-active">Voir toute la catégorie {{ sub_categorie.value.label }}
+                </a>
+              </div>
+            </div>
+            @for (sub_sub_categorie of sub_categorie.nodes; track i; let i = $index) {
+              <a class="cat"
+                [routerLink]="['/catalogue',categorie.value.label, sub_categorie.value.label, sub_sub_categorie.value.label]"
+                routerLinkActive="router-link-active">
+                {{ sub_sub_categorie.value.label }}
+                <img default="" [src]="environment.photoReel + sub_sub_categorie.value.photo + '.jpg'" />
+              </a>
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+</div>

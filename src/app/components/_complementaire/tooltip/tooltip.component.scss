@@ -1,0 +1,52 @@
+.icon {
+  display: inline-flex;
+  //width: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-help {
+  color: grey;
+}
+
+.tooltip-help {
+  background-color: grey;
+}
+
+.icon-alert {
+  color: var(--color-warn);
+}
+
+.icon-alert-client {
+  color: white;
+}
+
+.tooltip-alert {
+  background-color: var(--color-warn);
+  color: white;
+}
+
+.icon-problem {
+  color: var(--color-primary-second);
+}
+
+.icon-secondary {
+  color: var(--color-secondary);
+}
+
+.tooltip-problem {
+  background-color: var(--color-primary-contrast);
+  color: var(--color-primary-contrast);
+}
+
+.icon-white {
+  color: white;
+}
+
+.icon-tooltip {
+  cursor: help;
+}
+
+.icon-share {
+  cursor: pointer;
+}

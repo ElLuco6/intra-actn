@@ -1,0 +1,77 @@
+.mat-mdc-form-field {
+  display: block;
+}
+
+.log{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 95%;
+}
+
+.btn-conn {
+  background-color: var(--color-primary-second);
+  color: white;
+  margin-top: 10px;
+}
+
+.form-div {
+  margin: 10px 12vw 3vh
+}
+
+@media only screen and (max-width: 500px) {
+  #card {
+    background: #fbfbfb;
+    border-radius: 8px;
+    box-shadow: 1px 2px 8px var(--color-primary-second);
+    //margin: 6rem auto 8.1rem auto;
+    height: 32vh;
+    width: 80vw;
+  }
+}
+
+@media only screen and (min-width: 500px) {
+  #card {
+    background: #fbfbfb;
+    border-radius: 8px;
+    box-shadow: 1px 2px 8px var(--color-primary-second);
+    height: 31vh;
+    //margin: 6rem auto 8.1rem auto;
+    width: 50vw;
+  }
+}
+
+@media only screen and (min-width: 900px) {
+  #card {
+    background: #fbfbfb;
+    border-radius: 8px;
+    box-shadow: 1px 2px 8px var(--color-primary-second);
+    height: 32.5vh;
+    //margin: 6rem auto 8.1rem auto;
+    width: 35vw;
+  }
+}
+
+
+
+#card-content {
+  padding: 12px 44px;
+}
+#card-title {
+  font-family: "Raleway Thin", sans-serif;
+  letter-spacing: 4px;
+  padding-bottom: 23px;
+  padding-top: 13px;
+  text-align: center;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-content {
+  border: none;
+  outline: none;
+  padding-top: 14px;
+}

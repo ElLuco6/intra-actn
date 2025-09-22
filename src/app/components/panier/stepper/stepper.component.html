@@ -1,0 +1,18 @@
+<ul class="steps">
+  <a routerLink="/panier">
+    <li class="step"  [ngClass]="{'step--selected': step === 1, 'step--clickable': step > 1}">
+      <div class="number">1</div><p style="margin: 0" [ngClass]="{'phone': step !== 1}">Récapitulatif</p>
+    </li>
+  </a>
+  <li class="step"  [ngClass]="{'step--selected': step === 2}">
+    <div class="number">2</div>
+    <p style="margin: 0" [ngClass]="{'phone': step !== 2}">Livraison
+      <span *ngIf="[page]!='devis' ;">& Paiement</span>
+    </p>
+  </li>
+  <li class="step" [ngClass]="{'step--selected': step === 3}">
+    <div class="number">3</div><p style="margin: 0" [ngClass]="{'phone': step !== 3}" *ngIf="[page]!='devis' ;">Validation</p>
+    <p style="margin: 0" [ngClass]="{'phone': step !== 3}"*ngIf="[page]=='devis';">Enregistrer</p>
+  </li>
+
+</ul>

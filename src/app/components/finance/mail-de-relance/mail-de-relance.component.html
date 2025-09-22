@@ -1,0 +1,46 @@
+<mat-dialog-content>
+  <h1>Mail de relance</h1>
+  @if (contactsDest && !contactsDest[0].erreur) {
+    <mat-chip-listbox [(ngModel)]="destinataire"
+                      (ngModelChange)="updatePossibleCC($event)">
+      <div class="display-column">
+        <h3>Destinataire du mail</h3>
+        <div class="mat-chip-listbox-grid">
+          @for (contact of contactsDest; track contact) {
+            <mat-chip-option class="contact-chip"
+                             [value]="contact.mail"
+                             [matTooltip]="'Fonction : ' + (contact.fonction ? contact.fonction : 'non définie')">{{ contact.mail }}
+            </mat-chip-option>
+          }
+        </div>
+      </div>
+    </mat-chip-listbox>
+
+    <br/>
+
+    <mat-chip-listbox [(ngModel)]="copiesCarbone" multiple>
+      <div class="display-column">
+        <h3>En copie</h3>
+        <div class="mat-chip-listbox-grid">
+          @for (contact of contactsCC; track contact) {
+            <mat-chip-option class="contact-chip"
+                             [value]="contact.mail"
+                             [matTooltip]="'Fonction : ' + (contact.fonction ? contact.fonction : 'non définie')">{{ contact.mail }}
+            </mat-chip-option>
+          }
+        </div>
+      </div>
+    </mat-chip-listbox>
+  } @else {
+    Aucun client pour ce contact
+  }
+
+</mat-dialog-content>
+<mat-dialog-actions class="action-row">
+  <button mat-raised-button (click)="openAddContactPopup()">Ajouter un contact</button>
+
+  <div>
+    <button class="annuler" mat-button mat-dialog-close>Annuler</button>
+    <button class="envoyer" mat-button [mat-dialog-close]="{destinataire, copiesCarbone}">Envoyer</button>
+  </div>
+</mat-dialog-actions>

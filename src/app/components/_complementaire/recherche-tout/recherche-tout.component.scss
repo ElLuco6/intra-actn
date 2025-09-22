@@ -1,0 +1,43 @@
+@import "variables.scss";
+
+.catalogue-search-form {
+  height: 100%;
+  width: 100%;
+  padding: 0;
+}
+
+.search-bar {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  //border-bottom: 1px solid var(--color-primary-second);
+  position: relative;
+}
+
+input {
+  width: 100%;
+  padding-left: 16px;
+  padding-right: 12px;
+  border: none;
+  font-size: 1em;
+  background: transparent;
+}
+
+.text-button {
+  position: absolute;
+  right: 10px;
+  top: 0px;
+  bottom: 0px;
+  padding: 0px;
+}
+
+.clear-icon {
+  right: 30px;
+  opacity: 70%;
+}
+
+.trop-swag {
+  padding: 0;
+  background-color: #dde5db;
+  border-radius: 14px;
+}

@@ -1,0 +1,65 @@
+<div class="adresseForm" *ngIf="editForm">
+  <h3>Editer l'Adresse "{{ this.addressName }}":</h3>
+  <form [formGroup]="editForm" (ngSubmit)="editAddress()">
+    <mat-form-field class="example-full-width">
+      <mat-label>Nom de l'adresse :</mat-label>
+      <input formControlName="nomAddr" matInput maxlength="40" name="nom" placeholder="40 caracteres max" required type="text">
+      <mat-error *ngIf="editForm.get('nomAddr').invalid">Le nom de l'adresse doit faire entre 1 et 40 caractère. Caractères autorisés : Majuscules, Minuscules, Chiffres, éèêàâîïÉÈÊÀÂÎÏ'</mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="example-full-width">
+      <mat-label>Adresse ligne 1 :</mat-label>
+      <input formControlName="addr1" matInput maxlength="30" name="addr1" placeholder="30 caracteres max" required type="text">
+      <mat-error *ngIf="editForm.get('addr1').invalid">La première ligne de l'adresse doit faire entre 1 et 30 caractère. Caractères autorisés : Majuscules, Minuscules, Chiffres, éèêàâîïÉÈÊÀÂÎÏ'</mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="example-full-width">
+      <mat-label>Adresse ligne 2 :</mat-label>
+      <input formControlName="addr2" matInput maxlength="30" name="addr2" placeholder="30 caracteres max" type="text">
+      <mat-error *ngIf="editForm.get('addr2').invalid">La seconde ligne de l'adresse doit faire entre 1 et 30 caractère. Caractères autorisés : Majuscules, Minuscules, Chiffres, éèêàâîïÉÈÊÀÂÎÏ'</mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="example-full-width">
+      <mat-label>Code Postal :</mat-label>
+      <input formControlName="codePostal" matInput maxlength="5" name="codePostal" oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" required type="text">
+      <mat-error *ngIf="editForm.get('codePostal').invalid">Vérifiez que votre code postal corresponde bien au format du pays choisit. Caractères autorisés : Chiffres</mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="example-full-width">
+      <mat-label>Ville :</mat-label>
+      <input formControlName="ville" matInput maxlength="26" name="ville" placeholder="26 caracteres max" required type="text">
+      <mat-error *ngIf="editForm.get('ville').invalid">Le nom de la ville doit faire entre 1 et 26 caractère. Caractères autorisés : Majuscules, Minuscules, Chiffres, éèêàâîïÉÈÊÀÂÎÏ'</mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="example-full-width">
+      <mat-label>Téléphone :</mat-label>
+      <input formControlName="telephone" matInput maxlength="15" name="telephone" oninput="if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" placeholder="Numéro portable de préférence" required type="text">
+      <mat-hint>Veuillez ne pas mettre d'espace entre les caractères, exemple : 0000000000</mat-hint>
+      <mat-error *ngIf="editForm.get('telephone').invalid">Le numéro de téléphone doit faire entre 1 et 15 caractères, exemple : 0000000000. Caractères autorisés : Chiffres, +</mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="example-full-width">
+      <mat-label>Pays :</mat-label>
+      <mat-select formControlName="pays" required>
+        <mat-option value="FR">France</mat-option>
+        <mat-option value="BE">Belgique</mat-option>
+        <mat-option value="ES">Espagne</mat-option>
+        <mat-option value="LU">Luxembourg</mat-option>
+        <ng-container *ngIf="pays$ | async as pays">
+          <mat-option *ngFor="let unPays of pays" [value]="unPays['alpha2Code']">
+            {{ adresseService.getNameOfCountry(unPays) }}
+          </mat-option>
+        </ng-container>
+      </mat-select>
+      <mat-error *ngIf="editForm.get('pays').invalid">Pensez à selectionner un pays dans la liste.</mat-error>
+    </mat-form-field>
+    <br>
+    <mat-checkbox class="defaultCheckbox" formControlName="defaut" name="defaut" type="checkbox"> Faire de cette adresse votre nouvelle adresse par defaut.</mat-checkbox>
+    <p>* : Champs obligatoires</p>
+    <br>
+    <div class="formButtons">
+      <button [routerLink]="['/espace-client/adresses/']" class="raised-button">Annuler</button>
+      <button type="submit" class="raised-button">Enregistrer</button>
+    </div>
+  </form>
+</div>

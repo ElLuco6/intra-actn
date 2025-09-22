@@ -1,0 +1,300 @@
+<app-title-w-line [title]="'Reliquats'"></app-title-w-line>
+
+<mat-card appearance="outlined" style="padding: 1em; margin-bottom: 1em">
+  <div>
+    <h2>Filtres</h2>
+  </div>
+  <div style="display: flex; flex-direction: row; margin-bottom: .5em">
+    <div style="margin-right: 8px">Régions</div>
+    <mat-slide-toggle (click)="isChecked()" [color]="'primary'">Tous</mat-slide-toggle>
+  </div>
+  <div>
+    <form [formGroup]="filtreReliquat">
+      <div class="filtre-reliquat">
+        <mat-form-field>
+          <mat-label>N° Client</mat-label>
+          <input matInput formControlName="client"
+                 [ngModel]="saf.getFiltre('reliquat', 'numclient', 'includes')"
+                 (keydown)="onSearch('numclient', 'string', 'includes', $event); eventClientSearch = $event;"
+                 (focusin)="inputFocused()"
+                 (focusout)="inputFocused()"
+                 [matAutocomplete]="autoGroup"
+                 (click)="autocomplete.openPanel()"
+          >
+        </mat-form-field>
+
+        <mat-autocomplete #autoGroup="matAutocomplete"
+                          (optionSelected)="onSearch('client', 'string', 'includes', eventClientSearch)"
+                          class="single-autocomplete">
+          @if (autoCompleteOptions$ | async; as options) {
+            @for (client of options.clients; track client) {
+              <mat-option [value]="client.code">
+                {{ start(client.code) }}@if (client.code.includes(searching)) {
+                <span style="font-weight: bold;">{{ searching }}</span>
+              }{{ end(client.code) }}
+                <br>
+                {{ start(client.designation) }}@if (client.designation.includes(searching)) {
+                <span style="font-weight: bold;">{{ searching }}</span>
+              }{{ end(client.designation) }}
+              </mat-option>
+            }
+          }
+        </mat-autocomplete>
+
+        <mat-form-field>
+          <mat-label>N° Commande</mat-label>
+          <input matInput formControlName="commande"
+                 [ngModel]="saf.getFiltre('reliquat', 'numcommande', 'includes')"
+                 (keydown)="onSearch('numcommande', 'string', 'includes', $event)">
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Réf. Commande</mat-label>
+          <input matInput formControlName="refCommande"
+                 [ngModel]="saf.getFiltre('reliquat', 'referencecommande', 'includes')"
+                 (keydown)="onSearch('referencecommande', 'string', 'includes', $event)">
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Marque</mat-label>
+          <mat-select formControlName="marques" multiple [(ngModel)]="marquesSelected"
+                      (ngModelChange)="onSearch('produits.marque', 'array', 'includes', $event, 'marquesSelected')">
+            @for (marque of marqueArray; track marque) {
+              <mat-option [value]="marque">{{ marque }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Region</mat-label>
+          <mat-select formControlName="region" [(ngModel)]="regionSelected"
+                      (ngModelChange)="onSearch('region', 'array', 'includes', $event, 'regionSelected')" multiple>
+            @for (reg of region; track reg) {
+              <mat-option [value]="reg">{{ reg }}</mat-option>
+            }
+          </mat-select>
+          @if (filtreReliquat.value.region != '') {
+            <button matSuffix mat-icon-button aria-label="Clear"
+                    (click)="resetOneFilters('region')">
+              <mat-icon>close</mat-icon>
+            </button>
+          }
+        </mat-form-field>
+      </div>
+    </form>
+  </div>
+</mat-card>
+<!--<div class="nbReliquats">
+{{reliquatLength + ' Reliquats trouvés'}}
+</div>-->
+
+<!--<span style="margin-top: .5em" class="labels display-flex heavy-font">
+<label class="grow" (click)="onTri('numclient', 'string')">N° Client<app-tab-sort [state]="selected('numclient')"></app-tab-sort></label>
+<label class="grow" (click)="onTri('nom', 'string')">Nom<app-tab-sort [state]="selected('nom')"></app-tab-sort></label>
+<label class="grow">Réf. commande</label>
+<label class="grow">N° Commande</label>
+<label class="grow">Date</label>
+</span>-->
+<div class="bandeau"
+     [ngClass]="{'top-zbi': predictionService.currentClient, 'top-pas-zbi': !predictionService.currentClient}">
+  <ul class="raised-1 size-smaller devis-header">
+    <li class="sort phone" (click)="onTri('numclient', 'number')">N° Client
+      <app-tab-sort [state]="selected('numclient')"></app-tab-sort>
+    </li>
+    <li class="sort phone" (click)="onTri('nom', 'string')">Nom
+      <app-tab-sort [state]="selected('nom')"></app-tab-sort>
+    </li>
+    <li class="sort phone" (click)="onTri('codepostal', 'string')">Code Postal
+      <app-tab-sort [state]="selected('codepostal')"></app-tab-sort>
+    </li>
+    <li class="sort phone" (click)="onTri('ville', 'string')">Ville
+      <app-tab-sort [state]="selected('ville')"></app-tab-sort>
+    </li>
+    <li class="sort" (click)="onTri('referencecommande', 'string')">Réf. commande
+      <app-tab-sort [state]="selected('referencecommande')"></app-tab-sort>
+    </li>
+    <li class="sort del-for-phone" (click)="onTri('numcommande', 'number')">N° Commande
+      <app-tab-sort [state]="selected('numcommande')"></app-tab-sort>
+    </li>
+    <li class="sort" (click)="onTri('datecommande', 'date')">Date
+      <app-tab-sort [state]="selected('datecommande')"></app-tab-sort>
+    </li>
+  </ul>
+</div>
+<!-- NGFOR - RELIQUATS -->
+@if (tab) {
+  <div>
+    @if (tab.length == 0) {
+      <div class="no-result">Vous n'avez pas de reliquat</div>
+    }
+  </div>
+}
+@if (processedReliquats$ | async; as reliquats) {
+  @for (reliquat of reliquats; track reliquat; let i = $index) {
+    <div>
+      <div class="over floatClear">
+        <!-- ENTETE RELIQUAT -->
+        <div (click)="unrollDetails(i);" class="entete">
+          @if (!display[i]) {
+            <i class="unroll-button icon-plus raised-button"></i>
+          } @else {
+            <i class="unroll-button icon-minus raised-button"></i>
+          }
+          <div class="reliquat display-flex">
+            <label hidden>Réf. client : N° Client</label>
+            <div class="refClient grow pointer" (click)="openTab(reliquat.numclient)">{{ reliquat.numclient }}</div>
+            <label hidden>Nom</label>
+            <div class="grow pointer" (click)="openTab(reliquat.numclient)">{{ reliquat.nom }}</div>
+            <label hidden>Code Postal</label>
+            <div class="grow pointer" (click)="openTab(reliquat.numclient)">{{ reliquat.codepostal }}</div>
+            <label hidden>Ville</label>
+            <div class="grow pointer" (click)="openTab(reliquat.numclient)">{{ reliquat.ville }}</div>
+            <label hidden>Réf. ACTN</label>
+            <div class="grow">{{ reliquat.referencecommande }}</div>
+            @if (!reliquat.pdfar) {
+              <div class="refACTN grow">{{ reliquat.numcommande }}</div>
+            } @else {
+              <a class="refACTN grow arpdflink"
+                 target="_blank"
+                 [href]="environment.apiUrlActn + '/document/generate_intra.php?document=AR/' + reliquat.numclient + '/' + reliquat.numcommande">
+                {{ reliquat.numcommande }}
+                <fa-icon [icon]="faFilePdf"></fa-icon>
+              </a>
+            }
+            <label hidden>Date de Commande</label>
+            <div class="date grow">{{ reliquat.datecommande | date: 'dd/MM/yyyy' }}</div>
+          </div>
+        </div>
+        <!-- RELIQUAT DETAILS -->
+        @if (display[i]) {
+          <div class="reliquatDetails">
+            <hr>
+            <!-- ADRESSE -->
+            <div class="client-content">
+              <div class="block">
+                <span class="heavy-font">Adresse de Livraison</span>
+                <div class="adresses">
+                  <span class="heavy-font">{{ reliquat.wnom }}</span>
+                  <br>
+                  <span>{{ reliquat.wadresse1 }}&nbsp;&nbsp;</span>
+                  <br>
+                  @if (reliquat.wadresse2) {
+                    <span>{{ reliquat.wadresse2 }}&nbsp;&nbsp;<br></span>
+                  }
+                  <span>{{ reliquat.wcodepostal }}&nbsp;&nbsp;</span>
+                  <span>{{ reliquat.wville }}</span>
+                  <br>
+                  <!--<span>{{ (reliquat.pays ? reliquat.pays : "France") }}</span>-->
+                  <br>
+                </div>
+              </div>
+              <div style="display: flex; flex-direction: column; justify-items: start">
+                Client {{ reliquat.numclient }}
+                <p style="font-weight: 500">{{ reliquat.nom }}</p>
+                @if (reliquat.adresse1 != '') {
+                  <p>{{ reliquat.adresse1 }}</p>
+                }
+                @if (reliquat.adresse2 != '') {
+                  <p>{{ reliquat.adresse2 }}</p>
+                }
+                <p>{{ reliquat.codepostal }} {{ reliquat.ville }}</p>
+                <a [href]="'tel:' + reliquat.telephone">{{ reliquat.telephone }}</a>
+                <p>{{ reliquat.groupe }}</p>
+              </div>
+              <div style="display: grid; grid-auto-rows: 1fr; grid-template-columns:12.5em 10em; justify-items: start">
+                <p>Limite crédit safe : </p>
+                <p style="font-weight: 500">{{ reliquat.limiteCredit }} €</p>
+                <p>Plafond bloquant : </p>
+                <p>{{ reliquat.plafondBloquant || 0 }} €</p>
+                <p>Limite crédit excep : </p>
+                <p><strong style="font-weight: 500">{{ reliquat.limiteCreditExceptionnel || 'Pas des crédit excep' }}
+                  €</strong> @if (reliquat.limiteCreditExceptionnelDate) {
+                  jusqu'au {{ reliquat.limiteCreditExceptionnelDate }}
+                }</p>
+                <p>Encours compta : </p>
+                <p>{{ reliquat.EncoursCompta }} €</p>
+                <p>Encours BL : </p>
+                <p>{{ reliquat.EncoursBL }} €</p>
+                <p>Risque global : </p>
+                <p>{{ reliquat.risqueGlobal || 0 }} €</p>
+              </div>
+              <div style="display: grid; grid-template-rows: repeat(5, 1.5em); justify-items: left">
+                <p [matTooltip]="reliquat.Bilan">Bilan : {{ reliquat.Bilan | truncate:15 }}</p>
+                <p>Note : {{ reliquat.note }}</p>
+                <p>Siren : {{ reliquat.siren }}</p>
+                <p [matTooltip]="reliquat.naflibelle.toString()">Naf
+                  : {{ reliquat.naflibelle.toString() | truncate:15 }}</p>
+                <p>Region : {{ reliquat.region }}</p>
+              </div>
+              <div>
+                <p style="font-size: larger; text-align: center !important;">Contacts commerciaux</p>
+                <div style="display: grid;text-align: left !important; grid-template-rows: 1fr 1fr 1fr">
+                  <div style="display: grid; grid-template-columns: 1fr 1fr 1fr">
+                    <p>{{ reliquat.commercialNom1 }}</p>
+                    <p style="text-align: center">{{ reliquat.commercialMail1 }}</p>
+                    <p style="text-align: end">{{ reliquat.commercialTel1 }}</p>
+                  </div>
+                  <div style="display: grid; grid-template-columns: 1fr 1fr 1fr">
+                    <p>{{ reliquat.commercialNom2 }}</p>
+                    <p>{{ reliquat.commercialMail2 }}</p>
+                    <p>{{ reliquat.commercialTel2 }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="block">
+              <span class="heavy-font">{{ reliquat.message }}</span>
+            </div>
+          </div>
+        }
+        <hr style="margin: 0 8px 0 8px;">
+        <!-- Produits -->
+        <span class="labels_produits detail-grid heavy-font1">
+                      <label>Marque</label>
+                      <label>Produit</label>
+                      <label class="designation">Désignation</label>
+                      <label>Qté Commandée</label>
+                      <label>Qté à Livrer</label>
+                      <label>Expédition Estimée</label>
+                      <label>Stock</label>
+                      <label>Stock ext.</label>
+                      <label>Réappro</label>
+                    </span>
+        <!-- NGFOR - PRODUITS -->
+        @for (rel of reliquat.produits; track rel) {
+          <div class="produits">
+            <div class="detail-grid ">
+              <label class="marque">{{ rel.marque }}</label>
+              <label><a (click)="linkToProduct(rel.prod)">{{ rel.prod }}</a></label>
+              <label class="designation-produit">{{ rel.designation }}</label>
+              <label>{{ rel.quantitecommande }}</label>
+              <label>{{ rel.quantitealivrer }}</label>
+              @if ((rel.datelivraisonprevu == '')) {
+                <label>N.C.</label>
+              } @else {
+                @if (rel.datelivraisonprevu != 'n.c.') {
+                  <label>{{ rel.datelivraisonprevu | date: 'dd/MM/yyyy' }}</label>
+                } @else {
+                  <label>N.C.</label>
+                }
+              }
+              <label style="justify-self: center">{{ rel.qtestock }}</label>
+              <label style="justify-self: center">{{ rel.qtestockexterne }}</label>
+              <label style="justify-self: center">{{ rel.qteencommande }}</label>
+              <ng-template #prod>
+                @if (rel.datelivraisonprevu != 'n.c.') {
+                  <label>{{ rel.datelivraisonprevu | date: 'dd/MM/yyyy' }}</label>
+                }
+              </ng-template>
+            </div>
+          </div>
+        }
+      </div>
+      <!-- DEMANDE DE DELAIS -->
+      <!-- <fa-icon class="prefix icon size-big" [icon]="['fas', 'plus-circle']"></fa-icon> -->
+      <!--<div class="demandeDeDelaisButton" [ngClass]="{ demandeDeDelaisButtonDeactivated: sentDelay.includes(i) }" (click)="envoiDemandeDeDelai(reliquat.numcommande, reliquat.referencecommande, reliquat.datecommande, i)">
+      <span class="texte" style="font-size: 1rem;"><fa-icon class="envelope" [icon]="['fas', 'envelope']"></fa-icon>&nbsp;&nbsp;Demande de délai</span>
+    </div>
+    <div *ngIf="delayInError == i" class="demandeDeDelaisFailure">Demande de delai échouée</div>
+    <div *ngIf="sentDelay.includes(i)" class="demandeDeDelaisSuccess">Demande de delai envoyée</div>-->
+    </div>
+  }
+}
+

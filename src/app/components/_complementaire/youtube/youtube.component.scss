@@ -1,0 +1,42 @@
+.youtube {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  width: 100%;
+
+  > * {
+    width: 100%;
+  }
+}
+
+.iframe {
+  border: none;
+}
+
+.placeholder {
+  width: 640px;
+  height: 360px;
+  background-color: var(--color-primary-contrast);
+  color: var(--color-primary-contrast);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  @media screen and (max-width:768px) {
+    width:100%;
+  }
+  .ghost-button {
+    margin-top: 20px;
+    color: var(--color-primary-contrast);
+    background: var(--color-primary-contrast);
+  }
+}
+
+.teste{
+  width:640px;
+  @media screen and (max-width:768px){
+    width: 100%;
+  }
+}

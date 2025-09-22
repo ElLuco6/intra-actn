@@ -1,0 +1,37 @@
+.title {
+  font-size: 1.3rem;
+  font-weight: 600;
+
+  &.failure {
+    width: fit-content;
+    padding: 5px 9px;
+    border: solid 2px red;
+    border-radius: 8px;
+    margin-bottom: 15px;
+  }
+}
+
+.inline {
+  display: inline;
+}
+
+.underline {
+
+}
+
+.param-box {
+  font-size: 1.3rem;
+
+  h3 {
+    font-weight: 500;
+  }
+
+  a {
+    color: var(--color-primary-second);
+    text-decoration: underline;
+  }
+}
+
+.margin{
+  margin: 20px 0;
+}

@@ -1,0 +1,79 @@
+/// attention bloc englobant supérieur
+/*.header {
+    background: grey;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 125px;
+
+    > * {
+        width: 80%;
+    }
+}*/
+
+.steps {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-evenly;
+  width: 100%;
+  padding: 0;
+
+  @media screen and (max-width: 560px){
+    display: flex;
+  }
+  .step {
+    margin: 6px;
+    display: flex;
+    align-items: center;
+    padding-left: 8px;
+    padding-right: 12px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    border-radius: 360px;
+
+    @media screen and (max-width: 560px){
+      padding-left: 0px;
+      padding-right: 1px;
+      margin: 1px;
+      .number{
+        margin-right: 2px !important;
+      }
+    }
+    .number {
+      height: 2em;
+      width: 2em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: var(--color-primary-second);
+      margin-right: 10px;
+      color: white;
+    }
+
+    &--selected {
+      background: white;
+      color: black;
+
+      .number {
+        color: white;
+        background: var(--color-warn);
+      }
+    }
+
+    &--clickable {
+      cursor: pointer;
+    }
+  }
+}
+
+p.phone{
+  @media screen and (max-width: 560px){
+    display: none;
+  }
+}
+a{
+  text-decoration: none;
+}

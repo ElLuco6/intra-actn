@@ -1,0 +1,16 @@
+@import "styles/chips.scss";
+
+.container {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  overflow: hidden;
+  transition: max-height 300ms ease-in-out;
+  margin-bottom: 12px;
+}
+
+.titre {
+  width: 100%;
+  font-size: 0.885em;
+  color: rgba(0, 0, 0, 0.42);
+}

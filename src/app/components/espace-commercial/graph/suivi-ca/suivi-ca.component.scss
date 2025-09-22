@@ -1,0 +1,177 @@
+.page-layout {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+
+  &> :first-child {
+    width: 16rem;
+  }
+
+  &> :nth-child(2) {
+    width: 100%;
+  }
+}
+
+.option {
+  color: black;
+}
+
+.boutons {
+  display: flex;
+  gap: 20px;
+}
+
+.export {
+  background-color: var(--color-secondary);
+  color: white;
+
+  &.nope {
+    opacity: 20%;
+  }
+}
+
+.ligne-cliquable {
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #f0f0f0;
+  }
+
+  &:active {
+    background-color: #e0e0e0;
+  }
+}
+
+.filters-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.save-filters {
+  color: var(--color-primary-second);
+}
+
+.supprimer-filtrage {
+  color: var(--color-warn);
+  width: fit-content;
+  align-self: center;
+  margin-bottom: 20px;
+}
+
+mat-card {
+  padding: 1rem;
+  padding-bottom: 0;
+  height: fit-content;
+
+  h2 {
+    margin-bottom: 0.5rem;
+  }
+}
+
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+.small-font-size {
+  font-size: small;
+}
+
+.chart-et-boutons {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.buttons-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.boutons-graphe {
+  display: flex;
+  align-self: flex-end;
+  gap: 1rem;
+}
+
+.changer-graphe {
+  width: fit-content;
+  align-self: center;
+  margin-bottom: 20px;
+}
+
+.boutons-et-paginator {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.bouton-appliquer {
+  margin-bottom: 1rem;
+}
+
+.input-placeholder {
+  position: absolute;
+  opacity: 50%;
+}
+
+.input-select {
+  padding-left: 5px;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.info-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.info-icon {
+  position: absolute;
+  top: -8px;
+  right: -12px;
+  font-size: 10px;
+  background-color: white;
+  color: black;
+  border: 1px solid black;
+  border-radius: 50%;
+  width: 14px;
+  height: 14px;
+  text-align: center;
+  line-height: 14px;
+  cursor: default;
+  font-weight: bold;
+  font-family: Arial, sans-serif;
+}
+
+.prct-evolution {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.montant {
+  text-align: end;
+}
+
+.montant.positif {
+  color: green;
+}
+
+.montant.negatif {
+  color: red;
+}
+
+.mois {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}

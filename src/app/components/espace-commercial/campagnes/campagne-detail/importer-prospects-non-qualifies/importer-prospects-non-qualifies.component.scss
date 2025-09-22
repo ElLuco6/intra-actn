@@ -1,0 +1,26 @@
+.content {
+    display: flex;
+    flex-direction: column;
+}
+
+.button-template {
+    display: flex;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    width: auto;
+    align-self: flex-start;
+
+    &:hover {
+        text-decoration: none;
+    }
+}
+
+.annuler {
+    background-color: var(--color-warn);
+    color: white;
+}
+
+.valider {
+    background-color: var(--color-secondary);
+    color: white;
+}

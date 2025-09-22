@@ -1,0 +1,19 @@
+.infosClient {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 850px;
+}
+
+.colonneInfoClient {
+  display: flex;
+  flex-direction: column;
+}
+
+h4 {
+    font-weight: 500;
+}
+
+.montant {
+  text-align: end;
+}

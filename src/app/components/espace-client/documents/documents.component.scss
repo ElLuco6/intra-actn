@@ -1,0 +1,98 @@
+@import "styles";
+@import "styles/popup";
+
+.grille-tarif {
+  display: block;
+  width: calc(100% + 16px);
+  margin-left: -8px;
+
+  tr {
+    // width: 38%;
+    line-height: 2.2em;
+    padding-right: 8px;
+    padding-left: 8px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+
+    @media screen and (max-width: 768px) {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    &:nth-of-type(odd) {
+      border-radius: 2px;
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    &:hover {
+      background: var(--color-primary-second);
+      color: white;
+
+      .link {
+        color: white;
+      }
+    }
+  }
+}
+
+.mat-mdc-row .mat-mdc-cell {
+  border-bottom: 1px solid transparent;
+  border-top: 1px solid transparent;
+  cursor: pointer;
+}
+
+.mat-mdc-row:hover .mat-mdc-cell {
+  border-color: currentColor;
+}
+
+.demo-row-is-clicked {
+  font-weight: bold;
+}
+
+.gest-fichier {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: center;
+}
+
+.items-gest {
+  /*flex-grow: 1;
+  flex-basis: 200px;*/
+}
+
+.drop-zone {
+  height: 200px;
+  border-style: dashed;
+  display: grid;
+  place-content: center;
+}
+
+.text-drop-zone {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.btn-action {
+  display: flex;
+  justify-content: space-around;
+}
+
+.btn-zbi {
+  color: white;
+  width: 110px;
+
+  &.cancel {
+    background-color: var(--color-secondary);
+  }
+
+  &.delete {
+    background-color: var(--color-warn);
+  }
+}
+
+.docs {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}

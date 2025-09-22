@@ -1,0 +1,522 @@
+<div class="container-filtres raised-1">
+  <button class="text-button">Filtres</button>
+  <button class="raised-button" [routerLink]="['/espace-client', 'reliquats']">Suivre des reliquats de
+    commande</button>
+  <div class="filtres">
+    <div class="filtre">
+      <mat-form-field>
+        <mat-label>Réf. client</mat-label>
+        <input matInput [ngModel]="filtres.get('referencecommande')"
+               (ngModelChange)="onSearch('referencecommande', $event)" />
+      </mat-form-field>
+    </div>
+    <div class="filtre">
+      <mat-form-field>
+        <mat-label>N° de commande</mat-label>
+        <input matInput [ngModel]="filtres.get('numcommande')"
+               (ngModelChange)="onSearch('numcommande', $event)" />
+      </mat-form-field>
+    </div>
+    <div class="filtre">
+      <mat-form-field>
+        <mat-label>Réf. produit</mat-label>
+        <input matInput [ngModel]="filtres.get('ref-produit')" (ngModelChange)="onSearch('produit', $event)" />
+      </mat-form-field>
+    </div>
+    <div class="filtre">
+      <mat-form-field>
+        <mat-label>N° de BL</mat-label>
+        <input matInput [ngModel]="filtres.get('numbl')" (ngModelChange)="onSearch('numbl', $event)" />
+      </mat-form-field>
+    </div>
+    <div class="filtre">
+      <mat-form-field>
+        <mat-label>N° de Facture</mat-label>
+        <input matInput [ngModel]="filtres.get('numfacture')"
+               (ngModelChange)="onSearch('numfacture', $event)" />
+      </mat-form-field>
+    </div>
+    <div class="filtre">
+      <mat-form-field>
+        <mat-label>Statut</mat-label>
+        <mat-select [ngModel]="filtres.get('statut')" (ngModelChange)="onSearch('statut', $event)">
+          <mat-option value=""></mat-option>
+          <mat-option *ngFor="let statut of statutSet" [value]="statut">{{ statut }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="filtre">
+      <mat-form-field>
+        <mat-label>Marque</mat-label>
+        <mat-select [ngModel]="filtres.get('marque')" (ngModelChange)="onSearch('marque', $event)" multiple>
+          <mat-option value=""></mat-option>
+          <mat-option *ngFor="let marque of marqueArray" [value]="marque">{{ marque }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+  <div class="marque-filtres" *ngIf="marqueArray">
+    <div class="marque-options" [ngClass]="{'selected': filtres.get('marque').includes(option)}"
+         *ngFor="let option of marqueArray; let j = index" (click)="filtreMarqueToggle(option)"
+         (tap)="filtreMarqueToggle(option)">
+      <img class="marque-img" [src]="environment.logoMarquesCouleurs200x80 + option + '.gif'" [alt]="option" />
+    </div>
+  </div>
+</div>
+
+<!-- PAGINATOR -->
+<mat-paginator [length]="formatCmd.length" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions"
+               (page)="pageEvent = getServerData($event)">
+</mat-paginator>
+
+<ng-container *ngIf="numClient; else noNumClient">
+  <app-title-w-line [title]="'Commandes du client N° : ' + numClient"></app-title-w-line>
+</ng-container>
+<ng-template #noNumClient>
+  @if(authClient.currentClient){
+    <app-title-w-line [title]="'Commandes du client N° : ' + authClient.currentClient.id"></app-title-w-line>
+  }
+</ng-template>
+<!-- LABELS -->
+<div class="bandeau">
+  <ul class="raised-1 size-smaller display-flex">
+    <li class="grow-ref sort" (click)="onTri('Réf. client')" (tap)="onTri('Réf. client')">Réf. client <app-tab-sort
+      [state]="selected('Réf. client')"></app-tab-sort>
+    </li>
+    <li class="grow sort" (click)="onTri('Réf. ACTN')" (tap)="onTri('Réf. ACTN')">N° de commande <app-tab-sort
+      [state]="selected('Réf. ACTN')"></app-tab-sort>
+    </li>
+    <li class="grow sort" (click)="onTri('Date')" (tap)="onTri('Date')">Date <app-tab-sort
+      [state]="selected('Date')"></app-tab-sort>
+    </li>
+    <li class="grow sort del-for-phone" (click)="onTri('Factures')" (tap)="onTri('Factures')">Factures <app-tab-sort
+      [state]="selected('Factures')"></app-tab-sort>
+    </li>
+    <li class="grow sort del-for-phone" (click)="onTri('Dates Fact.')" (tap)="onTri('Dates Fact.')">Dates Fact. <app-tab-sort
+      [state]="selected('Dates Fact.')"></app-tab-sort>
+    </li>
+    <li class="grow sort del-for-phone" (click)="onTri('Statut')" (tap)="onTri('Statut')">Statut <app-tab-sort
+      [state]="selected('Statut')"></app-tab-sort>
+    </li>
+  </ul>
+</div>
+
+<!-- COMMANDES -->
+<div *ngIf="(!loading) && (formatCmd.length == 0)" class="no-result"> Vous n'avez pas d'historique de commandes</div>
+<!-- NGFOR - NUM DE COMMANDES -->
+<div *ngIf="cmdDetails" class="licences">
+  <div class="licence size-smaller"
+       *ngFor="let livraisons of formatCmd.slice(pageIndex*pageSize, (pageIndex+1)*pageSize); let i = index;">
+    <div class="raised-1">
+      <!-- LIVRAISONS ENTETE -->
+      <div (click)="unrollCommandDetails(livraisons);" class="entete size-default">
+
+        <div *ngFor="let livraison of livraisons; let j = index;" class="commande" [ngClass]="{'del-for-phone': j > 0}">
+          <div *ngIf="j == 0; else otherCmdLine" class="display-flex">
+            <label hidden>Réf. client</label>
+            <div class="refClient grow-ref">{{ livraison.referencecommande }}</div>
+
+            <label hidden>Réf. ACTN</label>
+            <div *ngIf="!livraison.pdfar; else arpdfexist" class="refACTN grow">
+              <span style="cursor: pointer" [routerLink]="['/commande-detail']"
+                [queryParams]="{commande: livraison.numcommande, client: numClient}">
+                {{ livraison.numcommande }}
+              </span>
+            </div>
+
+            <ng-template #arpdfexist>
+              <a class="refACTN grow arpdflink"
+                 target="_blank"
+                 [href]="environment.apiUrlActn + '/document/generate_intra.php?document=AR/' + numClient + '/' + livraison.numcommande">
+                {{ livraison.numcommande }}
+                <fa-icon [icon]="faFilePdf"></fa-icon>
+              </a>
+            </ng-template>
+
+            <label hidden>Date</label>
+            <div class="date grow">{{ livraison.datecommande | date: 'shortDate' }}</div>
+
+            <label hidden>Factures</label>
+            <div class="refACTN grow del-for-phone">
+              <ng-container *ngIf="livraison.numfacture != 0; else noFacture">
+                <ng-container *ngIf="livraison.pdffacture; else nopdf">
+                  <a class="underline"
+                     [href]="environment.apiUrlActn + '/document/generate_intra.php?document=FACTURE/' + numClient + '/' + livraison.numfacture"
+                     target="_blank"
+                  >
+                    {{ livraison.numfacture }}
+                    <fa-icon [icon]="faFilePdf"></fa-icon>
+                  </a>
+                </ng-container>
+                <ng-template #nopdf>
+                  {{ livraison.numfacture }}
+                  <span class="size-small no-wrap">
+                                        <!-- <fa-icon [icon]="['fas', 'file-pdf']"></fa-icon> -->
+                                        <br/>
+                                        PDF indisponible
+                                        <app-tooltip type="help" [text]="explicationPDFFactureindispo"></app-tooltip>
+                                    </span>
+                </ng-template>
+              </ng-container>
+            </div>
+            <ng-template #noFacture>
+              <div class="grow del-for-phone">n.c.</div>
+            </ng-template>
+
+            <div class="del-for-phone">
+              <label hidden>Date Fact.</label>
+              <div class="refACTN grow" *ngIf="livraison.datefacture != '2000-00-00'; else noDFacture">
+                {{ livraison.datefacture | date: 'shortDate' }}</div>
+              <ng-template #noDFacture>
+                <div class="grow">n.c.</div>
+              </ng-template>
+            </div>
+
+            <label hidden>Statut</label>
+            <div *ngIf="statutCmd[livraison.numcommande] != 'Reliquat livraison'; else reliquat" class="statut grow">{{ statutCmd[livraison.numcommande] }}</div>
+            <ng-template #reliquat>
+              <a class="statut grow" routerLink="../reliquats">
+                <div class="reliquat-link">
+                  {{ statutCmd[livraison.numcommande] }}</div>
+              </a>
+            </ng-template>
+          </div>
+          <ng-template #otherCmdLine>
+            <div class="display-flex del-for-phone">
+              <div class="grow-ref del-for-phone">&nbsp;</div>
+              <div class="grow del-for-phone">&nbsp;</div>
+              <div class="grow del-for-phone">&nbsp;</div>
+              <div class="grow del-for-phone">
+                <ng-container *ngIf="livraison.numfacture != 0; else noFacture">
+                  <ng-container *ngIf="livraison.pdffacture; else nopdf">
+                    <a class="underline"
+                       [href]="environment.apiUrlActn + '/document/generate_intra.php?document=FACTURE/' + numClient + '/' + livraison.numfacture"
+                       target="_blank"
+                    >
+                      {{ livraison.numfacture }}
+                      <fa-icon [icon]="faFilePdf"></fa-icon>
+                    </a>
+                  </ng-container>
+                  <ng-template #nopdf>
+                    {{ livraison.numfacture }}
+                    <!-- <fa-icon [icon]="['fas', 'file-pdf']"></fa-icon> -->
+                    <br/>
+                    <span class="size-small no-wrap">
+                                            PDF indisponible
+                                            <app-tooltip type="help" [text]="explicationPDFFactureindispo"></app-tooltip>
+                                        </span>
+                  </ng-template>
+                </ng-container>
+              </div>
+              <div class="grow del-for-phone">{{ livraison.datefacture | date: 'shortDate' }}</div>
+              <div class="grow del-for-phone">&nbsp;</div>
+              <ng-template #noFacture>
+                <div class="grow del-for-phone">n.c.</div>
+              </ng-template>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+
+      <!-- LIVRAISONS DETAILS -->
+      <div class="details commandeDetails" [ngClass]="{'show': display[livraisons[0].numcommande]}">
+        <ng-container>
+
+          <hr>
+          <!-- ADRESSE -->
+          <span class="weight-bolder">Adresse de Livraison</span>
+          <div class="adresses">
+            <span class="weight-bolder">{{ livraisons[0].wnom }}</span>
+            <br>
+            <span>{{ livraisons[0].wadresse1 }}&nbsp;&nbsp;</span>
+            <br>
+            <span *ngIf='livraisons[0].wadresse2'>{{ livraisons[0].wadresse2 }}&nbsp;&nbsp;<br></span>
+            <span>{{ livraisons[0].wcodepostal }}&nbsp;&nbsp;</span>
+            <span>{{ livraisons[0].wville }}</span>
+            <br>
+            <span>{{ (livraisons[0].pays ? livraisons[0].pays : "France") }}</span>
+            <br>
+            <!-- <span>{{ livraisons[0].adresse1 }} <br> {{ livraisons[0].adresse2 }} <br> {{ livraisons[0].adresse3 }} <br> {{ livraisons[0].adresse4 }}</span> -->
+          </div>
+
+          <!-- NGFOR - BON DE COMMANDE / BL -->
+          <div *ngFor="let livraison of livraisons; let livraisonIndex = index">
+            <hr>
+            <!-- CMD DETAILS -->
+            <span class="labels_details detail-grid weight-bolder">
+
+                            <label>BL</label>
+                            <label *ngIf="!(livraison.statut=='Avoir')">Facture</label>
+                            <label *ngIf="(livraison.statut=='Avoir')">Avoir</label>
+                            <label>Suivi de livraison</label>
+                            <label>Statut</label>
+                        </span>
+
+            <div class="detail-grid test1">
+              <!-- IF BL !0 -->
+              <div>
+                <div *ngIf="!(livraison.numbl == 0); else noBlTemplate" class="blID">
+                  <ng-container *ngIf="livraison.pdfbl; else noblpdf">
+                    <a [href]="environment.apiUrlActn + '/document/generate_intra.php?document=BON/' + numClient + '/' + livraison.numbl"
+                       target="_blank"
+                       class="underline"
+                    >
+                      <label hidden>BL n°</label>
+                      <span>{{ livraison.numbl }}&nbsp;</span>
+                      <span>du {{ livraison.datebl | date: 'shortDate' }}&nbsp;</span>
+                      <fa-icon [ngClass]="{ unavailable: livraison.numbl === livraison.numfacture }"
+                               [icon]="faFilePdf">
+                      </fa-icon>
+                    </a>
+                  </ng-container>
+                  <ng-template #noblpdf>
+                    <label hidden>BL n°</label>
+                    <span>{{ livraison.numbl }}&nbsp;</span>
+                    <span>du {{ livraison.datebl | date: 'shortDate' }}&nbsp;</span>
+                    <!-- <fa-icon [icon]="['fas', 'file-pdf']"></fa-icon> -->
+                    <br/>
+                    <span class="size-small no-wrap no-pdf">
+                                            PDF indisponible
+                                            <app-tooltip type="help" [text]="explicationPDFBLindispo"></app-tooltip>
+                                        </span>
+                  </ng-template>
+                </div>
+              </div>
+              <!-- IF BL 0 -->
+              <ng-template #noBlTemplate><span style="font-style: italic;">En attente de traitement</span></ng-template>
+
+              <!-- IF facture !0 -->
+              <div>
+                <div *ngIf="!(livraison.numfacture == 0); else noFactureTemplate" class="factID">
+                  <ng-container *ngIf="livraison.pdffacture; else nopdffacture">
+                    <a [href]="environment.apiUrlActn + '/document/generate_intra.php?document=FACTURE/' + numClient + '/' + livraison.numfacture"
+                       target="_blank"
+                       class="underline">
+                      <label hidden>Facture n°</label>
+                      <span>{{ livraison.numfacture }}&nbsp;</span>
+                      <span>du {{ livraison.datefacture | date: 'shortDate' }}&nbsp;</span>
+                      <fa-icon [icon]="faFilePdf"></fa-icon>
+                    </a>
+                  </ng-container>
+                  <ng-template #nopdffacture>
+                    <label hidden>Facture n°</label>
+                    <span>{{ livraison.numfacture }}&nbsp;</span>
+                    <span>du {{ livraison.datefacture | date: 'shortDate' }}&nbsp;</span>
+                    <!-- <fa-icon [icon]="['fas', 'file-pdf']"></fa-icon> -->
+                    <br/>
+                    <span class="size-small no-wrap no-pdf">
+                                            PDF indisponible
+                                            <app-tooltip type="help" [text]="explicationPDFFactureindispo"></app-tooltip>
+                                        </span>
+                  </ng-template>
+                </div>
+              </div>
+              <!-- IF facture 0 -->
+              <ng-template #noFactureTemplate><span style="font-style: italic;">En attente de traitement</span></ng-template>
+
+              <!-- Num Colis -->
+              <div>
+                <div *ngIf="sortedNumColis.get(livraison.numcommande); else noSuiviTemplate">
+                  <div
+                    *ngIf="sortedNumColis.get(livraison.numcommande).get(livraison.numbl), else noSuiviTemplate">
+                    <div
+                      *ngFor="let colis of sortedNumColis.get(livraison.numcommande).get(livraison.numbl); let j = index;">
+                      <a title="Suivre votre colis"
+                         class="numColis underline"
+                         href="{{ sortedNumColis.get(livraison.numcommande).get(livraison.numbl)[j].urlcolis }}"
+                         target="_blank">
+                        {{ sortedNumColis.get(livraison.numcommande).get(livraison.numbl)[j].numccolis }}
+                        <fa-icon  [icon]="faTruck"></fa-icon>
+                        <ng-container *ngIf="livraison.transporteur">
+                          <br><span class="size-small no-pdf transporteur">{{ livraison.transporteur }}</span>
+                        </ng-container>
+                      </a>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
+              <ng-template #noSuiviTemplate>
+                <span style="font-style: italic;">Indisponible</span>
+                <ng-container *ngIf="livraison.transporteur">
+                  <br><span class="size-small no-pdf transporteur">{{ livraison.transporteur }}</span>
+                </ng-container>
+              </ng-template>
+
+              <!-- Status -->
+              <div>
+                <span>{{ livraison.statut }}</span>
+              </div>
+            </div>
+
+            <!-- NUMEROS DE COLIS -->
+            <div>
+              <div *ngIf="sortedNumColis[livraison.numcommande]">
+                <div *ngIf="sortedNumColis[livraison.numcommande][livraison.numbl]">
+                  <div
+                    *ngFor="let colis of sortedNumColis[livraison.numcommande][livraison.numbl]; let j = index;">
+                    <div class="details detail-grid" *ngIf="j!=0">
+                      <!-- <div>
+                          {{ j }}
+                      </div>-->
+                      <div><a class="numColis underline" href="{{ colis.urlcolis }}"
+                              target="_blank">
+                        {{ colis.numccolis }}
+                      </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <br>
+
+            <!-- Produits  ici-->
+            <span class="labels_produits detail-grid2 weight-bolder">
+
+                            <label>Marque</label>
+                            <label>Produit</label>
+                            <label class="designation">Désignation</label>
+                            <label class="quantite">Quantité</label>
+                        </span>
+            <div class="produits"
+                 *ngFor="let produit of getDetailsFromCommande(livraison.numcommande, livraison.numbl)">
+              <div class="produit detail-grid2 weight-bold">
+
+                <span>{{ produit.marque }}</span>
+                <div class="panier">
+                  <a class="produitLink" (click)="linkToProduct(produit.produit)">{{ produit.produit }}</a>
+                  <app-tooltip (click)="addProduitToCart(produit)"
+                               class="cartLogo" showDelay="100" text="Ajouter le produit au panier" type="cart"></app-tooltip>
+                </div>
+                <span class="designation-produit">{{ produit.designation }}</span>
+                <span class="quantite">{{ produit.quantite }}</span>
+                <ng-container *ngIf="page === 'rma' && listOK">
+                  <button *ngIf="isValid(produit); else disabled" class="raised-button addBtn"
+                          type="button" (click)="popupDisplay(produit)">Retourner le produit</button>
+                  <ng-template #disabled>
+                    <div class="display-flex">
+                      <button class="raised-button addBtn disabled" type="button"
+                              [disabled]="true">Retourner le produit</button>
+                      <app-tooltip class="iconComp" position="right" type="error"
+                                   [text]="chargerAideProduitNonValide()"></app-tooltip>
+                    </div>
+                  </ng-template>
+                </ng-container>
+              </div>
+              <!-- S/N -->
+              <br/>
+              <div class="serial-numbers" *ngIf="livraisonSerials(livraison).length > 0">
+                <div class="noserie"
+                     *ngIf="produitSerials(livraisonSerials(livraison), produit).length > 0">
+                  <span class="weight-bolder">S/N:&nbsp;</span>
+                  <span
+                    *ngFor="let serial of produitSerials(livraisonSerials(livraison), produit); let k = index;">
+                                        <span *ngIf="serial.produit == produit.produit">
+                                            <span *ngIf="k > 0">&nbsp;,&nbsp;</span>
+                                            <span>
+                                                {{ serial.SERIE }}
+                                            </span>
+                                        </span>
+                                    </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </ng-container>
+      </div>
+    </div>
+
+    <div class="button-displayer">
+
+      <div class="bouton-details left" (click)="unrollCommandDetails(livraisons);">
+        <fa-icon *ngIf="!display[livraisons[0].numcommande]; else boutonMoins" class="prefix icon size-big"
+                 [icon]="faPlusCircle"></fa-icon>
+        <ng-template #boutonMoins>
+          <fa-icon class="prefix icon size-big" [icon]="faMinusCircle"></fa-icon>
+        </ng-template>
+        <span class="texte" style="font-size: 1rem;">de détails</span>
+      </div>
+
+      <div class="bouton-details right" (click)="reOrderPreviousCommand(livraisons);">
+        <i class="icon-share icon-cart">
+        </i>
+        <span class="texte" style="font-size: 1rem;">recommander</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<ng-container *ngIf="produitActif">
+  <div [ngClass]="isPopUp ? 'popUpActive' : 'popUpInactive'">
+        <span class="labelsRMACom">
+            <label class="grow2">Marque</label>
+            <label class="grow2">Réf. produit</label>
+            <label class="grow3">Désignation</label>
+            <label class="grow2">Fin de garantie</label>
+        </span>
+    <span class="produitsRMACom">
+            <label class="grow2">{{ produitActif.marque }}</label>
+            <label class="grow2">{{ produitActif.produit }}</label>
+            <label class="grow3">{{ produitActif.designation }}</label>
+            <label class="grow2">{{ produitActif.garantiedatefin }}</label>
+        </span>
+    <div *ngIf="produitActif.noserie; else passerie">
+      <div class="margeCom">
+        <h3>Quels produits voulez vous retourner ?</h3>
+      </div>
+      <div class="listSerie">
+        <ng-container *ngFor="let noserie of produitActif.noserie">
+          <div class="noSerie">
+            <mat-checkbox (click)="selectionSerie(noserie)"></mat-checkbox>
+            &nbsp;&nbsp;&nbsp;{{ noserie }}
+          </div>
+        </ng-container>
+      </div>
+      <div class="display-flex">
+        <div class="debfin">
+          <button class="raised-button btnSec" type="button" (click)="close()">Retour</button>
+        </div>
+        <div class="dumb2"></div>
+        <div class="debfin">
+          <button class="raised-button" type="button" (click)="selectProduit(produitActif)">Valider</button>
+        </div>
+      </div>
+    </div>
+    <ng-template #passerie>
+      <div>
+        <div class="margeCom">
+          <h3>Combien de produits voulez vous retourner ?</h3>
+        </div>
+        <span class="produitsRMACom">
+                    <label class="grow1">
+                        <div class="display-flex">
+                            <label class="center">Quantité :</label>
+                            <div class="marginClasse">
+                                <app-input-number min="1" max={{produitActif.quantite}} [number]="quant"
+                                                  (value)="quantChange($event)" size="small">
+                                </app-input-number>
+                            </div>
+                        </div>
+                    </label>
+                </span>
+        <div class="display-flex">
+          <div class="debfin">
+            <button class="raised-button addBtn btnSec" type="button" (click)="close()">Retour</button>
+          </div>
+          <div class="dumb2"></div>
+          <div class="debfin">
+            <button class="raised-button addBtn" type="button"
+                    (click)="selectProduit(produitActif, true)">Valider</button>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </div>
+</ng-container>
+<div class="dark-overlay" [ngClass]="{ show: isPopUp }" (click)="close()"></div>
+<!--<app-popup-obj-display></app-popup-obj-display>-->

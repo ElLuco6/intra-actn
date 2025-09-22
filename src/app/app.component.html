@@ -1,0 +1,34 @@
+@if (!user) {
+  <div class="app">
+    <app-login></app-login>
+  </div>
+}
+
+@if (user) {
+  <div class="app">
+    <div style="box-shadow: 0 2px 5px 2px rgba(0,0,0,.2)">
+      <app-header></app-header>
+      <app-rolling-header style="z-index: 100"></app-rolling-header>
+      <app-side-nav-client style="z-index: 101;" [(currentMenu)]="selectedSideNavMenu"></app-side-nav-client>
+      @if (logClient.currentClient) {
+        <app-bar-client></app-bar-client>
+      }
+    </div>
+    <br>
+      <div id="content" [@routerFade]="o.isActivated ? o.activatedRoute : ''">
+        <app-fil-d-arianne></app-fil-d-arianne>
+        <!--<app-breadcrumb></app-breadcrumb>-->
+        <router-outlet (activate)="onActivate($event)" #o="outlet"></router-outlet>
+      </div>
+      <app-back-to-top></app-back-to-top>
+      <app-heartbeat-sensor></app-heartbeat-sensor>
+      <app-snackbar></app-snackbar>
+      <app-footer></app-footer>
+    </div>
+  }
+  @if (show()) {
+    <app-new-spinner></app-new-spinner>
+  } @else {
+    <img src="assets/img/Rolling-1s-100px.gif"
+      style="width:100px; height:100px; position:fixed; top:calc(50vh - 50px); left:calc(50vw - 50px); z-index:1000;" />
+    }

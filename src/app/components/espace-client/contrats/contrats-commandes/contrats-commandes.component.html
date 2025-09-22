@@ -1,0 +1,323 @@
+<div class="container">
+  <div class="container-filtres raised-1">
+    <button class="text-button">Filtres</button>
+    <button class="raised-button size-smaller" (click)="selectedTabIndexChange.emit(0)" (tap)="selectedTabIndexChange.emit(0)">Afficher les licences par produits</button>
+    @if (filtres$ | async; as filtres) {
+      <div class="filtres" [formGroup]="filtresForm">
+        @for (filtre of filtres; track filtre; let i = $index) {
+          <div class="filtre">
+            @switch (filtre.forme) {
+              @case ('select') {
+                <mat-form-field>
+                  <mat-label>{{ filtre.label }}</mat-label>
+                  <mat-select [formControlName]="filtre.target" [(ngModel)]="filtreValues[filtre.target]" (ngModelChange)="onSearch(filtre.target, filtre.type, filtre.method, $event, filtreValues[filtre.target])" multiple disableOptionCentering panelClass="select-panel">
+                    @for (option of filtre.options; track option; let j = $index) {
+                      <mat-option [value]="option" [disabled]="">
+                        {{ option }}
+                      </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              }
+              @case ('input') {
+                <mat-form-field>
+                  <mat-label>{{ filtre.label }}</mat-label>
+                  <input matInput [ngModel]="getFiltre(filtre.target, filtre.method)" (keydown)="onSearch(filtre.target, filtre.type, filtre.method, $event)" [ngModelOptions]="{standalone: true}" />
+                </mat-form-field>
+              }
+            }
+          </div>
+        }
+        <div class="filtre">
+          <mat-form-field>
+            <mat-label>Filtre</mat-label>
+            <mat-select [(value)]="selectedFiltreDate">
+              <mat-option [value]="filtreTout" (click)="onFiltreDate()" (tap)="onFiltreDate()">{{ filtreTout }}</mat-option>
+              @for (group of filtresDate; track group) {
+                <mat-optgroup [label]="group.label">
+                  @for (filtre of group.options; track filtre) {
+                    <mat-option [value]="filtre" (click)="onFiltreDate()" (tap)="onFiltreDate()">{{ filtre }}</mat-option>
+                  }
+                </mat-optgroup>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+    }
+
+    <div class="config filtre">
+      <mat-checkbox [ngModel]="prioritaire" (ngModelChange)="onPriorite($event)">Afficher les licences prioritaires en premier</mat-checkbox>
+    </div>
+
+    @if (filtreMarque) {
+      <div class="marque-filtres">
+        @for (option of filtreMarque.options; track option; let j = $index) {
+          <div class="marque-options" [ngClass]="{'selected': filtreValues['produit.marque']?.includes(option)}"
+            (click)="filtreMarqueToggle(option)"
+            (tap)="filtreMarqueToggle(option)">
+            <img class="marque-img" [src]="environment.logoMarquesUrl70x30center + option + '.gif'" [alt]="option"/>
+          </div>
+        }
+      </div>
+    }
+  </div>
+
+  <div class="bandeau">
+    <ul class="raised-1 size-smaller">
+      <li class="sort" (click)="onTri('commande.referencecommande', 'string')" (tap)="onTri('commande.referencecommande', 'string')">Réf. commande<app-tab-sort [state]="selected('commande.referencecommande')"></app-tab-sort></li>
+      <li class="sort tab-c" (click)="onTri('commande.numcommande', 'string')" (tap)="onTri('commande.numcommande', 'string')">N° de commande<app-tab-sort [state]="selected('commande.numcommande')"></app-tab-sort></li>
+      <li class="sort tab-c" (click)="onTri('commande.datecommande', 'date')" (tap)="onTri('commande.datecommande', 'date')">Date de commande<app-tab-sort [state]="selected('commande.datecommande')"></app-tab-sort></li>
+      <li class="sort tab-c" (click)="onTri('commande.numfacture', 'string')" (tap)="onTri('commande.numfacture', 'string')">N° de facture<app-tab-sort [state]="selected('commande.numfacture')"></app-tab-sort></li>
+      <li class="sort tab-c" (click)="onTri('commande.datefacture', 'date')" (tap)="onTri('commande.datefacture', 'date')">Date de facture<app-tab-sort [state]="selected('commande.datefacture')"></app-tab-sort></li>
+      <li class="tab-c sort" (click)="onTri('renouvellementdate', 'date')" (tap)="onTri('renouvellementdate', 'date')">Date d'expiration<app-tab-sort [state]="selected('renouvellementdate')"></app-tab-sort></li>
+      <li class="sort tab-c" (click)="onTri('statut', 'string')" (tap)="onTri('statut', 'string')">Statut<app-tab-sort [state]="selected('statut')"></app-tab-sort></li>
+    </ul>
+  </div>
+
+  @if (processedLicences$ | async; as processedLicences) {
+    <div class="licences">
+      @if (processedLicences.length > 0) {
+        <mat-paginator [length]="processedLicences.length"
+          [pageIndex]="paginator.pageIndex"
+          [pageSize]="paginator.pageSize"
+          [pageSizeOptions]="paginator.pageSizeOptions"
+          (page)="onPaginatorEvent($event)"
+          showFirstLastButtons>
+        </mat-paginator>
+        @for (licence of (processedLicences | slice: paginator.low: paginator.high); track licence; let index = $index) {
+          <div #licence class="licence">
+            <div class="raised-1">
+              <ul>
+                <li class="weight-bold">{{ licence.commande.referencecommande }}</li>
+                <li class="tab-c">{{ licence.commande.numcommande }}</li>
+                <li class="tab-c">{{ licence.commande.datecommande | date: 'shortDate' }}</li>
+                <li class="tab-c">{{ licence.commande.numfacture }}</li>
+                <li class="tab-c">{{ licence.commande.datefacture | date: 'shortDate' }}</li>
+                <li class="tab-c lh" [ngClass]="{'red': licenceService.isPrioritaire(licence)}">
+                  @if (licence.statut !== 'Expirée' && licenceService.isPrioritaire(licence)) {
+                    <app-tooltip
+                      text="La licence arrive bientot à expiration."
+                      type="alert">
+                    </app-tooltip>
+                    &nbsp;
+                  }
+                  {{ licence.renouvellementdate | date:'shortDate' }}
+                  @if (licence.statut === 'Active') {
+                    <br/>
+                    {{ printDuree(licence.nombredejoursrestant) }}
+                  }
+                </li>
+                <li class="tab-c" [ngClass]="{'red': licenceService.isPrioritaire(licence) && licence.statut === 'Expirée'}">
+                  @if (licence.statut === 'Expirée' && licenceService.isPrioritaire(licence)) {
+                    <app-tooltip
+                      class="bigger"
+                      text="La licence est arrivée à expiration."
+                      type="alert">
+                    </app-tooltip>
+                    &nbsp;
+                  }
+                  {{ licence.statut }}
+                </li>
+              </ul>
+              <div class="size-smaller p-produit">
+                <div>
+                  <span class="weight-bold">Produit :</span>
+                  <p>{{ licence.produit.marque }} - </p>
+                  <a class="weight-bold" (click)="onClickReference(licence.produit.reference)" (tap)="onClickReference(licence.produit.reference)">{{ licence.produit.reference }}</a>
+                </div>
+                @if (!isEditing(index)) {
+                  <div>
+                    <span class="weight-bold">SN / EAV :</span>
+                    <fa-icon class="icon icon--edit" [icon]="faPenSquare" (click)="startEdit(index, licence)" (tap)="startEdit(index, licence)"></fa-icon>
+                    <p>{{ licence.serie }}</p>
+                  </div>
+                } @else {
+                  <div>
+                    <span class="weight-bold">SN / EAV :</span>
+                    <input name="noserie" [(ngModel)]="stringsNoSerie[index]" />
+                    <fa-icon class="icon icon--check" [icon]="faCheckCircle" (click)="editNoSerie(index, licence)" (tap)="editNoSerie(index, licence)"></fa-icon>
+                    <fa-icon class="icon icon--cancel" [icon]="faTimesCircle" (click)="stopEdit(index)" (tap)="stopEdit(index)"></fa-icon>
+                  </div>
+                }
+                <div>
+                  <span class="weight-bold">Client final :</span>
+                  <fa-icon class="icon icon--edit" [icon]="faPenSquare" (click)="afficherPopup(licence)" (tap)="afficherPopup(licence)"></fa-icon>
+                  <p>{{ licence.client.nom }}</p>
+                </div>
+              </div>
+              <div class="details size-smaller" [ngClass]="{'show': isActive(index)}">
+                <hr/>
+                <div class="full-width">
+                  <h3>Informations sur le produit</h3>
+                  <div class="info-commande full-width">
+                    <ul class="full-width">
+                      <li class="weight-bold">Marque</li>
+                      <li class="weight-bold">Produit</li>
+                      <li class="weight-bold">Désignation</li>
+                      <li class="weight-bold">N° de série</li>
+                      <li class="weight-bold">Quantité</li>
+                    </ul>
+                    <ul class="full-width">
+                      <li>{{ licence.produit.marque }}</li>
+                      <li class="weight-bold"><a (click)="onClickReference(licence.produit.reference)" (tap)="onClickReference(licence.produit.reference)">{{ licence.produit.reference }}</a></li>
+                      <li class="cut">{{ licence.produit.designation }}</li>
+                      <li class="weight-bold">{{ licence.serie }}</li>
+                      <li>{{ licence.quantite }}</li>
+                    </ul>
+                  </div>
+                </div>
+                <hr/>
+                <h3 class="full-width">Informations sur la licence</h3>
+                <h4 class="full-width">Coordonnées du client final</h4>
+                <div>
+                  <span class="bold size-bigger">{{ licence.client.nom }}</span><br/>
+                  <span>{{ licence.client.adresse1 }}</span><br/>
+                  <span>{{ licence.client.adresse2 }}</span><br/>
+                  <span>{{ licence.client.codepostal }}&nbsp;{{ licence.client.ville }}</span><br/>
+                  <span>{{ licence.client.pays | uppercase }}</span>
+                </div>
+                <div>
+                  <span>{{ licence.client.mail }}</span><br/>
+                  <span>{{ licence.client.telephone }}</span>
+                  <button class="raised-button" (click)="afficherPopup(licence)" (tap)="afficherPopup(licence)">
+                    Modifier le client final / N° de série
+                  </button>
+                </div>
+              </div>
+              <div class="details history size-smaller" [ngClass]="{show: isHistoryActive(index)}">
+                <span class="bold size-bigger">Historique de la licence</span>
+                @if (licence.history.length > 0) {
+                  @for (oldLicence of licence.history; track oldLicence) {
+                    <ul>
+                      <li class="tab-0_8"><img [src]="environment.logoMarquesUrl70x30center + oldLicence.produit.marque + '.gif'" [alt]="oldLicence.marque"/></li>
+                      <li class="tab-1 break bold">{{ oldLicence.produit.reference }}</li>
+                      <li class="tab-1_5">{{ oldLicence.produit.designation }}</li>
+                      <li class="tab-2 break bold">{{ oldLicence.serie }}</li>
+                      <li class="tab-2">{{ oldLicence.client.nom }}</li>
+                      <li class="tab-1 tab-c">{{ oldLicence.commandedate | date:'shortDate' }}</li>
+                      <li class="tab-1 tab-c lh">{{ oldLicence.renouvellementdate | date:'shortDate' }}</li>
+                      <li class="tab-1 tab-c">Renouvelée</li>
+                    </ul>
+                  }
+                } @else {
+                  <p>Aucun historique disponible sur cette licence : il s'agit d'une nouvelle licence ou des numéros de série sont manquants.</p>
+                }
+              </div>
+            </div>
+            <div class="boutons size-smaller">
+              <div class="bouton-details" (click)="showDetails(index)">
+                @if (!isActive(index)) {
+                  <fa-icon class="prefix icon size-big" [icon]="faPlusCircle"></fa-icon>
+                } @else {
+                  <fa-icon class="prefix icon size-big" [icon]="faMinusCircle"></fa-icon>
+                }
+                <span class="texte size-bigger">de détails</span>
+              </div>
+              @if (licence.history.length > 0) {
+                <div class="bouton-details" (click)="showHistory(index)">
+                  <fa-icon class="prefix icon size-big" [icon]="faHistory"></fa-icon>
+                  @if (!isHistoryActive(index)) {
+                    <span class="texte size-bigger">Voir l'historique</span>
+                  } @else {
+                    <span class="texte size-bigger">Cacher l'historique</span>
+                  }
+                </div>
+              }
+              <div class="action">
+                @if (licenceService.isPrioritaire(licence) && !licenceService.isIgnored(licence)) {
+                  <div class="bouton-details smaller secondary-color"
+                    (click)="licenceService.ignore(licence)" (tap)="licenceService.ignore(licence)">
+                    <fa-icon class="prefix icon" [icon]="faBellSlash"></fa-icon><span>Ignorer l'alerte</span>
+                  </div>
+                }
+                @if (licenceService.isPrioritaire(licence) && licenceService.isIgnored(licence)) {
+                  <div class="bouton-details smaller"
+                    (click)="licenceService.follow(licence)" (tap)="licenceService.follow(licence)">
+                    <fa-icon class="prefix icon" [icon]="faBell"></fa-icon><span>Suivre l'alerte</span>
+                  </div>
+                }
+                @if (!licenceService.isPrioritaire(licence)) {
+                  <div class="bouton-details smaller hidden">
+                  </div>
+                }
+                <div class="bouton-details" (click)="modifier(licence)" (tap)="modifier(licence)">
+                  <span class="size-bigger">Renouveler @if (licence.statut === 'Active') {
+                    / Modifier
+                  }</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+        <mat-paginator [length]="processedLicences.length"
+          [pageIndex]="paginator.pageIndex"
+          [pageSize]="paginator.pageSize"
+          [pageSizeOptions]="paginator.pageSizeOptions"
+          (page)="onPaginatorEvent($event)"
+          showFirstLastButtons>
+        </mat-paginator>
+      } @else {
+        <h3>Aucun produit renouvelable n'a été trouvé.</h3>
+      }
+    </div>
+  }
+</div>
+
+<div class="popup" [ngClass]="{active: showPopup}">
+  <div class="popup-background" (click)="showPopup = false" (tap)="showPopup = false"></div>
+  <div class="popup-window">
+    @if (licencePopup != null) {
+      <app-enduser-form title="Modifier l'utilisateur final" [serialNumber]="{mandatory: true, name: 'N° de série'}" [produits]="produits" [client]="licencePopup.client" (clientChange)="onChangeClient($event)"></app-enduser-form>
+    }
+    <div class="popup-buttons">
+      <button class="raised-button button--color-secondary" (click)="showPopup = false" (tap)="showPopup = false">Annuler les modifications</button>
+      <button class="raised-button" (click)="changeClient(clientPopup)" (tap)="changeClient(clientPopup)">Modifier le client</button>
+    </div>
+  </div>
+</div>
+
+@if (showHelpPopup) {
+  <div class="popup" [ngClass]="{active: showHelpPopup}">
+    <div class="popup-background" (click)="hideHelpPopup()" (tap)="hideHelpPopup()"></div>
+    <div class="popup-window raised-3">
+      @if (!demandeAideEnvoyee) {
+        @if (!isAskingForHelp) {
+          <p>Nous sommes dans l'incapacité de vous proposer de renouveler cette licence via cette interface pour le moment.</p>
+          <p>Vous pouvez :</p>
+          <ul>
+            @if (licencePopup.niv1 === 'CYB') {
+              <li><a class="text-link" [routerLink]="'/licences-cybersecurite/' + licencePopup.marque.toUpperCase()">Utiliser notre espace d'aide au choix cybersécurité</a></li>
+            }
+            @if (produitsSimilaires.length > 0) {
+              <li><a class="text-link" [routerLink]="'/catalogue/search'" [queryParams]="queryProduitsSimilaires()">Voir des produits similaires ({{ produitsSimilaires.length }})</a></li>
+            }
+            @if (produitHelpPopup.reference != '') {
+              <li><a class="text-link" [routerLink]="produitService.lienProduit(produitHelpPopup)">Voir la fiche produit</a></li>
+            }
+            <li><a class="text-link" (click)="isAskingForHelp = true" (tap)="isAskingForHelp = true">Demander à un commercial de vous recontacter</a></li>
+          </ul>
+          <div class="buttons">
+            <button class="raised-button" (click)="hideHelpPopup()" (tap)="hideHelpPopup()">Fermer cette fenêtre</button>
+          </div>
+        } @else {
+          <p>Vous souhaitez demander à un commercial de vous recontacter concernant la licence {{ licencePopup.produit }} commandée le {{ licencePopup.commandedate | date:'shortDate' }}</p>
+          <p>Vous pouvez préciser vos besoins (durée du renouvellement, nombre de postes, etc.) dans l'encadré ci-dessous.</p>
+          <mat-form-field>
+            <mat-label>Renseignements complémentaires</mat-label>
+            <textarea matInput cdkTextareaAutosize cdkAutosizeMinRows="3" cdkAutosizeMaxRows="5" [(ngModel)]="commentaire"></textarea>
+          </mat-form-field>
+          <div class="buttons">
+            <button class="raised-button button--color-secondary" (click)="hideHelpPopup()" (tap)="hideHelpPopup()">Fermer cette fenêtre</button>
+            <button class="raised-button" (click)="demandeAide()" (tap)="demandeAide()">Contacter un commercial</button>
+          </div>
+        }
+      } @else {
+        <p>Votre demande d'aide a bien été envoyé.</p><br/>
+        <div class="buttons">
+          <button class="raised-button" (click)="hideHelpPopup()" (tap)="hideHelpPopup()">Fermer cette fenêtre</button>
+        </div>
+      }
+    </div>
+  </div>
+}

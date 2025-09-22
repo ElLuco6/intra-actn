@@ -1,0 +1,93 @@
+.container {
+  display: flex;
+  min-height: 70vh;
+  gap: 1rem;
+}
+
+.container .left {
+  width: 20%;
+  padding: 1rem;
+  border-radius: 20px;
+  background-color: #dde5db;
+}
+
+.container .right {
+  width: 80%;
+  padding: 1rem;
+  border-radius: 20px;
+  background-color: #f1f7eb;
+}
+
+.table-contact {
+  border-radius: 20px;
+}
+
+.btn-enbasla {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.btn-w-icon {
+  display: flex;
+  gap: .5rem;
+  align-items: center;
+}
+
+.annuler {
+  color: var(--color-warn);
+  --mat-protected-button-ripple-color: var(--color-warn-ripple) !important;
+  --mat-protected-button-state-layer-color: var(--color-warn) !important;
+}
+
+.action {
+  color: var(--color-secondary);
+  --mat-protected-button-ripple-color: var(--color-secondary-ripple) !important;
+  --mat-protected-button-state-layer-color: var(--color-secondary) !important;
+}
+
+.container-cmpt-rendu {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.cmpt-rendu {
+  flex: 0 0 49%;
+}
+
+.subtitle {
+  font-weight: normal;
+  font-style: italic;
+  margin-left: .5rem;
+}
+
+
+.num-people {
+  cursor: pointer;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.mat-mdc-row .mat-mdc-cell {
+  border-bottom: 1px solid transparent;
+  border-top: 1px solid transparent;
+  cursor: pointer;
+}
+
+.mat-mdc-row:hover .mat-mdc-cell {
+  border-color: currentColor;
+}
+
+.edit-button {
+  margin-left: 1rem;
+}
+
+.infos-societe {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}

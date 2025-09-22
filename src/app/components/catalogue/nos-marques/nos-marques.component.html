@@ -1,0 +1,95 @@
+<app-title-w-line title="Nos marques" size="small"></app-title-w-line>
+<div class="firstLetterLinks">
+  <div class="firstLetterLink" *ngFor="let firstChar of firstLetters | keyvalue" (click)="removeMarque(firstChar.key)">
+    {{ firstChar.key }}</div>
+
+  <mat-chip-listbox class="mat-chip-list-stacked" aria-label="Color selection">
+    <button class="raised-button voirBtn" *ngIf="hideBtn != true" [disabled]="btnVoir != true"
+            (click)="resetMarque()">Voir toutes</button>
+  </mat-chip-listbox>
+
+</div>
+
+
+<div class="container">
+  <ng-container *ngFor="let marque of marques; index as i;">
+   <!--  {{marquePicked }}/{{marque[1]}} -->
+
+    <!-- LISTE AFFICHABLE -->
+    <div [attr.id]="removeSpaces(marque[0])" class="marque-container"
+         [ngClass]="{'expanded': marquePicked == marque[1]}"
+         *ngIf="getCategoriesParMarques(marque[1]).url ==='';else regular ">
+      <!-- IMG -->
+      <div class="marque" [ngClass]="{marqueSelected: marquePicked == marque[1]}">
+        <div (click)="toggleMarquePicked(marque[1], i)" [ngClass]="{'selected': marquePicked == marque[1]}">
+          <img [default]="environment.logoMarquesCouleurs200x80 + 'ACTN.gif'"
+               [src]="environment.logoMarquesCouleurs200x80 + marque[1] + '.gif'" [alt]="marque[0]" />
+          <p><span *ngIf="marquePicked !== marque[1]; else hideMarque">{{ marque[0] }}</span>
+            <ng-template #hideMarque>&nbsp;</ng-template>
+          </p>
+        </div>
+      </div>
+      <div class="categoriesMarque" [ngClass]="{'show' : marquePicked == marque[1]}" >
+        
+        <div class="marqueName">
+
+          <p [routerLink]="['/', 'catalogue', 'search']" [queryParams]="{ marque: marque[1] }"
+             class="categoriesMarqueTitle">{{ marque[0] }}
+            </p>
+            <button mat-raised-button (click)="openBlank(marque[1])" class="grille-tarif">Tarifs & Documents</button>
+          </div>
+          <div class="details-marque">
+          <!-- <ul class="categories">
+						<li class="niv1" *ngFor="let lvl1 of getCategoriesParMarques(marque[1]).sub">
+							<a class="categoriesMarqueElement lvl1" [routerLink]="['/catalogue/' + '/' + lvl1.label]" [queryParams]="{ marque: marque[1] }">
+								{{ lvl1.label }}
+							</a>
+						</li>
+					</ul> -->
+          <div class="sub-categories" [style.column-count]="getNbColonnesPourMarque(marque[1])"
+               [style.width]="colonnesMax == getNbColonnesPourMarque(marque[1]) ? '100%' : 'fit-content'">
+            <ng-container *ngFor="let lvl1 of getCategoriesParMarques(marque[1]).sub">
+              <p class="categoriesMarqueElement lvl1">
+                {{ lvl1.label }} 
+              </p>
+              <div class="niv2" *ngFor="let lvl2 of lvl1.sub">
+                <a *ngIf="lvl2.label" class=" categoriesMarqueElement lvl2"
+                   [routerLink]="['/catalogue/' + '/' + lvl1.label + '/' + lvl2.label + '/unique']"
+                   [queryParams]="{ marque: marque[1] }">
+                  {{ lvl2.label }}
+                </a>
+                <ng-container *ngFor="let lvl3 of lvl2.sub">
+                  <a *ngIf="lvl3.label" class=" categoriesMarqueElement lvl3"
+                     [routerLink]="['/catalogue/' + '/' + lvl1.label + '/' + lvl2.label + '/' + lvl3.label]"
+                     [queryParams]="{ marque: marque[1] }">
+                    {{ lvl3.label }}
+                  </a>
+                </ng-container>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+        <!--<app-banniere emplacement="top" [marques]="[marque[1]]"></app-banniere>-->
+      </div>
+    </div>
+
+    <!-- Affichage pour les marques  qui ont besoins d'une rediction direct sur leur site ex(shuttle)-->
+    <ng-template #regular>
+      <div [attr.id]="removeSpaces(marque[0])" class="marque-container"
+           [ngClass]="{'expanded': marquePicked == marque[1]}">
+        <div class="marque" [ngClass]="{marqueSelected: marquePicked == marque[1]}">
+          <div (click)="redirect(getCategoriesParMarques(marque[1]).url)"
+               [ngClass]="{'selected': marquePicked == marque[1]}">
+            <img [default]="environment.logoMarquesCouleurs200x80 + 'ACTN.gif'"
+                 [src]="environment.logoMarquesCouleurs200x80 + marque[1] + '.gif'" [alt]="marque[0]" />
+            <p><span *ngIf="marquePicked !== marque[1]; else hideMarque">{{ marque[0] }}</span>
+              <ng-template #hideMarque>&nbsp;</ng-template>
+            </p>
+          </div>
+        </div>
+
+
+      </div>
+    </ng-template>
+  </ng-container>
+</div>

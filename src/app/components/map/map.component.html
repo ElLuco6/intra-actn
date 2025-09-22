@@ -1,0 +1,280 @@
+<app-title-w-line [title]="'Géolocalisation'" size="small"></app-title-w-line>
+<mat-card appearance="outlined" id="filtre_compoenent">
+
+  <mat-panel-title class="menu__item text-button font active"> Filtres <mat-icon (click)="resetFilters()">close
+  </mat-icon>
+</mat-panel-title>
+
+<div class="map_header" [formGroup]="filtresForm">
+
+  <div class="filtreHeader" >
+
+    <div class="quoikoube">
+
+      <mat-form-field id="selectDep">
+        <mat-label>Selectionner un département</mat-label>
+
+        <mat-select formControlName="departement" [(ngModel)]="depSelected"
+          (ngModelChange)="onSearch('departement', 'array', 'includes', $event ,'depSelected')" multiple>
+          @for (departement of dep; track departement) {
+            <mat-option [value]="departement.argument">
+            {{departement.arguliblibelle}}</mat-option>
+          }
+        </mat-select>
+        @if (filtresForm.value.departement != '') {
+          <button matSuffix mat-icon-button aria-label="Clear" class="Xbtn" (click)="resetOneFilters('departement') ;$event.stopPropagation()">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </mat-form-field>
+
+    </div>
+
+    <div class="quoikoube">
+      <mat-form-field id="selectRegion">
+        <mat-label>Selectionner une région</mat-label>
+        <mat-select formControlName="region" [(ngModel)]="regionSelected"
+          (ngModelChange)="onSearch('region', 'array', 'includes', $event, 'regionSelected')" multiple
+          >
+          @for (region of regionArr; track region) {
+            <mat-option [value]="region.SecteurCode">{{region.SecteurLibelle}}
+            </mat-option>
+          }
+
+        </mat-select>
+        @if (filtresForm.value.region != '') {
+          <button matSuffix mat-icon-button aria-label="Clear" class="Xbtn"  (click)="resetOneFilters('region') ;$event.stopPropagation()">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+
+      </mat-form-field>
+
+    </div>
+    <div class="quoikoube">
+      <mat-form-field id="noteClient">
+        <mat-label>Notation client</mat-label>
+        <mat-select formControlName="note" [(ngModel)]="noteSelected"
+          (ngModelChange)="onSearch('note', 'array', 'includes', $event, 'noteSelected')" multiple>
+          @for (note of notes; track note) {
+            <mat-option [value]="note">
+              {{note}}
+            </mat-option>
+          }
+        </mat-select>
+        @if (filtresForm.value.note != '') {
+          <button matSuffix mat-icon-button aria-label="Clear" class="Xbtn"
+            (click)="resetOneFilters('note') ;$event.stopPropagation()">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </mat-form-field>
+
+
+    </div>
+
+    <div class="quoikoube">
+
+      <mat-form-field id="typeClient">
+        <mat-label>Type de clients</mat-label>
+
+        <mat-select formControlName="typologie" [(ngModel)]="typeSelected"
+          (ngModelChange)="onSearch('typologie', 'array', 'includes', $event, 'typeSelected')" multiple>
+          @for (type of prospetType; track type) {
+            <mat-option [value]="type">
+            {{type}}</mat-option>
+          }
+        </mat-select>
+
+        @if (filtresForm.value.typologie != '') {
+          <button matSuffix mat-icon-button aria-label="Clear" class="Xbtn"  (click)="resetOneFilters('typologie') ;$event.stopPropagation()">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </mat-form-field>
+
+    </div>
+
+
+
+
+
+  </div>
+  <div  class="searchbatContainer">
+
+    <mat-form-field class="example-form-field" id="searchBar">
+      <mat-label>
+        <mat-icon class="toto">search</mat-icon> Recherche par adresse
+      </mat-label>
+      <input formControlName="recherche" name="recherche" matInput type="text">
+
+      @if (filtresForm.value.recherche) {
+        <button matSuffix mat-icon-button aria-label="Clear"
+          (click)="filtresForm.get('recherche').setValue('')">
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </mat-form-field>
+
+    <button class="raised-button csvBtn export" matTooltip="Prendra seulement en compte les clients géolocalisés et non localisés" (click)="addCampgne()">Ajouter la liste des clients filtrés à une campagne</button>
+    <button class="raised-button csvBtn" matTooltip="Prendra seulement en compte les clients géolocalisés et non localisés" (click)="downloadCSV()">Télécharger la liste des clients filtrés</button>
+
+  </div>
+  <div>
+  </div>
+</div>
+
+
+
+
+</mat-card>
+
+
+<div class="resultat">
+  <h2>Nombre de résultat total : {{this.addressArray.length}} <br> Géolocalisés : {{numResult}} <br> Non localisés :
+  {{nmberClientNonLocaliser}}</h2>
+
+  <h2>Clients zone survolée : <span class="numberResult"></span></h2>
+</div>
+
+<div class="map-container">
+  <div class="map-frame">
+
+
+
+    <div id="map_content">
+      <div id="map"></div>
+      <div id="map_result">
+        <ul class="resultHtml">
+        </ul>
+      </div>
+    </div>
+
+
+    <p class="date">Dernières mise à jour : {{myDate.fileModifiedDate | date:'short' }} </p>
+    <button class="raised-button" [disabled]="isSpinning" (click)="refresh()"> Rafraichir les données</button>
+
+
+
+  </div>
+</div>
+
+
+<div id="controlArticle">
+
+  <div></div><!-- div alignement -->
+  <div></div><!-- div alignement -->
+  <div class="btn_refresh_div">
+    <div></div>
+
+  </div>
+</div>
+
+
+<!-- CLIENT NON LOCALISER -->
+
+<div>
+
+
+  <app-title-w-line [title]="'Clients non localisés'" size="small"></app-title-w-line>
+  <div class="tgekghzrejgh">
+    <mat-form-field>
+      <mat-label>Filter</mat-label>
+      <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Mia" #input>
+    </mat-form-field>
+    @if(!selection.isEmpty()){
+      <button mat-raised-button class="export" (click)="campagnesService.openCampaignDialog(selection)">Affecter à une campagne</button>
+      }@else{
+      <button mat-raised-button class="export nope" [disabled]="true">Affecter à une campagne</button>
+    }
+  </div>
+
+
+  <div class="mat-elevation-z3">
+    <mat-paginator [pageSizeOptions]="[ 25,50,75, 100]" aria-label="Select page of users"></mat-paginator>
+
+    <table mat-table [dataSource]="this.dataSource" matSort>
+
+      <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-checkbox (change)="$event ? toggleAllRows() : null"
+            [checked]="selection.hasValue() && isAllSelected()"
+            [indeterminate]="selection.hasValue() && !isAllSelected()"
+            [aria-label]="checkboxLabel()">
+          </mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <mat-checkbox (click)="$event.stopPropagation()"
+            (change)="$event ? selection.toggle(row) : null"
+            [checked]="selection.isSelected(row)"
+            [aria-label]="checkboxLabel(row)">
+          </mat-checkbox>
+        </td>
+      </ng-container>
+
+      <!-- ID Column -->
+      <ng-container matColumnDef="username">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Nom du client </th>
+        <td mat-cell *matCellDef="let row"> {{row.username}} </td>
+      </ng-container>
+
+      <!-- Progress Column -->
+      <ng-container matColumnDef="addressName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Adresse </th>
+        <td mat-cell *matCellDef="let row"><a [href]="'https://www.google.com/maps/place/'+row.addressName+'+'+row.city +'+'+row.postcode+''" target="_blank"> {{row.addressName}} {{ row.city }} {{row.postcode}}</a></td>
+      </ng-container>
+
+      <!-- Name Column -->
+      <ng-container matColumnDef="region">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Région </th>
+        <td mat-cell *matCellDef="let row"> {{row.region}} </td>
+      </ng-container>
+
+      <!-- Name Column -->
+      <ng-container matColumnDef="departement">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Département </th>
+        <td mat-cell *matCellDef="let row"> {{row.departement}} </td>
+      </ng-container>
+
+      <!-- Fruit Column -->
+      <ng-container matColumnDef="numclient">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Numéro client </th>
+
+        <td mat-cell *matCellDef="let row" (click)="openInNewWindow(row)" style="cursor: pointer"> {{Number(row.numclient)}} </td>
+      </ng-container>
+      <!-- Fruit Column -->
+      <ng-container matColumnDef="tel">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Téléphone </th>
+        <td mat-cell *matCellDef="let row"> {{row.tel}} </td>
+      </ng-container>
+      <!-- Fruit Column -->
+      <ng-container matColumnDef="ca">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Chiffre d'affaire </th>
+        <td mat-cell *matCellDef="let row"> {{row.ca}} </td>
+      </ng-container>
+      <!-- Fruit Column -->
+      <ng-container matColumnDef="note">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Note </th>
+        <td mat-cell *matCellDef="let row"> {{row.note}} </td>
+      </ng-container>
+      <!-- Fruit Column -->
+      <ng-container matColumnDef="typologie">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Type de client </th>
+        <td mat-cell *matCellDef="let row"> {{row.typologie}} </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" colspan="4">Aucune donnée correspondant au filtre  "{{input.value}}"</td>
+      </tr>
+    </table>
+
+  </div>
+
+
+
+
+</div>

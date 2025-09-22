@@ -1,0 +1,61 @@
+<div class="container raised-1" [ngClass]="{'show': state === State.ACTIVE }">
+  <h3>ACTN respecte votre vie privée</h3>
+  <p>
+    ACTN et ses partenaires utilisent des cookies et des traceurs sur ce site.
+    Ces cookies sont utilisés à des fins de bon fonctionnement du site, de sécurité, de mesure d'audience, d'analyse et d'amélioration de l'expérience utilisateur.
+    Votre consentement à l'installation de cookies non strictement nécessaires est libre et peut-être retiré à tout moment.
+    Vous pouvez donner ou retirer votre consentement globalement ou paramétrer vos préférences par finalités de cookies.
+  <div class="buttons">
+    <button class="raised-button ghost-button" (click)="onShowCookieParams()" (tap)="onShowCookieParams()">Paramètres des cookies</button>
+    <button class="raised-button button--color-secondary" (click)="onRefuse()" (tap)="onRefuse()">Refuser les cookies</button>
+    <button class="raised-button button--color-secondary" (click)="onAccept()" (tap)="onAccept()">Accepter les cookies</button>
+  </div>
+</div>
+
+<div class="popup scroller" [ngClass]="{active: state === State.COOKIE }">
+  <div class="popup-background" (click)="onHideCookieParams()" (tap)="onHideCookieParams()"></div>
+  <div class="popup-window raised-3">
+    <h2>Gérer mes cookies</h2>
+    <p>
+      Nous conservons vos choix pendant 30 jours.
+      Vous pouvez changer d'avis à tout moment en cliquant sur le lien « Gérer mes cookies » situé dans le pied de page du site.
+    </p>
+    <br/>
+    <div class="cookie">
+      <h3>Cookies strictement nécessaires</h3>
+      <p class="description">Ces cookies sont indispensables afin de permettre au site de fonctionner correctement.</p>
+      <h4 class="toggle tj-actif">Toujours actif</h4>
+    </div>
+    <hr/>
+    <div class="cookie">
+      <h3>Cookies d'améliorations de l'expérience utilisateur</h3>
+      <p class="description">Ces cookies nous permettent de mémoriser vos préférences et de personnaliser les contenus qui vous sont proposés.</p>
+      <div class="toggle"><mat-slide-toggle [(ngModel)]="userExperience"></mat-slide-toggle></div>
+    </div>
+    <hr/>
+    <div class="cookie">
+      <h3>Cookies Youtube</h3>
+      <p class="description">
+        Ces cookies sont utilisés par Google lorsque nous vous proposons des vidéos de www.youtube.com.<br/>
+        Pour consulter les politiques de confidentialités de Google : <a href="https://policies.google.com/privacy?hl=fr" target="_blank" rel="noopener noreferrer">Règles de confidentialité</a>
+      </p>
+      <div class="toggle"><mat-slide-toggle [(ngModel)]="youtube"></mat-slide-toggle></div>
+    </div>
+    <hr/>
+    <div class="cookie">
+      <h3>Cookies GoToWebinar</h3>
+      <p class="description">
+        Ces cookies sont utilisés par LogMeIn lorsque nous vous proposons des vidéos de www.gotowebinar.com.<br/>
+        Pour consulter les politiques de confidentialités de LogMeIn : <a href="https://www.logmein.com/fr/legal/privacy" target="_blank" rel="noopener noreferrer">Politique de confidentialité</a>
+      </p>
+      <div class="toggle"><mat-slide-toggle [(ngModel)]="gotowebinar"></mat-slide-toggle></div>
+    </div>
+    <br/>
+    <div class="buttons">
+      <button class="raised-button button--color-secondary" (click)="onRefuseAll()" (tap)="onRefuseAll()">Tout refuser</button>
+      <button class="raised-button button--color-secondary" (click)="onAcceptAll()" (tap)="onAcceptAll()">Tout accepter</button>
+      <button class="raised-button" (click)="onRefuse()" (tap)="onRefuse()">Continuer sans accepter</button>
+      <button class="raised-button" (click)="onSaveCookieParams()" (tap)="onSaveCookieParams()">Enregistrer mes préférences</button>
+    </div>
+  </div>
+</div>

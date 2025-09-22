@@ -1,0 +1,4 @@
+<app-title-w-line [title]="'Utilisateurs et contacts'"></app-title-w-line>
+@if (loading) {
+  <app-list-users-contacts [idClient]="idClient" [contactList]="listeContact" ></app-list-users-contacts>
+}

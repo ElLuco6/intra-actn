@@ -1,0 +1,9 @@
+.router-fade.ng-enter,
+.router-fade.ng-leave {
+  opacity: 0;
+}
+
+.router-fade.ng-enter.ng-enter-active,
+.router-fade.ng-leave {
+  opacity: 1;
+}

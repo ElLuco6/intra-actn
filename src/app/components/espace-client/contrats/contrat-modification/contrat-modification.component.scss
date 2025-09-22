@@ -1,0 +1,128 @@
+@import "../contrats.component.scss";
+
+$nbItems: 8;
+
+ul {
+  box-shadow: none;
+
+  &:not(:first-of-type) {
+    li {
+      font-weight: normal !important;
+    }
+  }
+}
+
+.postes {
+  padding: 20px;
+  background-color: #fafafa;
+}
+
+.bandeau {
+  position: relative;
+  top: inherit;
+}
+
+.duree {
+  max-width: 200px;
+}
+
+.formulaire {
+  display: flex;
+  flex-wrap: wrap;
+
+  > * {
+    margin: 10px;
+    width: 100%;
+  }
+
+  .input-number {
+    max-width: 300px;
+  }
+
+  .resume {
+    margin-bottom: 20px;
+  }
+
+  h3 {
+    margin-top: 1px;
+  }
+
+  .buttons {
+    width: 100%;
+    text-align: right;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+
+    button,
+    a {
+      display: inline-block;
+      text-decoration: none;
+
+      &:first-child {
+        margin-right: 10px;
+      }
+    }
+
+    &.up {
+    //  margin-top: -53px;
+    }
+  }
+
+  .renew-upgrade {
+    margin-bottom: 20px;
+  }
+  mat-radio-button {
+    &:not(:first-of-type) {
+      margin-left: 20px;
+    }
+  }
+  mat-slide-toggle {
+    margin-bottom: 20px;
+  }
+}
+
+.popup {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  z-index: -1;
+  opacity: 0;
+  visibility: hidden;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &.active {
+    visibility: visible;
+    z-index: 21;
+    opacity: 1;
+  }
+
+  .popup-background {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 20;
+  }
+
+  .popup-window {
+    background: white;
+    padding: 20px;
+    z-index: 21;
+    max-width: 80%;
+  }
+
+  .popup-buttons {
+    display: flex;
+    justify-content: flex-end;
+
+    > *:not(:last-child) {
+      margin-right: 20px;
+    }
+  }
+}

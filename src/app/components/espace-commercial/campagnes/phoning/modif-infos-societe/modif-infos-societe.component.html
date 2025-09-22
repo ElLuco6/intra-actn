@@ -1,0 +1,108 @@
+<h2 mat-dialog-title>Modification infos société</h2>
+<mat-dialog-content class="content">
+    @if (formUpdateProspect) {
+    <form [formGroup]="formUpdateProspect">
+        <div class="input-add">
+            <h2>Infos société</h2>
+            <div class="fields">
+                <mat-form-field>
+                    <mat-label>N° SIRET</mat-label>
+                    <input matInput formControlName="numSiret" disabled>
+                    @if (!formUpdateProspect.get('numSiret').valid) {
+                    <mat-error>Le numéro de SIRET doit faire entre 9 et 14
+                        chiffres
+                    </mat-error>
+                    }
+                </mat-form-field>
+                <mat-form-field appearance="fill">
+                    <mat-label>Nom société</mat-label>
+                    <input matInput formControlName="nomSociete">
+                    @if (!formUpdateProspect.get('nomSociete').valid) {
+                    <mat-error>Obligatoire</mat-error>
+                    }
+                </mat-form-field>
+                <mat-form-field appearance="fill">
+                    <mat-label>N° APE</mat-label>
+                    <input matInput formControlName="numApe">
+                </mat-form-field>
+                <mat-form-field appearance="fill">
+                    <mat-label>Activité</mat-label>
+                    <input matInput formControlName="activite">
+                </mat-form-field>
+                <mat-form-field appearance="fill">
+                    <mat-label>Site web</mat-label>
+                    <input matInput formControlName="siteWeb">
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Origine</mat-label>
+                    <input formControlName="origine" matInput />
+                </mat-form-field>
+                <mat-form-field appearance="fill">
+                    <mat-label>Secteur représentant</mat-label>
+                    <mat-select formControlName="region">
+                        @for (reg of prospectService.region; track reg) {
+                        <mat-option [value]="reg">
+                            {{ reg }}
+                        </mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Groupement</mat-label>
+                    <mat-select formControlName="groupe">
+                        @for (grp of groupement; track grp) {
+                        <mat-option [value]="grp.argument">
+                            {{ grp.argument + '-' + grp.libelle }}
+                        </mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>N° Téléphone</mat-label>
+                    <input matInput formControlName="numTelephone">
+                </mat-form-field>
+                <mat-form-field appearance="fill">
+                    <mat-label>Adresse</mat-label>
+                    <input matInput formControlName="adresse">
+                </mat-form-field>
+                <mat-form-field appearance="fill">
+                    <mat-label>Code postal</mat-label>
+                    <input matInput formControlName="codePostal">
+                    @if (!formUpdateProspect.get('codePostal').valid) {
+                    <mat-error>Le code postal doit contenir exactement 5 chiffres</mat-error>
+                    }
+                </mat-form-field>
+                <mat-form-field appearance="fill">
+                    <mat-label>Ville</mat-label>
+                    <input matInput formControlName="ville">
+                    @if (!formUpdateProspect.get('ville').valid) {
+                    <mat-error>Ne doit pas contenir de caractères spéciaux</mat-error>
+                    }
+                </mat-form-field>
+            </div>
+        </div>
+        <h2>Infos complémentaires</h2>
+        <div class="brrrrt-colonne">
+            <mat-form-field class="size-default zazizou" appearance="fill">
+                <mat-label>Date de recrutement</mat-label>
+                <input matInput [max]="this.maxDate" [matDatepicker]="picker" formControlName="dateRecrutement"
+                    [value]="formUpdateProspect.get('dateRecrutement').value" readonly>
+                <mat-hint>DD/MM/YYYY</mat-hint>
+                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker [disabled]="false"></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+                <mat-label>Commentaire</mat-label>
+                <textarea matInput #comm formControlName="commentaire" cdkTextareaAutosize [maxLength]="2000"
+                    #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="1" cdkAutosizeMaxRows="5"></textarea>
+                <mat-hint align="end">{{ comm.value?.length || 0 }}/2000</mat-hint>
+            </mat-form-field>
+            <p style="color: red">* Champs obligatoires</p>
+        </div>
+    </form>
+    }
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button class="annuler" mat-button mat-dialog-close>Annuler</button>
+    <button class="valider" mat-button mat-dialog-close (click)="updateProspect()">Valider</button>
+</mat-dialog-actions>

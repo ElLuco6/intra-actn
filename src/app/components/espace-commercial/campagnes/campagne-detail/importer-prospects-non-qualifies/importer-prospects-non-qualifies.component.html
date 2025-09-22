@@ -1,0 +1,10 @@
+<h2 mat-dialog-title>Importer des prospects non qualifiés</h2>
+<mat-dialog-content class="content">
+    Afin d'importer votre liste de prospects non qualifiés, veuillez remplir ce fichier excel et l'importer en cliquant sur "Parcourir...".
+    <a class="button-template" mat-raised-button [href]="URL_TEMPLATE"> Télécharger le template </a>
+    <input cdkFocusInitial #fileInput type="file" />
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button class="annuler" mat-button mat-dialog-close>Annuler</button>
+    <button class="valider" mat-button mat-dialog-close (click)="processExcelFile()">Valider</button>
+</mat-dialog-actions>

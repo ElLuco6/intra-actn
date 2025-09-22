@@ -1,0 +1,295 @@
+<div id="rma">
+  <mat-tab-group mat-stretch-tabs dynamicHeight animationDuration="0">
+    <mat-tab label="Vue par produits">
+      <div class="premOnglet">
+        <div class=" bandeau2" [ngClass]="{'hidden': windowScrolled}">
+          <div class="container-filtres" [ngClass]="{'hidden': windowScrolled}">
+            <div class="flex">
+              <div class="conteneur action-row">
+                <button id="filtresToggle" class="text-button" type="button" (click)="onFiltresTogglePressed($event)"
+                        (tap)="onFiltresTogglePressed($event)" [ngClass]="{ active: showFiltres }" appKeyboardFocus>
+                  Filtres
+                  <i class="icon-caret-down" [ngClass]="{ focused: showFiltres }"></i>
+                </button>
+                <i title="vider le filtre" class="reset-filter-all" (click)="resetAllFilters()">
+                  <mat-icon>clear</mat-icon>
+                </i>
+              </div>
+              <div class="conteneur">
+                <span *ngIf="nbProduitsTemp > 1; else unique" class="historique"><b>{{ produitsListTemp.length }}
+                  références
+                  </b>livrées </span>
+                <ng-template #unique><span class="historique"><b>{{ produitsListTemp.length }} référence </b>livrée
+                  </span>
+                </ng-template>
+                <mat-form-field [ngStyle]="{width: getWidth()}">
+                  <mat-label>Période</mat-label>
+                  <mat-select [(value)]="selectedHisto">
+                    <mat-option [value]="histo" *ngFor="let histo of historiqueList" (click)="filter(histo)">{{ histo }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+            </div>
+
+            <ng-container *ngIf="showFiltres">
+              <div *ngIf="filtres$ | async as filtres" [formGroup]="filtresForm">
+                <div class="filtresPetit">
+                  <div class="filtre" *ngFor="let filtre of filtres; let i = index">
+                    <mat-form-field class="taille">
+                      <mat-label>{{ filtre.label }}</mat-label>
+                      <mat-select [formControlName]="filtre.target" multiple disableOptionCentering
+                                  panelClass="select-panel">
+                        <mat-option *ngFor="let option of filtre.options; let j = index" [value]="option" [disabled]="">
+                          {{ option }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                    <i *ngIf="filtresForm.value[filtre.target].length" title="vider le filtre" class="reset-filter"
+                       (click)="resetFilters(filtre.target)">
+                      <mat-icon>clear</mat-icon>
+                    </i>
+                  </div>
+
+                  <div class="filtre">
+                    <mat-form-field>
+                      <mat-label>Réf. Produit & Designation</mat-label>
+                      <input matInput [ngModel]="filtreRef" (ngModelChange)="rechercheRef($event)"
+                             [ngModelOptions]="{standalone: true}" />
+                    </mat-form-field>
+                    <i *ngIf="filtreRef" title="vider le filtre" class="reset-filter" (click)="resetFiltersRef()">
+                      <mat-icon>clear</mat-icon>
+                    </i>
+                    <app-tooltip class="iconComp" position="right" type="help" [text]="chargerAideProduitRef()">
+                    </app-tooltip>
+                  </div>
+
+                  <div class="filtre">
+                    <mat-form-field>
+                      <mat-label>N° Série</mat-label>
+                      <input matInput [ngModel]="filtreNoSerie" (ngModelChange)="rechercheNoSerie($event)"
+                             [ngModelOptions]="{standalone: true}" />
+                    </mat-form-field>
+                    <i *ngIf="filtreNoSerie" title="vider le filtre" class="reset-filter" (click)="resetFiltersSerie()">
+                      <mat-icon>clear</mat-icon>
+                    </i>
+                    <app-tooltip class="iconComp" position="right" type="help" [text]="chargerAideNoSerie()">
+                    </app-tooltip>
+                  </div>
+                  <div *ngIf="trouvSerie" class="matError">
+                    <span>Votre numéro de série n'a pas été trouvé dans la liste</span>
+                  </div>
+                </div>
+
+                <!--<div>
+                  <mat-form-field>
+                    <mat-label>EAN</mat-label>
+                    <input matInput [ngModel]="filtreEAN" (ngModelChange)="rechercheEAN($event)" [ngModelOptions]="{standalone: true}"/>
+                  </mat-form-field>
+                  <app-tooltip class="iconComp" position="right" type="help" [text]="chargerAideEAN()"></app-tooltip>
+                </div> -->
+
+                <div class="marque-filtres" *ngIf="filtreMarque" [ngClass]="{'hidden': windowScrolled}">
+                  <div class="marque-options" [ngClass]="{'selected': filtresForm.get('marque').value.includes(option)}"
+                       *ngFor="let option of filtreMarque.options; let j = index" (click)="filtreMarqueToggle(option)"
+                       (tap)="filtreMarqueToggle(option)">
+                    <img class="marque-img" [src]="environment.logoMarquesCouleurs200x80 + option + '.gif'" [alt]="option">
+                  </div>
+                </div>
+              </div>
+
+            </ng-container>
+
+          </div>
+        </div>
+
+        <!-- RESULTAT & PAGINATOR -->
+        <div class="flexB">
+          <div class="flexC">
+            <span *ngIf="nbProduitsAffich > 1; else uniqueAff" [appAddClassOnChange]="'flash'"
+                  [listenTo]="nbProduitsAffich"><b>{{ produitsListAffich.length }} résultats</b></span>
+
+            <ng-template #uniqueAff><span [appAddClassOnChange]="'flash'"
+                                          [listenTo]="nbProduitsAffich"><b>{{ produitsListAffich.length }} résultat</b></span>
+            </ng-template>
+          </div>
+
+          <mat-paginator *ngIf="produitsListAffich.length"
+                         style-paginator
+                         [showTotalPages]="3"
+                         [pageSize]="pageSize"
+                         [pageIndex]="pageIndex"
+                         [pageSizeOptions]="pageSizeOptions"
+                         (page)="pageEvent = getServerData($event)"
+                         [length]="produitsListAffich.length" >
+          </mat-paginator>
+        </div>
+
+        <div id="band" class="bandeau">
+          <ul class="raised-1 size-smaller">
+            <li class="grow2 sort" (click)="onTri('Marque')" (tap)="onTri('Marque')">Marque <app-tab-sort
+              [state]="selected('Marque')"></app-tab-sort>
+            </li>
+            <li class="grow2 sort" (click)="onTri('Réf. produit')" (tap)="onTri('Réf. produit')">Réf. produit <app-tab-sort
+              [state]="selected('Réf. produit')"></app-tab-sort>
+            </li>
+            <li class="grow3">Désignation</li>
+            <li class="grow2 sort" (click)="onTri('N° de BL')" (tap)="onTri('N° de BL')">N° de BL <app-tab-sort
+              [state]="selected('N° de BL')"></app-tab-sort>
+            </li>
+            <li class="grow3">N° de série</li>
+            <li class="grow2 sort" (click)="onTri('Fin de garantie')" (tap)="onTri('Fin de garantie')">Fin de garantie <app-tab-sort
+              [state]="selected('Fin de garantie')"></app-tab-sort>
+            </li>
+            <li class="grow1C">Qte</li>
+            <li class="grow1C">Sélection</li>
+            <li class="deselect" (click)="deselectionner()">Tout déselectioner</li>
+          </ul>
+        </div>
+
+        <div class="background">
+          <ng-container
+            *ngFor="let produit of produitsListAffich.slice(pageIndex*pageSize, (pageIndex+1)*pageSize); let i = index;"
+            class="detailsProduits">
+
+            <ng-container *ngIf="produit.noserie && produit.quantite > 1; else uniqueNoserie">
+              <div class="margeProduits">
+                <div class="cadreProduits">
+                  <ng-container *ngFor="let noserie of produit.noserie; let j = index">
+
+                    <span id="{{i}}:{{j}}" class="produitsRMA">
+                      <label class="grow2">{{ produit.marque }}</label>
+                      <label class="grow2">{{ produit.produit }}</label>
+                      <label class="grow3">{{ produit.designation }}</label>
+                      <label *ngIf="produit.datebl; else pasdate" class="grow2">{{ produit.numbl }} du
+                        {{ produit.datebl }}</label>
+                      <ng-template #pasdate>
+                        <label class="grow2">{{ produit.numbl }}</label>
+                      </ng-template>
+                      <label class="grow3">{{ start(noserie) }}<span
+                        *ngIf="noserie.includes(filtreNoSerie.toUpperCase())"
+                        style="font-weight: bold;">{{ filtreNoSerie.toUpperCase() }}</span>{{ end(noserie) }}</label>
+                      <label class="grow2">{{ produit.garantiedatefin }}</label>
+                      <label class="grow1C">1</label>
+                      <div class="grow1C">
+                        <mat-checkbox *ngIf="valideRMA(produit) && !disableList[i]" [disabled]="disableList[i]"
+                                      [checked]="checkList[i]" (click)="selectionner2(i, noserie)"></mat-checkbox>
+                        <app-tooltip *ngIf="!valideRMA(produit)" class="iconComp" position="right" type="error"
+                                     [text]="chargerAideProduitRef()"></app-tooltip>
+                      </div>
+                      <label class="grow2">
+                        <button *ngIf="numberList[i] && noserie === noserieActive" class="raised-button" type="button"
+                                (click)="selectProduit(produit)">{{textBtn}}</button>
+                      </label>
+                    </span>
+
+                  </ng-container>
+                  <div class="details" [ngClass]="{'show': cadreDetails[i]}">
+                    <label class="labelDetB">Réf. client : </label>
+                    <label class="labelDet">{{ produit.referencecommande }}</label>
+                    <label class="labelDetB">Réf. ACTN : </label>
+                    <label class="labelDet">{{ produit.numcommande }}</label>
+                    <label class="labelDetB" *ngIf="produit.numfacture && produit.datefacture">N° de facture : </label>
+                    <label class="labelDet" *ngIf="produit.numfacture && produit.datefacture">{{ produit.numfacture }}
+                      du {{ produit.datefacture }}</label>
+                  </div>
+                </div>
+                <div class="popDetails" (click)="montrerDetails(i)">
+                  <i *ngIf="!cadreDetails[i]; else minus" class="unroll-button icon-plus flat-button"></i>
+                  <ng-template #minus>
+                    <i class="unroll-button icon-minus flat-button"></i>
+                  </ng-template>
+                  de détails
+                </div>
+              </div>
+            </ng-container>
+
+            <ng-template #uniqueNoserie>
+              <div class="margeProduits">
+                <div class="cadreProduits">
+                  <span id="{{i}}:0" class="produitsRMA">
+                    <label class="grow2">{{ produit.marque }}</label>
+                    <label class="grow2">{{ produit.produit }}</label>
+                    <label class="grow3">{{ produit.designation }}</label>
+                    <label *ngIf="produit.datebl; else pasdate" class="grow2">{{ produit.numbl }} du
+                      {{ produit.datebl }}</label>
+                    <ng-template #pasdate>
+                      <label class="grow2">{{ produit.numbl }}</label>
+                    </ng-template>
+                    <label class="grow3">{{ start(produit.noserie) }}<span
+                      *ngIf="produit.noserie.includes(filtreNoSerie.toUpperCase())"
+                      style="font-weight: bold;">{{ filtreNoSerie.toUpperCase() }}</span>{{ end(produit.noserie) }}</label>
+                    <label class="grow2">{{ produit.garantiedatefin }}</label>
+                    <label class="grow1C">{{ produit.quantite }}</label>
+                    <div class="grow1C">
+                      <mat-checkbox *ngIf="valideRMA(produit) && !disableList[i]" [disabled]="disableList[i]"
+                                    [checked]="checkList[i]" (click)="selectionner(i, produit.quantite)"></mat-checkbox>
+                      <app-tooltip *ngIf="!valideRMA(produit)" class="iconComp" position="right" type="error"
+                                   [text]="chargerAideProduitNonValide()"></app-tooltip>
+                    </div>
+                    <label class="grow2">
+                      <div class="marginClass">
+                        <app-input-number *ngIf="produit.quantite > 1 && numberList[i]" min="1" max={{produit.quantite}}
+                                          [number]="quant" (value)="quantChange($event)" size="small">
+                        </app-input-number>
+                      </div>
+                      <button *ngIf="numberList[i] && quant > 1" class="raised-button" type="button"
+                              (click)="selectProduit(produit)">Retourner les produits</button>
+                      <button *ngIf="(numberList[i] && +produit.quantite === 1) || (numberList[i] && quant === 1)"
+                              class="raised-button" type="button" (click)="selectProduit(produit)">Retourner le
+                        produit</button>
+                    </label>
+                  </span>
+                  <div class="details" [ngClass]="{'show': cadreDetails[i]}">
+                    <label class="labelDetB">Réf. client : </label>
+                    <label class="labelDet">{{ produit.referencecommande }}</label>
+                    <label class="labelDetB">Réf. ACTN : </label>
+                    <label class="labelDet">{{ produit.numcommande }}</label>
+                    <label class="labelDetB" *ngIf="produit.numfacture && produit.datefacture">N° de facture : </label>
+                    <label class="labelDet" *ngIf="produit.numfacture && produit.datefacture">{{ produit.numfacture }}
+                      du {{ produit.datefacture }}</label>
+                  </div>
+                </div>
+                <div class="popDetails" (click)="montrerDetails(i)">
+                  <i *ngIf="!cadreDetails[i]; else minus" class="unroll-button icon-plus flat-button"></i>
+                  <ng-template #minus>
+                    <i class="unroll-button icon-minus flat-button"></i>
+                  </ng-template>
+                  &nbsp;de détails
+                </div>
+              </div>
+            </ng-template>
+          </ng-container>
+        </div>
+
+        <div class="flexB">
+          <div class="flexC">
+            <h4>Si vous ne trouvez pas votre produit, pensez à utiliser les filtres.</h4>
+          </div>
+
+          <mat-paginator *ngIf="produitsListAffich.length"
+                         style-paginator
+                         [showTotalPages]="3"
+                         [pageSize]="pageSize"
+                         [pageIndex]="pageIndex"
+                         [pageSizeOptions]="pageSizeOptions"
+                         (page)="pageEvent = getServerData($event)"
+                         [length]="produitsListAffich.length" >
+          </mat-paginator>
+        </div>
+
+        <h4 class="link">Seul s'affichent les produits ouverts au droit de retour (voir <a
+          [routerLink]="['/conditions-generales-de-vente']" fragment="7" href="">Conditions Générales de Vente</a>) ou
+          couverts par une garantie.
+        </h4>
+
+
+      </div>
+    </mat-tab>
+    <mat-tab label="Vue par commandes">
+      <div class="secOnglet">
+        <app-commandes></app-commandes>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

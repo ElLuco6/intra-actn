@@ -1,0 +1,193 @@
+@if (tableauCRSplit && tableauObjectifsSplit) {
+  <div>
+    @for (chiffres of tableauObjectifsSplit; track chiffres) {
+      <br/>
+      <div class="titre-et-slider">
+        <h2> {{ "Objectifs de l'année " + chiffres.annee + ' :' }}</h2>
+        <div>
+          Valeurs réelles
+          <mat-slide-toggle color="primary" [checked]="afficherValeursConsolidees"
+                            (change)="toggleValeursConsolidees()">
+          </mat-slide-toggle>
+          Valeurs consolidées
+        </div>
+      </div>
+      <div class="tableau-container">
+        <table class="tableau">
+          <thead>
+          <tr>
+            <th>Catégorie</th>
+            <th>Marque</th>
+            <th>Coef</th>
+            @for (mois of listeMois; track mois) {
+              <th>{{ mois.nom }}</th>
+            }
+          </tr>
+          </thead>
+          @for (categorie of chiffres.categories; track categorie) {
+            <tbody>
+            <tr class="ligne-objectif">
+              <td>{{ categorie.libelle + ' (' + categorie.categorieId + ')' }}</td>
+              <td>Objectifs</td>
+              <td>-</td>
+              @for (totalMois of totauxMois; track totalMois) {
+                @if (totalMois.annee === chiffres.annee && totalMois.categorie === categorie.libelle) {
+                  @if (!afficherValeursConsolidees) {
+                    <td>-</td>
+                  } @else {
+                    <td class="montants">
+                      {{ totalMois.objectif | number:'1.0':'fr-FR' }} pts
+                    </td>
+                  }
+                }
+              }
+            </tr>
+            <tr class="ligne-total">
+              <td class="cliquable" (click)="expanded[categorie.libelle] = !expanded[categorie.libelle]">
+                Voir {{ expanded[categorie.libelle] ? 'moins' : 'plus' }}
+              </td>
+              <td>Total</td>
+              <td>-</td>
+              @for (totalMois of totauxMois; track totalMois) {
+                @if (totalMois.annee === chiffres.annee && totalMois.categorie === categorie.libelle) {
+                  @if (afficherValeursConsolidees) {
+                    <td>
+                      <div>
+                        {{ totalMois.valeurConsolidee | number:'1.0':'fr-FR' }} pts
+                      </div>
+                      @if (totalMois.mois !== 'total') {
+                        <div>
+                          @for (niveau of convertirNiveaux(totalMois.niveaux); track niveau; let i = $index) {
+                            @if (niveau > 0) {
+                              <mat-icon [class]="totalMois.completion>=niveau ? 'etoile-doree' : 'etoile-grise'"
+                                        [matTooltip]="'Palier ' + (i + 1) + ' : ' + niveau + ' %'">star
+                              </mat-icon>
+                            }
+                          }
+                        </div>
+                      }
+                      <div>
+                        {{ '(' + totalMois.completion + '%)' }}
+                      </div>
+                    </td>
+                  } @else {
+                    <td class="montants">
+                      {{ totalMois.valeurReelle | number:'1.0':'fr-FR' }} €
+                    </td>
+                  }
+                }
+              }
+            </tr>
+              @if (expanded[categorie.libelle]) {
+                @for (
+                  marque of trouverCategorieCorrespondante(chiffres.annee, categorie.categorieId)?.marques; track marque) {
+                  <tr>
+                    <td></td>
+                    <td class="marque">{{ marque.marquelib }}</td>
+                    <td>{{ marque.coeff }}</td>
+                    @if (afficherValeursConsolidees) {
+                      @for (montantConsolide of marque.montantsConsolides; track montantConsolide) {
+                        <td class="montants">{{ montantConsolide.valeur | number:'1.0':'fr-FR' }} pts</td>
+                      }
+                    } @else {
+                      @for (montant of marque.montants; track montant) {
+                        <td class="montants">{{ montant.valeur | number:'1.0':'fr-FR' }} €</td>
+                      }
+                    }
+                  </tr>
+                }
+              }
+            </tbody>
+            <br/>
+          }
+          <thead>
+          <tr>
+            <th>Marque préconisée</th>
+            <th>Marque</th>
+            <th>Coef</th>
+            @for (mois of listeMois; track mois) {
+              <th>{{ mois.nom }}</th>
+            }
+          </tr>
+          </thead>
+          @for (marquePreco of chiffres.marquesPreconisees; track marquePreco) {
+            <tbody>
+            <tr class="ligne-objectif">
+              <td>{{ removePrefix(marquePreco.libelle) + ' (' + marquePreco.categorieId + ')' }}</td>
+              <td>Objectifs</td>
+              <td>-</td>
+              @for (totalMois of totauxMois; track totalMois) {
+                @if (totalMois.annee === chiffres.annee && totalMois.categorie === marquePreco.libelle) {
+                  @if (!afficherValeursConsolidees) {
+                    <td>-</td>
+                  } @else {
+                    <td class="montants">
+                      {{ totalMois.objectif | number:'1.0':'fr-FR' }} pts
+                    </td>
+                  }
+                }
+              }
+            </tr>
+            <tr class="ligne-total">
+              <td class="cliquable" (click)="expanded[marquePreco.libelle] = !expanded[marquePreco.libelle]">
+                Voir {{ expanded[marquePreco.libelle] ? 'moins' : 'plus' }}
+              </td>
+              <td>Total</td>
+              <td>-</td>
+              @for (totalMois of totauxMois; track totalMois) {
+                @if (totalMois.annee === chiffres.annee && totalMois.categorie === marquePreco.libelle) {
+                  @if (afficherValeursConsolidees) {
+                    <td>
+                      <div>
+                        {{ totalMois.valeurConsolidee | number:'1.0':'fr-FR' }} pts
+                      </div>
+                      @if (totalMois.mois !== 'total') {
+                        <div>
+                          @for (niveau of convertirNiveaux(totalMois.niveaux); track niveau; let i = $index) {
+                            @if (niveau > 0) {
+                              <mat-icon [class]="totalMois.completion>=niveau ? 'etoile-doree' : 'etoile-grise'"
+                                        [matTooltip]="'Palier ' + (i + 1) + ' : ' + niveau + ' %'">star
+                              </mat-icon>
+                            }
+                          }
+                        </div>
+                      }
+                      <span>
+                            {{ '(' + totalMois.completion + '%)' }}
+                        </span>
+                    </td>
+                  } @else {
+                    <td class="montants">
+                      {{ totalMois.valeurReelle | number:'1.0':'fr-FR' }} €
+                    </td>
+                  }
+                }
+              }
+            </tr>
+              @if (expanded[marquePreco.libelle]) {
+                @for (marque of trouverCategorieCorrespondante(chiffres.annee, marquePreco.categorieId)?.marques; track
+                  marque) {
+                  <tr>
+                    <td></td>
+                    <td class="marque">{{ marque.marquelib }}</td>
+                    <td>{{ marque.coeff }}</td>
+                    @if (afficherValeursConsolidees) {
+                      @for (montantConsolide of marque.montantsConsolides; track montantConsolide) {
+                        <td class="montants">{{ montantConsolide.valeur | number:'1.0':'fr-FR' }} pts</td>
+                      }
+                    } @else {
+                      @for (montant of marque.montants; track montant) {
+                        <td class="montants">{{ montant.valeur | number:'1.0':'fr-FR' }} €</td>
+                      }
+                    }
+                  </tr>
+                }
+              }
+            </tbody>
+            <br/>
+          }
+        </table>
+      </div>
+    }
+  </div>
+}

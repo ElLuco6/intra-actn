@@ -1,0 +1,38 @@
+.form-add {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+}
+
+.input-add {
+  display: flex;
+  flex-direction: column;
+}
+
+.button-action {
+  display: flex;
+  justify-content: flex-end;
+  gap: 20px;
+}
+
+.button-annuler {
+  background-color: var(--color-warn);
+  color: white;
+}
+
+.button-enregistrer {
+  background-color: var(--color-secondary);
+  color: white;
+}
+.cp-ville {
+  display: flex;
+  width: 100%;
+  gap: 20px;
+}
+
+.largeur-input-binome {
+  width: 50%;
+}
+
+
+

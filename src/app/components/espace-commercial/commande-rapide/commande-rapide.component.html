@@ -1,0 +1,131 @@
+<app-title-w-line [title]="'Saisie rapide'"></app-title-w-line>
+<form
+  [formGroup]="form"
+  (ngSubmit)="onSubmit()"
+  class="commande-rapide raised-1"
+  >
+  <div class="input-grid labels">
+    <div></div>
+    <div></div>
+    <div>Désignation</div>
+    <div>Stock</div>
+    <div style="justify-self: center;">Prix unitaire</div>
+    <div style="justify-self: center;">Prix total</div>
+    <div></div>
+  </div>
+
+  @for (item of items.controls; track item; let i = $index) {
+    <div formArrayName="items">
+      <div [formGroupName]="i" class="input-grid">
+        <!-- REF -->
+        <mat-form-field class="input-reference" appearance="fill">
+          <input
+            type="text"
+            matInput
+            placeholder="Réference"
+            formControlName="ref"
+            [matAutocomplete]="autoGroup"
+            />
+            <mat-autocomplete #autoGroup="matAutocomplete" classList="autocomplete">
+              @if (autoCompleteOptions$ | async; as options) {
+                @for (produit of options.produits; track produit) {
+                  <mat-option
+                    [value]="produit.reference"
+                    >
+                    <!-- etant donné que notre recherche peut se trouver dans la reference ou la designation du produit, le ngIf permet de verifier dans quel champ se trouve notre recherche et de n'en afficher qu'un seul -->
+                    {{ start(produit.reference) }}@if (produit.reference.toUpperCase().includes(searching.toUpperCase())) {
+                    <span style="font-weight: bold;">{{ searching | uppercase }}</span>
+                    }{{ end(produit.reference) }}
+                    <br />
+                    {{ start(produit.designation) | uppercase }}@if (produit.designation.toUpperCase().includes(searching.toUpperCase())) {
+                    <span style="font-weight: bold;">{{ searching | uppercase }}</span>
+                    }{{ end(produit.designation) | uppercase }}
+                  </mat-option>
+                }
+              }
+            </mat-autocomplete>
+            @if (correspondingProductsStatus[i] == 1) {
+              <div class="ref-status">
+                Reference invalide
+              </div>
+            }
+          </mat-form-field>
+          <!-- QTE -->
+          <div class="qte-reference">
+            <app-input-number min="1" number="1" (value)="qteChange(i, $event)" size="small">
+            </app-input-number>
+          </div>
+          @if (correspondingProducts[i]) {
+            @if (correspondingProducts[i].reference) {
+              <!-- LIB -->
+              <div class="lib-display"> <p>{{ correspondingProducts[i].designation }}</p> </div>
+              <!-- STOCK -->
+              <div class="stock-display" [ngClass]="{ active: correspondingProducts[i].qteStock1 >= items.value[i].qte }">
+                <div>
+                  <p>
+                    {{ correspondingProducts[i].qteStock1 | number: '1.0-0' }} en stock
+                  </p>
+                  <p>
+                    {{ correspondingProducts[i].qteEnReappro | number: '1.0-0' }} en réappro
+                  </p>
+                </div>
+              </div>
+              <!-- PRIX -->
+              @if (isReducQt(correspondingProducts[i], i)) {
+                <div class="prix-display">
+                  <div>{{ correspondingProducts[i].prix | currency:'EUR':'symbol':'1.2-2':'fr' }}<span class="size-smaller">&nbsp;HT</span></div>
+                </div>
+              } @else {
+                <div class="prix-display">
+                  <div>
+                    <div>{{ correspondingProducts[i].prixPar | currency:'EUR':'symbol':'1.2-2':'fr' }}<span class="size-smaller">&nbsp;HT</span></div>
+                    <span>par {{ correspondingProducts[i].qtePar | number: '1.0-0' }}</span>
+                  </div>
+                </div>
+              }
+              <div class="prix-display">
+                <div>
+                  {{ correspondingProducts[i].prix * items.value[i].qte }}<span class="size-smaller">&nbsp;HT</span>
+                </div>
+              </div>
+            }
+          }
+          <div class="statusIconDiv">
+            @if (this.items.value[i].ref) {
+              <mat-icon class="statusIcon" (click)="resetInput(i)">delete</mat-icon>
+            }
+          </div>
+        </div>
+      </div>
+    }
+
+    <button class='text-button' type="button" (click)="items.push(newItem(this.items.length))">
+      Ajouter une ligne +
+    </button>
+
+    <!-- <ng-template *ngIf="total > 0"> -->
+    <div class="total-display">
+      Total : {{ total | number: '1.2-2' }} €
+    </div>
+  <!-- </ng-template> -->
+
+  <mat-divider style="clear: both;"></mat-divider>
+
+  <div class="action-row">
+    <button class='raised-button' type="button" (click)="resetAllInputs()">
+      Réinitialiser la liste
+    </button>
+    <button class='raised-button' type="submit">
+      Ajouter au panier
+    </button>
+  </div>
+
+  <div style="clear: both;" class="status-return" >
+    @if (statusReturn == 1) {
+      <p>Liste reinitialisée</p>
+    }
+    @if (statusReturn == 3) {
+      <p>Liste ajoutée au panier</p>
+    }
+  </div>
+</form>

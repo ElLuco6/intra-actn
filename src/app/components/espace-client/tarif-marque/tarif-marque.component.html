@@ -1,0 +1,22 @@
+<app-title-w-line title="Téléchargement de tarifs" size="small"></app-title-w-line>
+<div class="firstLetterLinks">
+  @for (firstChar of firstLetters | keyvalue; track firstChar) {
+    <div class="firstLetterLink" (click)="removeMarque(firstChar.key)">{{ firstChar.key }}</div>
+  }
+
+  <mat-chip-listbox class="mat-chip-list-stacked" aria-label="Color selection">
+    @if (hideBtn != true) {
+      <button class="raised-button voirBtn" [disabled]="btnVoir != true" (click)="resetMarque()">Voir toutes</button>
+    }
+  </mat-chip-listbox>
+
+</div>
+
+<div class="container">
+  @for (marque of marques; track marque) {
+    <div class="marque" (click)="downloadXLS(marque)">
+      <img [default]="environment.logoMarquesCouleurs200x80 + 'ACTN.gif'" [src]="environment.logoMarquesCouleurs200x80 + marque[0] + '.gif'" [alt]="marque[0]" />
+      <p>{{ marque[0].toLocaleLowerCase() }}</p>
+    </div>
+  }
+</div>

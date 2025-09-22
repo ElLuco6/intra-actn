@@ -1,0 +1,47 @@
+.bouboule {
+  width: 10px;
+  height: 10px;
+  border-radius: 100px;
+}
+
+.triangle {
+  display: inline-block;
+  border-right: 6px solid transparent;
+  border-bottom: 10px solid;
+  border-left: 6px solid transparent;
+}
+
+.bouboule-triangle {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 5px;
+}
+
+.filter-bouboule-triangle {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.input-field {
+  background: transparent;
+  position: relative;
+}
+
+.input-placeholder {
+  position: absolute;
+  opacity: 50%;
+}
+
+.input-field:focus + .input-placeholder,
+.input-field:not(:placeholder-shown) + .input-placeholder {
+  opacity: 0;
+}
+
+.input-select {
+  padding-left: 5px;
+  display: flex;
+  align-items: center;
+  position: relative;
+}

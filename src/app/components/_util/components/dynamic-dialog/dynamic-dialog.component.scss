@@ -1,0 +1,5 @@
+.cancel {
+  color: var(--color-warn);
+  --mat-protected-button-ripple-color: var(--color-warn-ripple) !important;
+  --mat-protected-button-state-layer-color: var(--color-warn) !important;
+}

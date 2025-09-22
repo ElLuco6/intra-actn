@@ -1,0 +1,8 @@
+<mat-dialog-content>
+  <h1>Supprimer un filtrage</h1>
+  <p>Vous êtes sur le point de supprimer le filtrage suivant : {{ data.displayName }}</p>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button class="annuler" mat-button mat-dialog-close>Annuler</button>
+  <button class="supprimer" mat-button [mat-dialog-close]="true">Supprimer</button>
+</mat-dialog-actions>

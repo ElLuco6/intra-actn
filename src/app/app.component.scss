@@ -1,0 +1,78 @@
+@import "variables.scss";
+.app{
+    height: 100vh;
+}
+
+#content {
+  margin: 10px $window-padding-screen 3vh $window-padding-screen;
+  min-height: calc(100vh - 523px);
+
+  @media screen and (min-width: 1650px) {
+    margin: 10px $window-padding-large-screen 3vh $window-padding-large-screen;
+  }
+
+  @media screen and (max-width: 1300px) {
+    margin: 10px $window-padding-tablet 3vh $window-padding-tablet;
+    padding: 0;
+  }
+
+  @media screen and (max-width: $top-nav-small-breakpoint) {
+    margin: 10px $window-padding-tablet 3vh $window-padding-tablet;
+    min-height: calc(100vh - 240px);
+  }
+
+  @media screen and (max-width: $sub-nav-small-breakpoint) {
+    margin: 113px 2vw 3vh 2vw;
+  }
+}
+
+::ng-deep.mdc-line-ripple {
+  display: none!important;
+}
+
+::ng-deep.mat-mdc-text-field-wrapper {
+  border-radius: 10px!important;
+}
+
+::ng-deep.mat-mdc-card {
+  border-radius: 10px!important;
+  box-shadow: 0 2px 3px 1px #0003 !important;
+  border: none !important;
+  background-color: var(--mat-table-background-color, var(--mat-app-surface)) !important;
+}
+
+::ng-deep.mat-mdc-row {
+  height: 34px!important;
+}
+
+#content {
+  margin-right: 4em;
+  margin-left: 4em;
+}
+
+.router-fade.ng-enter,
+.router-fade.ng-leave {
+  opacity: 0;
+}
+
+.router-fade.ng-enter.ng-enter-active,
+.router-fade.ng-leave {
+  opacity: 1;
+}
+
+::ng-deep.mat-elevation-z3 {
+  border-radius: 10px;
+  padding: .5rem;
+}
+
+::ng-deep.mat-pseudo-checkbox-full.mat-pseudo-checkbox-checked, .mat-pseudo-checkbox-full.mat-pseudo-checkbox-indeterminate {
+  background-color: var(--color-primary) !important;
+}
+
+::ng-deep.mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled):not(.mat-mdc-option-multiple) {
+  background-color: var(--color-primary) !important;
+}
+
+::ng-deep.mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) .mdc-list-item__primary-text {
+  color: white !important;
+}

@@ -1,0 +1,95 @@
+.add-to-cart-form {
+  display: flex;
+  width: 100%;
+
+  &.column {
+    flex-direction: column;
+    align-items: center;
+
+    app-input-number {
+      margin: 0 0 10px 0;
+      width: 100%;
+    }
+
+    .raised-button {
+      width: 100%;
+    }
+  }
+
+  &:not(.column) {
+    app-input-number {
+      margin: 2px 20px 0 0;
+      width: calc(30% - 10px);
+    }
+
+    .raised-button {
+      width: calc(70% - 10px);
+    }
+  }
+
+  &.noInput {
+    .raised-button {
+      width: inherit !important;
+    }
+  }
+}
+
+button:not(:disabled) {
+  cursor: pointer;
+
+  &.error {
+    background-color: var(--color-warn);
+
+    animation: shake 0.6s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+
+    $amplitude: 0.75px;
+
+    @keyframes shake {
+      10%, 90% {
+        transform: translate3d(calc(-#{$amplitude}), 0, 0);
+      }
+
+      20%, 80% {
+        transform: translate3d(calc(2 * #{$amplitude}), 0, 0);
+      }
+
+      30%, 50%, 70% {
+        transform: translate3d(calc(-4 * #{$amplitude}), 0, 0);
+      }
+
+      40%, 60% {
+        transform: translate3d(calc(4 * #{$amplitude}), 0, 0);
+      }
+    }
+  }
+}
+
+.small-texte {
+  font-size: 0.75em;
+  height: 0px;
+  margin-top: -20px;
+  margin-bottom: 20px;
+
+  &.error {
+    color: var(--color-warn);
+    margin-top: 0px;
+    margin-bottom: -5px;
+    padding-top: 5px;
+  }
+}
+
+
+.dispo-div {
+  text-align: center;
+
+  .dispo-text {
+    font-size: 0.8rem;
+  }
+  .dispo-button {
+    font-size: 0.9rem;
+    padding: 4px 7px;
+  }
+}

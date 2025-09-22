@@ -1,0 +1,35 @@
+.panel{
+    margin: 10px 0px;
+}
+
+.table {
+    width: 100%;
+    border-radius: 5px;
+   // height: 200px;
+    overflow: auto;
+    border: #607D8B 1px solid;
+    box-shadow: 0 0 11px rgba(33,33,33,.2);
+  }
+  th{
+    color: #ffff;
+  }
+  .bgGreen{
+    background-color: var(--color-primary-second);
+  }
+
+  th, td {
+    vertical-align: top;
+    border-right: 1px solid rgba(0,0,0,.12);
+    padding-left: 16px !important;
+    padding-top: 14px !important;
+  }
+  .filters{
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    border-radius: 10px;
+  }
+  .filter{
+    display: flex;
+    gap: 10px;
+  }

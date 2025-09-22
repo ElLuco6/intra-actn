@@ -1,0 +1,191 @@
+/* @import url('https://fonts.googleapis.com/css?family=Poppins');
+
+* {
+  font-family: 'Poppins', sans-serif;
+} */
+
+/* .blockGraph{
+  width: 70%;
+  margin: auto;
+  margin-top: 30px;
+margin-bottom: 10px;
+background-color: #f4f4f4;
+box-shadow: 0px 1px 22px -12px #607D8B;
+} */
+/* .shnekzer{
+
+  margin: auto;
+  margin-top: 30px;
+margin-bottom: 10px;
+background-color: #f4f4f4;
+box-shadow: 0px 1px 22px -12px #607D8B;
+} */
+/* .zoubida{
+  display: grid;
+  grid-template-columns: 5fr 5fr;
+  gap: 50px;
+}
+
+p {
+  font-family: Lato; 
+} */ 
+
+::ng-deep .mat-mdc-tab{
+  max-width: 200px;
+}
+.table {
+  width: 100%;
+  border-radius: 5px;
+  height: 200px;
+  overflow: auto;
+  border: #607D8B 1px solid;
+  box-shadow: 0 0 11px rgba(33,33,33,.2);
+}
+th{
+  color: #ffff;
+}
+.bgGreen{
+  background-color: var(--color-primary-second);
+}
+/* .hidden-category {
+  display: none;
+} */
+th, td {
+  vertical-align: top;
+  border-right: 1px solid rgba(0,0,0,.12);
+  padding-left: 16px !important;
+  padding-top: 14px !important;
+}
+.annee{
+  margin: 20px 0px;
+  font-weight: bold;
+
+    color: #333
+}
+/* .circle{
+  height: 84%;
+} */
+
+/* .table{
+  width: 70%;
+
+  //border-bottom: #607D8B 1px solid;
+  //border-left: #607D8B 1px solid;
+} */
+/* .chart{
+  border: #607D8B 1px solid;
+  display: flex;
+  align-items: center;
+
+  display: grid;
+  grid-template-columns: 5fr 5fr;
+} */
+/* .titre-diagram{
+  margin-left: 10px;
+} */
+
+/* #marseilleBB{
+
+  display: grid;
+  grid-template-columns: 5fr 5fr;
+} */
+/* apx-chart{
+  margin: 10px;
+} */
+
+//.mat-mdc-row .mat-mdc-cell {
+ // border-bottom: 1px solid transparent;
+ // border-top: 1px solid transparent;
+  //cursor: pointer;
+
+
+
+.mat-mdc-row:hover .mat-mdc-cell {
+  border-color: var(--color-primary-second);
+}
+.mat-mdc-row:hover{
+  z-index: 20;
+  box-shadow: 0 0 11px rgba(33,33,33,.2);
+}
+
+.demo-row-is-clicked {
+  font-weight: bold;
+}
+
+.mat-sticky {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: #f5f5f5; /* Couleur d'arrière-plan facultative pour l'en-tête */
+}
+.obj{
+  background-color: #f2f2f2;
+  color: #f2f2f2 ;
+//  border-bottom: solid 1px cadetblue;
+ // border:  #607D8B solid 10px !important;
+}
+
+.prime{
+  background-color: #d9e1f2 ; //#5BC0B8;
+  color: white;
+}
+.hidden-cell {
+  //display: none; /* pour cacher la cellule */
+  /* ou */
+//  visibility: hidden;
+ // color: #ffff;
+ color: transparent;
+ //border-bottom: solid 10px cadetblue;
+ // opacity: 0; /* pour rendre la cellule transparente */
+  /* ou */
+  /* autres styles pour modifier l'apparence de la cellule */
+}
+/* .zozo{
+  color: goldenrod;
+ // border-bottom: solid 10px cadetblue;
+
+}
+mat-mdc-row mat-mdc-cell {
+
+  &.obj{
+    color: goldenrod;
+   // border-bottom: solid 10px cadetblue;
+
+  }
+
+} */
+.moula{
+  background-color: gold;
+  color: var(--color-primary-second);
+}
+//.execel{
+  //height: 600px;
+//  overflow: auto;
+//}
+.categorie-A {
+  background-color: #ff0000; /* Couleur de fond pour la catégorie "A" */
+}
+
+.categorie-B {
+  background-color: #00ff00; /* Couleur de fond pour la catégorie "B" */
+}
+/* .mat-expansion-panel {
+  overflow: inherit !important;
+}
+
+.mat-expansion-panel-body {
+  overflow: hidden; // This rule fixes extra whitespace
+} */
+.text_end{
+  text-align: end;
+}
+.mat-expansion-panel-header.mat-expanded {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+.tabGroup{
+  .custom-tab{
+    max-width: 300px;
+  }
+}

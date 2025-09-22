@@ -1,0 +1,251 @@
+@use "sass:string";
+
+h3 {
+  font-weight: bold;
+}
+
+.usr-auth {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 20px;
+}
+
+.usr {
+  display: flex;
+  gap: 20px;
+}
+
+.date {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+p, h3 {
+  margin: 0;
+}
+
+.touti {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 1rem
+}
+
+
+.btn-modif {
+  color: var(--color-secondary);
+  --mat-protected-button-ripple-color: var(--color-secondary-ripple) !important;
+  --mat-protected-button-state-layer-color: var(--color-secondary) !important;
+  overflow: hidden;
+  position: relative;
+}
+
+.pdemerde {
+  font-size: 1.125rem!important;
+  height: 1.125rem!important;
+  width: 1.125rem!important;
+  margin-top: 4px;
+}
+
+.btntest {
+  text-align: center;
+  transition: all .5s ease;
+}
+
+
+.btn--action{
+  display: block;
+  transition: all .5s ease 0s;
+}
+
+.btn--action span{
+  display: inline-block;
+  position: relative;
+  transition: all .5s ease;
+}
+
+.btn--action span:before{
+  content: attr(data-content);
+  display: inline-block;
+  position: absolute;
+  top: 4px;
+  opacity: 0;
+  transition: width .5s;
+}
+
+.btn--action.edit:hover span{
+  padding-left: 3.5rem;
+}
+.btn--action.delete-hehe:hover span{
+  padding-left: 4rem;
+}
+.btn--action.doss:hover span{
+  padding-left: 4.5rem;
+}
+.btn--action.clients:hover span{
+  padding-left: 3rem;
+}
+
+.btn--action:hover span:before{
+  left: -5px;
+  opacity: 1;
+}
+
+.btn--action:active {
+  transform: translateY(5px);
+}
+
+.btns {
+  display: flex;
+  gap: 20px;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+.header-table {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 1rem 0 1rem;
+}
+
+::ng-deep.mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+.tableu {
+  border-radius: 10px;
+  padding: 0!important;
+  margin-top: 1rem;
+}
+
+::ng-deep.mat-mdc-tab-body-content {
+  padding: 1rem;
+}
+
+table {
+  width: 100%;
+}
+
+tr.example-detail-row {
+  height: 0!important;
+}
+
+tr.example-element-row:not(.example-expanded-row):hover {
+  background: whitesmoke;
+}
+
+tr.example-element-row:not(.example-expanded-row):active {
+  background: #efefef;
+}
+
+.example-element-row td {
+  border-bottom-width: 0;
+}
+
+.example-element-detail {
+  overflow: hidden;
+  display: flex;
+}
+
+.example-element-diagram {
+  min-width: 80px;
+  border: 2px solid black;
+  padding: 8px;
+  font-weight: lighter;
+  margin: 8px 0;
+  height: 104px;
+}
+
+.example-element-symbol {
+  font-weight: bold;
+  font-size: 40px;
+  line-height: normal;
+}
+
+.example-element-description {
+  padding: 16px;
+}
+
+.example-element-description-attribution {
+  opacity: 0.5;
+}
+
+.container-cmpt-rendu {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.cmpt-rendu {
+  flex: 0 0 49%;
+}
+
+.subtitle {
+  font-weight: normal;
+  font-style: italic;
+  margin-left: .5rem;
+}
+
+.unebitsurlepaule {
+  display: flex;
+  gap: 10px;
+}
+
+.unebitsurlepaule .left {
+  width: 20%;
+  padding: 1rem;
+  border-radius: 20px;
+  background-color: #dde5db;
+}
+
+.unebitsurlepaule .right {
+  width: 80%;
+  padding: 1rem;
+  border-radius: 20px;
+  background-color: #f1f7eb;
+}
+
+.btn-delete {
+  color: var(--color-warn);
+  --mat-protected-button-ripple-color: var(--color-warn-ripple) !important;
+  --mat-protected-button-state-layer-color: var(--color-warn) !important;
+}
+
+.phoning {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+.filtres-people {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+p {
+  margin: 0 !important;
+}
+
+.hihi {
+  justify-self: end;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  height: 32px;
+  width: max-content;
+  min-width: max-content;
+  padding: 0 12px;
+  border-radius: 4em;
+  display: flex;
+  margin: 4px 8px 4px 0;
+  flex-wrap: wrap;
+  align-items: center;
+  font-size: 0.885rem;
+  color: white;
+  background-color: #1a4e61;
+}
+
+.reset-button {
+  margin-bottom: 1rem;
+}

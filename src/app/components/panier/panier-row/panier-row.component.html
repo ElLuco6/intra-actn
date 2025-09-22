@@ -1,0 +1,339 @@
+<mat-card appearance="outlined" style="z-index: 1;">
+  <div class="container" [ngClass]="{'no-input': !showInputNumber}">
+    <div class="image">
+      <a [routerLink]="produitService.lienProduit(cartItem.produit)" routerLinkActive="router-link-active">
+        @if(cartItem.produit.photo){
+          <img [default]="produitService.errorImg(cartItem.produit)" class="image-produit"
+            [src]="environment.vignette + cartItem.produit.photo + '.jpg'" />
+            }@else{
+            <img [default]="produitService.errorImg(cartItem.produit)" class="image-produit"
+              [src]="environment.produitDefautImgUrl + '.jpg'" />
+            }
+          </a>
+        </div>
+
+        <!-- INFO PRODUIT -->
+        <div class="details">
+          <a [routerLink]="produitService.lienProduit(cartItem.produit)" routerLinkActive="router-link-active">
+            <p class="for-phone">Produit/Marque:</p>
+            <h3 class="reference">
+              {{ cartItem.produit.reference }}
+              <img [src]="environment.logoMarquesCouleurs200x80 + cartItem.produit.marquelib + '.gif'"
+                alt="{{cartItem.produit.marque}}" />
+              </h3>
+              <div class="designation">{{ cartItem.produit.designation }}</div>
+            </a>
+          </div>
+
+          @if (cartItem.produit.gabarit !== 'V'){
+            <div class="dispo weight-bolder">
+
+              <div class="state-value" [ngClass]="{ active: cartItem.partQteDisponible >= cartItem.qte }">
+                <!-- {{ cartItem.qte | number: '1.0-0' }} sur -->
+                <span class="for-phone" style="color:black;">Disponible:&nbsp; </span>
+                {{ cartItem.partQteDisponible | number: '1.0-0' }} en stock
+              </div>
+            </div>
+            }@else{
+            <p class="demat-msg">Produit dématérialisé</p>
+          }
+          <!-- PRIX -->
+          <div class="prix-details size-smaller">
+            <div class="prix-public">
+              <div class="libelle">prix public</div>
+              @if((cartItem.produit.prixPublic > 0)) {
+                <div class="montant" >
+                  <div>{{ cartItem.produit.prixPublic }}<span class="size-smaller">&nbsp;€ HT</span></div>
+                </div>
+                }@else{
+                <p class="montant">n.c.</p>
+              }
+
+            </div>
+            <div class="ecopart">
+              <div class="libelle">écopart</div>
+              <div class="montant">
+                <div>{{ cartItem.produit.prixD3E }}<span class="size-smaller">&nbsp;€ HT</span></div>
+              </div>
+            </div>
+            @if (!cartItem.produit.hasPriceByQte){
+              <div class="prix-pro"
+                [ngClass]="{'prix-public': (cartItem.cotation?.prixvente ?? 0) !== 0}">
+
+                @if (showInputNumber) {
+                  <div class="libelle">
+                    prix client
+                    @if(cartItem.cotation?.prixvente == cartItem.produit.prix){
+                      cotation
+                    }
+                    @if(!editPrix && (cartItem.prixSaisi == 0 || cartItem.prixSaisi == undefined) && (cartItem.cotation?.prixvente ?? 0) == 0){
+                      <mat-icon class="edit-prix" (click)="editPrix = true">edit</mat-icon>
+                    }
+                  </div>
+                  @if(isReducQt(cartItem)){
+                    <div class="montant"
+                      [ngClass]="{'size-bigger': (cartItem.cotation?.prixvente ?? 0) === 0, 'bold': (cartItem.cotation?.prixvente ?? 0) === 0}">
+                      <div>{{ cartItem.produit.prix }}<span class="size-smaller">&nbsp;€ HT</span></div>
+                    </div>
+                    }@else{
+                    <div class="montant bold size-bigger">
+                      <div>{{ cartItem.produit.prixPar }}<span class="size-smaller">&nbsp;€ HT</span></div>
+                    </div>
+                  }
+                } @else {
+                  @if(cartItem.prixSaisi != 0 && cartItem.prixSaisi != undefined && !isNaN(cartItem.prixSaisi)){
+                    <div class="libelle">prix saisi</div>
+                    @if (isReducQt(cartItem)){
+                      <div class="montant"
+                        [ngClass]="{'size-bigger': (cartItem.cotation?.prixvente ?? 0) === 0, 'bold': (cartItem.cotation?.prixvente ?? 0) === 0}">
+                        <div>
+                          {{ cartItem.prixSaisi }}<span class="size-smaller">&nbsp;€ HT</span>
+                        </div>
+                      </div>
+                    } @else {
+                      <div class="montant bold size-bigger">
+                        <div>{{ cartItem.produit.prixPar }}<span class="size-smaller">&nbsp;€ HT</span></div>
+                      </div>
+                    }
+                  } @else {
+                    <div class="libelle">prix client</div>
+                    @if (isReducQt(cartItem)) {
+                      <div class="montant"
+                        [ngClass]="{'size-bigger': (cartItem.cotation?.prixvente ?? 0) === 0, 'bold': (cartItem.cotation?.prixvente ?? 0) === 0}">
+                        <div>{{ cartItem.produit.prix }}<span class="size-smaller">&nbsp;€ HT</span></div>
+                      </div>
+                    } @else {
+                      <div class="montant bold size-bigger">
+                        <div>{{ cartItem.produit.prixPar }}<span class="size-smaller">&nbsp;€ HT</span></div>
+                      </div>
+                    }
+                  }
+                }
+              </div>
+            } @else {
+              @for (qtp of cartItem.produit?.qtePrice; track qtp; let i = $index){
+                <div [ngClass]="(cartService.cart.items[cartItem.produit.reference]?.priceByQtyAppliedIndex == i) ? 'prix-pro' : 'prix-public'">
+                  <div class="libelle">prix par {{ qtp.qte }}</div>
+                  @if (!editPrix && cartService.cart.items[cartItem.produit.reference]?.priceByQtyAppliedIndex == i && showInputNumber) {
+                    <mat-icon class="edit-prix" (click)="editPrix = true">edit</mat-icon>
+                  }
+                  <div class="montant">
+                    <div>{{ qtp.price }}<span class="size-smaller">&nbsp;HT</span></div>
+                  </div>
+                </div>
+              }
+              @if (cartItem.prixSaisi != 0 && cartItem.prixSaisi != undefined && !isNaN(cartItem.prixSaisi) && !showInputNumber) {
+                <div style="display: flex; justify-content: space-between">
+                  <div class="libelle">prix saisi</div>
+                  <div class="montant"
+                    [ngClass]="{'size-bigger': (cartItem.cotation?.prixvente ?? 0) === 0, 'bold': (cartItem.cotation?.prixvente ?? 0) === 0}">
+                    <div>
+                      {{ cartItem.prixSaisi }}<span class="size-smaller">&nbsp;€ HT</span>
+                    </div>
+                  </div>
+                </div>
+
+              }
+            }
+
+            @if ((cartItem.cotation?.prixvente ?? 0) != 0 && (cartItem.cotation?.prixvente != cartItem.produit.prix)){
+              <div class="prix-pro">
+                <div class="libelle ">prix cotation</div>
+                <div  class="montant">
+                  <div>{{ cartItem.cotation.prixvente }}<span class="size-smaller">&nbsp;€ HT</span></div>
+                </div>
+              </div>
+            }
+
+            <!-- Prix saisi -->
+            @if ((editPrix && (cartItem.cotation?.prixvente ?? 0) == 0) || (cartItem.prixSaisi != 0 && cartItem.prixSaisi != undefined)) {
+              @if(showInputNumber){
+                <div>
+                  <div class="libelle" style="width: 100%">prix saisi <mat-icon class="edit-prix" (click)="editPrix = false; deletePrixModif(this.cartItem.produit.reference);">close</mat-icon></div>
+                  <div class="montant" style="display: flex; justify-content: end">
+                    <input type="number" class="change-price" value="" style="-webkit-appearance: none; -moz-appearance: textfield; width: 100%; color: var(--color-warn)" #prixSaisi
+                      [value]="cartItem.prixSaisi" (keyup)="updatePrixModif(this.cartItem.produit.reference, prixSaisi.value)">
+                    </div>
+                  </div>
+                }
+              }
+            </div>
+            <!-- PRIX PAR QUANTITÉ -->
+
+
+            <!-- VERTICAL DIVIDER -->
+            <div class="vertical-divider"></div>
+
+            <!-- QUANTITE -->
+            <div>
+              @if (showInputNumber){
+                @if (+cartItem.produit.qtemini !== 0 && +cartItem.produit.qtemini < +cartItem.produit.qtemaxi) {
+                  <p class="small-texte">
+                    De {{ cartItem.produit.qtemini }} à {{ cartItem.produit.qtemaxi }}
+                  </p>
+                }
+                @if (+cartItem.produit.qtemini !== 0 && +cartItem.produit.qtemini !== 1 && +cartItem.produit.qtemini > +cartItem.produit.qtemaxi) {
+                  <p class="small-texte">
+                    Au moins {{ cartItem.produit.qtemini }}
+                  </p>
+                }
+                <app-input-number
+                  min="1"
+                  [max]="maximum(cartItem.produit)"
+                  [number]="cartItem.qte"
+                  (value)="quantiteChange(cartItem, $event)"
+                  [wrongValue]="wrongValue"
+                  size="small">
+                </app-input-number>
+                @if (_wrongValue) {
+                  <p class="small-texte errorQte">Quantité invalide</p>
+                }
+              } @else {
+                <div class="size-huge weight-bold">{{ cartItem.qte }}</div>
+              }
+            </div>
+
+            <!-- TOTAL -->
+            <div class="total-produit ">
+              <div class="weight-bold">
+                <span class="for-phone">Total article(s):&nbsp; </span>
+                <div>{{ cartItem.total }}<span class="size-smaller">&nbsp;€ HT</span></div>
+              </div>
+              <div>Marge {{ cartItem.margeParProduit }} %</div>
+            </div>
+
+            <!-- DELETE -->
+            @if (showInputNumber){
+              <div class="delete">
+                <button class="text-button cursor-pointer" (click)="removeProduit(cartItem);">
+                  <mat-icon aria-hidden="false" aria-label="Supprimer">delete</mat-icon>
+                </button>
+              </div>
+            }
+
+          </div>
+
+          @if (display[indexRow]){
+            <div class="reliquatDetails">
+              <div style="display: grid; grid-template-columns: 1fr 3em">
+                <form action="">
+                  <mat-form-field style="width: 100%;">
+                    <mat-label>Saisir un commentaire</mat-label>
+                    <textarea style="border: 1px solid lightgrey; min-height: 0 !important;" #commentaire matInput maxlength="280" placeholder="Le commentaire"></textarea>
+                    <mat-hint align="start">Nombre de characteres restant</mat-hint>
+                    <mat-hint align="end">{{ commentaire.value.length }} / 280</mat-hint>
+                  </mat-form-field>
+                </form>
+                <mat-icon class="delete-comm" (click)="unrollDetails(indexRow); commentaire.value = ''">clear</mat-icon>
+              </div>
+            </div>
+          }
+
+        </mat-card>
+
+        <!-- Commentaire de ligne  -->
+        @if (showInputNumber) {
+          <div style="display: flex; flex-direction: column">
+            <div class="details-com raised-1" [ngClass]="{'show-detail': isActive(indexRow)}">
+              @if (cartItem.commentaire) {
+                @if (cartItem.modifActiv) {
+                  <div class="ajout-com-zone">
+                    <form [formGroup]="commentaireFormEdit" class="modif-com">
+                      <mat-form-field appearance="fill" class="textarea-style">
+                        <textarea matInput [formControlName]="'commentaire'"></textarea>
+                        {{ commentaireFormEdit.get('commentaire').value.length }} / 260
+                        @if (commentaireFormEdit.get('commentaire').invalid) {
+                          <mat-error>Le commentaire de faire entre 1 et 260 caractères</mat-error>
+                        }
+                      </mat-form-field>
+                    </form>
+                    <div style="display: flex; flex-direction: column; width: fit-content; gap: 5px">
+                      <button mat-raised-button
+                      (click)="modifComm(produitComm, commentaireFormEdit.get('commentaire').value);
+                        cartItem.modifActiv = false" style="background-color: var(--color-secondary); color: white">Enregistrer</button>
+                      <button mat-raised-button (click)="cartItem.modifActiv = false" style="background-color: var(--color-warn); color: white">Annuler</button>
+                    </div>
+                  </div>
+                  }@else{
+                  <div class="comm-empl">
+                    <h3>Commentaire pour le produit {{ cartItem.produit.reference }}</h3>
+                    <button class="text-button cursor-pointer" (click)="cartService.supprComm(cartItem.produit)">
+                      <mat-icon style="color: var(--color-warn)"  [matTooltip]="'Supprimer'" aria-hidden="false" aria-label="Supprimer">delete</mat-icon>
+                    </button>
+                    <p class="comm-text">{{cartItem.commentaire}}</p>
+                    <button class="text-button cursor-pointer">
+              <mat-icon style="color: var(--color-primary-second)" [matTooltip]="'Modifier'" (click)="
+              commentaireFormEdit.get('commentaire').setValue(cartItem.commentaire);
+              produitComm = cartItem.produit; cartItem.modifActiv = true" aria-hidden="false" aria-label="Supprimer">edit</mat-icon>
+                    </button>
+
+                  </div>
+                }
+              } @else {
+                <div class="ajout-com-zone">
+                  <form [formGroup]="commentaireForm" class="form-add">
+                    <mat-form-field appearance="fill" class="textarea-style">
+                      <mat-label>Écrire un commentaire ...</mat-label>
+                      <textarea matInput [formControlName]="'commentaire'"></textarea>
+                      {{ commentaireForm.get('commentaire').value.length }} / 260
+                      @if (commentaireForm.get('commentaire').invalid) {
+                        <mat-error>Le commentaire de faire entre 1 et 260 caractères</mat-error>
+                      }
+                    </mat-form-field>
+                  </form>
+                  <div style="display: flex; flex-direction: column; width: fit-content; gap: 5px">
+                    <button mat-raised-button
+                      (click)="ajoutComm(cartItem.produit, commentaireForm.get('commentaire').value)"
+                    style="background-color: var(--color-secondary); color: white">Enregistrer</button>
+                    <button mat-raised-button (click)="showDetails(indexRow)" style="background-color: var(--color-warn); color: white">Annuler</button>
+                  </div>
+                </div>
+              }
+
+            </div>
+    <div style="display: grid;
+                        grid-template-rows: 1fr;
+                        justify-content: end;">
+      <!--<button (click)="showDetails(indexRow)" mat-button style="background-color: var(--color-primary-second);
+                                                                color: white;
+                                                                border-radius: 0 0 5px 5px;
+                                                                min-width: 0;
+                                                                height: fit-content;">
+              <ng-container *ngIf="isActive(indexRow); else no">
+                <mat-icon>expand_less</mat-icon>
+              </ng-container>
+              <ng-template #no>
+                <mat-icon>expand_more</mat-icon>
+              </ng-template>
+              Commentaire
+            </button>-->
+            <button mat-button class="ajout-com" (click)="produitComm = cartItem.produit; showDetails(indexRow)">
+              <mat-icon>
+                @if (isActive(indexRow)) {
+                  expand_less
+                } @else {
+                  expand_more
+                }
+                <ng-template #no>
+                  expand_more
+                </ng-template>
+
+              </mat-icon>
+
+              Commentaire
+            </button>
+          </div>
+        </div>
+      } @else {
+        @if (cartItem?.commentaire?.length > 0) {
+          <div class="setp-valid">
+            <h3>Commentaire pour le produit {{ cartItem.produit.reference }}</h3>
+            <p></p>
+            <p class="comm-text">{{cartItem.commentaire}}</p>
+          </div>
+        }
+      }
+
+
+      <app-cotation-row [produit]="cartItem.produit" [uneditable]="cotationNotEditable" [warningOnQte]="warningOnCotationQte"></app-cotation-row>
+

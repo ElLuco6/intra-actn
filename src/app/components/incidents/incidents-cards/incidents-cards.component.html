@@ -1,0 +1,74 @@
+<div class="chip">
+  <div class="chips">
+    <div style="margin-right: 8px">Régions</div><mat-slide-toggle (click)="isChecked()" [color]="'primary'">Tous</mat-slide-toggle>
+  </div>
+</div>
+
+<div class="carre">
+  <div class="card-incident">
+    @if (nbClientBloque != 0) {
+      <a [routerLink]="['/incidents/clients-bloques']"    routerLinkActive="router-link-active" [queryParams]="{region: filtreRegion, type: 'bloque'}" style="text-decoration: none"
+        >
+        <mat-card appearance="outlined" class="taille-carre" style="padding-top: 30px;">
+          <mat-card-title>Retards de<br> paiement</mat-card-title>
+          <p class="content-card">{{ nbClientBloque }}</p>
+        </mat-card>
+      </a>
+    } @else {
+      <mat-card appearance="outlined" class="taille-carre" style="padding-top: 30px;">
+        <mat-card-title>Retards de<br> paiement</mat-card-title>
+        <mat-card-content>
+          <p class="content-card">{{ nbClientBloque }}</p>
+        </mat-card-content>
+      </mat-card>
+    }
+  </div>
+  <div class="card-incident">
+    @if (nbCdeBloquee != 0) {
+      <a [routerLink]="['/incidents/commandes-bloques']"   routerLinkActive="router-link-active" [queryParams]="{type: 'cdeBloque', region: filtreRegion, compteur: ''}" style="text-decoration: none"
+        >
+        <mat-card appearance="outlined" class="taille-carre">
+          <mat-card-title>Commandes <br> bloquées <br>sur encours</mat-card-title>
+          <p class="content-card">{{ nbCdeBloquee }}</p>
+        </mat-card>
+      </a>
+    } @else {
+      <mat-card appearance="outlined" class="taille-carre">
+        <mat-card-title>Commandes <br> bloquées <br>sur encours</mat-card-title>
+        <p class="content-card">{{ nbCdeBloquee }}</p>
+      </mat-card>
+    }
+  </div>
+  <div class="card-incident">
+    @if (nbCdeRupture !=0) {
+      <a [routerLink]="['/espace-commercial/reliquats']"   routerLinkActive="router-link-active" style="text-decoration: none"
+        >
+        <mat-card appearance="outlined" class="taille-carre" style="align-items: center">
+          <mat-card-title style="height: 200px;display: flex;justify-content: center;align-items: center;">Reliquats</mat-card-title>
+          <p class="content-card">{{ nbCdeRupture }}</p>
+        </mat-card>
+      </a>
+    } @else {
+      <mat-card appearance="outlined" class="taille-carre">
+        <mat-card-title style="height: 200px;display: flex;justify-content: center;align-items: center;">Reliquats</mat-card-title>
+        <p class="content-card">{{ nbCdeRupture }}</p>
+      </mat-card>
+    }
+  </div>
+  <!--<div class="card-incident">
+  <a [routerLink]="['/incidents/rma']" routerLinkActive="router-link-active" [queryParams]="{region: filtreRegion}" style="text-decoration: none"
+    *ngIf="nbRmaBloque != 0; else noLink4"
+    >
+    <mat-card class="taille-carre" style="padding-top: 30px;">
+      <mat-card-title>RMA en attente <br> de traitement</mat-card-title>
+      <p class="content-card">{{ nbRmaBloque }}</p>
+    </mat-card>
+  </a>
+  <ng-template #noLink4>
+    <mat-card class="taille-carre" style="padding-top: 30px;">
+      <mat-card-title>RMA en attente <br> de traitement</mat-card-title>
+      <p class="content-card">{{ nbRmaBloque }}</p>
+    </mat-card>
+  </ng-template>
+</div>-->
+</div>

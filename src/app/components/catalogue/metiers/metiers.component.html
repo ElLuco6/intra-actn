@@ -1,0 +1,42 @@
+<app-title-w-line title="Nos Métiers" size="small"></app-title-w-line>
+
+@if (isReady) {
+  <div class="container">
+    @for (item of categories  | keyvalue: compareFn.bind(this); track i) {
+      <div class="ligne raised-1">
+        <div class="case">
+          <img [src]="environment.img + categorie.get(item.key).code + '.jpg'" alt="logo {{item.key}} " class="categorie-metiers" />
+        </div>
+        <div class="marque">
+          @for (a of item.value; track i; let i = $index) {
+            <span >
+              <a [routerLink]="['/catalogue/search']" [queryParams]="{ marque: item.value[i].marque, niv1: categorie.get(item.key).code }" >
+                <img [src]="environment.logoMarquesCouleurs200x80 + item.value[i].marque + '.gif'" alt="logo {{item.value[i].marque}}" class="logo" />
+                <!--{{item.value[i].marquelib}}&nbsp;-->
+              </a>
+            </span>
+          }
+        </div>
+      </div>
+    }
+    <div class="raised-1">
+      <a [routerLink]="['/catalogue/search']" [queryParams]="{ marque: 'PRES', niv1: 'FOR' }" >
+        <img [src]="environment.img  + 'FOR.jpg'" alt="logo formations" class="logo" />
+      </a>
+      <br/>
+      <a [routerLink]="['/prestations']" >
+        <img [src]="environment.img  + 'PRE.jpg'" alt="logo prestations" class="logo" />
+      </a>
+    </div>
+    <!-- <ng-container *ngFor="let categorie of categories; index as i;"> -->
+    <!-- <div class="categorie" [ngClass]="{categorieSelected: categoriePicked == categorie[1]}">
+    <div (click)="toggleMarquePicked(categorie[1], i)" [ngClass]="{'selected': categoriePicked == categorie[1]}">
+      <p>
+        <span *ngIf="categoriePicked !== categorie[1]; else hideMarque">{{ categorie[0] }} </span>
+        <ng-template #hideMarque>&nbsp;</ng-template>
+      </p>
+    </div>
+  </div> -->
+<!-- </ng-container> -->
+</div>
+}

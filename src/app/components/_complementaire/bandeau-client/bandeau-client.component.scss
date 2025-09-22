@@ -1,0 +1,52 @@
+.mat-card {
+  margin-bottom: 1em;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.client-content {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 20px 50px;
+}
+
+th,
+td {
+  text-align: left;
+}
+
+th {
+  padding-right: 20px;
+  font-weight: normal;
+}
+
+.strong {
+  font-weight: bold;
+}
+
+.contacts-commerciaux {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+
+.boutons {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.login {
+  background-color: var(--color-primary-second);
+  color: white;
+}
+
+.logout {
+  background-color: var(--color-warn);
+  color: white;
+}
+
+.texte-rouge {
+  color: var(--color-warn);
+}

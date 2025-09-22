@@ -1,0 +1,40 @@
+$border-size: 5px;
+$border-color-off: rgba(0, 0, 0, 0.4);
+$border-color-on: rgba(0, 0, 0, 1);
+$border: $border-size solid black;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  @media screen and (max-width:720px){
+    display:none;
+  }
+}
+
+.up {
+  border-bottom: $border;
+  margin-bottom: 3px;
+
+  &.active {
+    border-bottom-color: $border-color-on;
+  }
+}
+
+.down {
+  border-top: $border;
+
+  &.active {
+    border-top-color: $border-color-on;
+  }
+}
+
+.up,
+.down {
+  width: 0;
+  height: 0;
+  transition: all 200ms ease-in-out;
+  border-color: $border-color-off;
+  border-left: $border-size - 1px solid transparent;
+  border-right: $border-size - 1px solid transparent;
+}

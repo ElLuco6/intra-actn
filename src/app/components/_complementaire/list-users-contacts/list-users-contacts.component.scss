@@ -1,0 +1,147 @@
+.popUpActive {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  z-index: -1;
+  opacity: 0;
+  visibility: hidden;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &.active {
+    visibility: visible;
+    z-index: 22;
+    opacity: 1;
+  }
+  .popup-background {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 22;
+  }
+
+  .popup-window {
+    background: white;
+    padding: 20px;
+    z-index: 22;
+    max-width: 80%;
+    border-radius: 3px;
+
+    > * {
+      line-height: 2.5em;
+    }
+
+    h3 {
+      margin: 0;
+    }
+
+    .content a {
+      display: grid;
+      grid-template-columns: 32px auto;
+      align-items: center;
+
+      fa-icon {
+        color: var(--color-primary-second);
+        font-size: 1.5rem;
+      }
+    }
+
+    mat-form-field {
+      margin-top: 10px;
+      //min-width: 23.9%;
+    }
+
+    .clipboard {
+      margin-top: 9px !important;
+      font-size: 1.3em;
+      min-width: 16px !important;
+      max-width: 16px !important;
+      display: flex;
+      justify-content: center;
+      color: var(--color-primary-second);
+    }
+    .popup-buttons {
+      display: flex;
+      justify-content: flex-end;
+
+      > *:not(:last-child) {
+        margin-right: 20px;
+      }
+    }
+  }
+}
+
+.mat-mdc-row .mat-mdc-cell {
+  border-bottom: 1px solid transparent;
+  border-top: 1px solid transparent;
+  cursor: pointer;
+}
+
+.mat-mdc-row:hover .mat-mdc-cell {
+  border-color: currentColor;
+}
+
+.form-contact {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  align-items: center;
+  &.evenly {
+    //justify-content: space-evenly;
+  }
+
+  &.seultout {
+    //gap: 1.4%;
+    //margin-left: 1.1%;
+  }
+}
+
+.form-web {
+  width: 100%;
+}
+
+.util-button {
+  display: flex;
+  justify-content: start;
+  margin-bottom: 1em;
+  margin-left: 10px;
+  gap: 20px;
+}
+
+/*.margin-a-gauche {
+  margin-left: 1.1%
+}*/
+
+.button-web {
+  max-height: 6vh;
+  margin-bottom: 1vh;
+}
+
+.button-deco {
+  display: flex;
+  flex-direction: row;
+  justify-content: end;
+  gap: 30px;
+}
+
+.desac {
+  opacity: 20%;
+}
+
+.margeCote {
+  margin: 10px 10px 10px 0;
+  background: var(--color-secondary);
+}
+
+.table {
+  margin-bottom: 1em;
+}
+
+.table tr:nth-of-type(even){
+  background-color: #efefef;
+}

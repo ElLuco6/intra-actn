@@ -1,0 +1,32 @@
+<div class="log">
+  <mat-card appearance="outlined" id="card" class="log-card">
+    <div id="card-title">
+      <mat-card-title>Se connecter</mat-card-title>
+    </div>
+    <form class="form" [formGroup]="loginForm" (ngSubmit)="logIn()">
+      <mat-form-field>
+        <mat-label style="padding-top: 13px">Email</mat-label>
+        <input matInput type="email" formControlName="login" class="form-content" id="user-email"
+          (focusin)="inputFocused()"
+          (focusout)="inputFocused()">
+          @if (loginForm.get('login').invalid) {
+            <mat-error>Champ obligatoire</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label style="padding-top: 13px">Mot de passe</mat-label>
+          <input matInput type="password" formControlName="password" class="form-content" id="user-password">
+          @if (loginForm.get('password').invalid) {
+            <mat-error>Champ obligatoire</mat-error>
+          }
+        </mat-form-field>
+        @if (connectionFailure) {
+          <div><span>Échec de la connexion, l'identifiant et/ou le mot de passe ne correspondent pas.</span></div>
+        }
+        <button mat-raised-button class="btn-conn" [disabled]="loginForm.invalid">Se connecter</button>
+      </form>
+    </mat-card>
+  </div>
+
+
+

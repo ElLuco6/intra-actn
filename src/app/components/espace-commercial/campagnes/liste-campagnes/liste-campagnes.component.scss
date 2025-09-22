@@ -1,0 +1,29 @@
+.btn-add {
+  background-color: var(--color-secondary);
+  color: white;
+}
+
+.cell:hover {
+  cursor: pointer;
+  border: 1px solid var(--color-secondary);
+  overflow: hidden;
+}
+
+.filtres {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+
+.boutons {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 1rem;
+  gap: 20px;
+}
+
+.toggle {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}

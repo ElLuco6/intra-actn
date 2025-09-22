@@ -1,0 +1,347 @@
+<ng-template #statut>
+
+  <div *ngIf="produit.codePromo != ''" class="info-statut">
+    <ng-container *ngIf="produit.codePromo == 'R'; else otherPromo">
+      <div title="{{produit.libPromo}}" class="status{{ produit.codePromo }}">{{ produit.libPromo }}</div>
+    </ng-container>
+    <ng-template #otherPromo>
+      <div title="{{produit.libPromo}}"
+           class="status{{ produit.codePromo }}">{{ produit.libPromo }} {{ produit.prixdatepromo != '' ? ' jusqu\'au ' + produit.prixdatepromo : '' }}
+      </div>
+    </ng-template>
+  </div>
+
+</ng-template>
+
+<!-- IMAGE -->
+<ng-template #image>
+  <img class="image-produit" [src]="environment.vignette + urlImage() + '.webp'"
+       [default]="produitService.errorImg(produit)" [alt]="produit.designation"/>
+</ng-template>
+
+<!-- DETAILS -->
+<ng-template #refActn>
+  <h3 class="ref-actn">{{ produit.reference }}</h3>
+  <span *ngIf="!simple" class="refconstructeur size-smaller">Réf. constructeur : {{ produit.reffournisseur }}</span>
+</ng-template>
+<ng-template #designation>
+  <p class="designation weight-bolder">{{ produit.designation }}</p>
+  <div *ngIf="!simple && produit.division !== '' " class="" style="color: orange;">{{ produit.division }}</div>
+</ng-template>
+<ng-template #marque>
+  <span class="marque-produit" [ngClass]="{simple: format === 'grid' && simple}">
+    <img [default]="''" [src]="environment.logoMarquesUrl70x30down + produit.marque + '.gif'" [alt]="produit.marque"/>
+  </span>
+</ng-template>
+
+<!-- PRIX -->
+<ng-template #prix>
+  <div class="prix-details">
+    <!-- PRIX PUBLIC -->
+    <div *ngIf="(!simple || format === 'list')">
+      <div class="libelle">prix public</div>
+      <div *ngIf="produit.prixPublic !== 0; else NC1" class="montant">
+        <div>{{ produit.prixPublic | currency:'EUR':'symbol':'1.2-2':'fr-FR' }}<span
+          class="size-smaller">&nbsp;HT</span></div>
+      </div>
+      <ng-template #NC1>
+        <div class="montant">NC</div>
+      </ng-template>
+    </div>
+    <!-- D3E -->
+    <div *ngIf="produit.prixD3E != 0 && (!simple || format === 'list')">
+      <div class="libelle">écopart.</div>
+      <div class="montant">
+        <div>{{ produit.prixD3E | currency:'EUR':'symbol':'1.3-3':'fr-FR' }}<span class="size-smaller">&nbsp;HT</span>
+        </div>
+      </div>
+    </div>
+    <!-- VOTRE PRIX -->
+    <div class="libelle" *ngIf="!produit.hasPriceByQte; else prixParQte">
+      <div>prix standard</div>
+      <div *ngIf="produit.prixstd !== 0; else NC2" [ngClass]="{ 'montant' : !cotationWarn }">
+        <div>{{ produit.prixstd | currency:'EUR':'symbol':'1.2-2':'fr-FR' }}<span class="size-smaller">&nbsp;HT</span>
+        </div>
+      </div>
+      <ng-template #NC2>
+        <div class="montant">
+          NC
+        </div>
+      </ng-template>
+    </div>
+    <ng-container *ngIf="authClient.currentClient">
+      <div class="votre-prix">
+        <div>prix client</div>
+        <div *ngIf="produit.prix !== 0; else NC2" [ngClass]="{ 'montant' : !cotationWarn }">
+          <div>{{ produit.prix | currency:'EUR':'symbol':'1.2-2':'fr-FR' }}<span class="size-smaller">&nbsp;HT</span>
+          </div>
+        </div>
+        <ng-template #NC2>
+          <div class="montant">
+            NC
+          </div>
+        </ng-template>
+      </div>
+    </ng-container>
+    <!-- PRIX COTATION -->
+    <div *ngIf="cotationWarn" class="votre-prix">
+      <div>prix cotation</div>
+      <div *ngIf="cotationLa.prixvente !== 0; else NC2" class="montant">
+        <div>{{ cotationLa.prixvente | currency:'EUR':'symbol':'1.2-2':'fr' }}<span class="size-smaller">&nbsp;HT</span>
+        </div>
+      </div>
+      <ng-template #NC2>
+        <div class="montant">
+          NC
+        </div>
+      </ng-template>
+    </div>
+    <!-- PRIX PAR QUANTITE -->
+    <ng-template #prixParQte>
+      <ng-container *ngFor="let qtp of produit.qtePrice; let i = index;">
+        <div
+          [ngClass]="((qtePriceAppliedIndex == i) || (i == 0 && !cartService.cart.items[produit.reference])) ? 'votre-prix' : ''">
+          <div class="libelle">prix par {{ qtp.qte }}</div>
+          <div class="montant">
+            <div>{{ qtp.price | currency:'EUR':'symbol':'1.2-2':'fr-FR' }}<span class="size-smaller">&nbsp;HT</span>
+            </div>
+          </div>
+        </div>
+        <!-- <div *ngIf="produit.qtePrice.length > 2" class="prix-public">
+          <div class="qtePrice-button raised-button" (click)="openQtePriceLayer = true">Voir d'autres prix</div>
+          </div>
+          <div class="popup" [ngClass]="{active: openQtePriceLayer}">
+          <div class="popup-background" (click)="openQtePriceLayer = false" (tap)="openQtePriceLayer = false"></div>
+          <div class="popup-window raised-3">
+            <div class="priceQte-title">Prix par quantité de {{ produit.reference }}</div>
+            <div class="priceQte-lines" *ngIf="produit.hasPriceByQte">
+              <div *ngFor="let qtp of produit.qtePrice" class="priceQte-line">
+                <ng-container *ngIf="qtp.qte > 0">
+                  <div class="">Par {{ qtp.qte }}</div>
+                  <div class="">
+                    <div>{{ qtp.price | currency:'EUR':'symbol':'1.2-2' }}<span class="size-small">&nbsp;HT</span></div>
+                  </div>
+                </ng-container>
+              </div>
+              <div class="raised-button" [routerLink]="lienProduit">Voir la fiche produit</div>
+            </div>
+          </div>
+        </div> -->
+      </ng-container>
+    </ng-template>
+
+  </div>
+</ng-template>
+
+<!-- ABONNEMENT -->
+<ng-template #abonnement>
+  <div *ngIf="hasAbonnement">
+    <div class="state bold">Abonnement</div>
+    <div class="state-value bold">{{ dureeAbonnement }}</div>
+  </div>
+</ng-template>
+
+<!-- DISPO -->
+<ng-template #dispo>
+  <div class="dispo" *ngIf="produit.gabarit != 'V'; else produitVirtuel">
+    <div [ngClass]="{
+              active: produit.qteStock1 > 0,
+              available: produit.qteStock1 > 0
+               }">
+      <div class="state">
+        Disponible
+      </div>
+      <div class="state-value">{{ produit.qteStock1 | number:'':'fr-FR' }}</div>
+    </div>
+    <div [ngClass]="{ active: produit.qteStock2 > 0 }">
+      <div class="state">
+        Stock externe
+      </div>
+      <div class="state-value">{{ produit.qteStock2 | number: '1.0-0':'fr-FR' }}</div>
+    </div>
+    <div [ngClass]="{ active: produit.qteEnReappro > 0 }">
+      <div class="state">
+        En réappro.
+        <ng-container *ngIf="produit.qteEnReappro > 0">
+          <br/>
+          Date réappro :
+        </ng-container>
+      </div>
+      <div class="state-value">
+        {{ produit.qteEnReappro | number: '1.0-0' }}
+        <ng-container *ngIf="produit.qteEnReappro > 0">
+          <br/>
+          <ng-container *ngIf="produit.dateConfReappro != ''; else NC">
+            <p class="size-small">{{ produit.dateConfReappro }}</p>
+          </ng-container>
+          <ng-template #NC>
+            N.C.
+          </ng-template>
+        </ng-container>
+      </div>
+    </div>
+    <ng-template [ngTemplateOutlet]="abonnement"></ng-template>
+  </div>
+  <ng-template #produitVirtuel>
+    <div class="dispo-virtuel">
+      Produit dématérialisé
+      <ng-template [ngTemplateOutlet]="abonnement"></ng-template>
+      <span>
+        durée {{ produit.garantie }} mois
+      </span>
+    </div>
+  </ng-template>
+</ng-template>
+
+<!-- PDF -->
+<ng-template #pdf>
+  <app-pdf-icon [produit]="produit" [showLibelle]="false" class="size-smaller"></app-pdf-icon>
+</ng-template>
+
+<!-- PANIER -->
+<ng-template #panier>
+  <div>
+    <app-add-to-cart-form class="add-to-cart" [produit]="produit" [isDisabled]="produit.prix === 0" direction="column"
+                          (qtyInCart)="getQtePriceAppliedIndex($event)"></app-add-to-cart-form>
+    <!--<a class="raised-button add-to-cart button&#45;&#45;with-label-and-icon" *ngIf="produit.prodconfig === 'O'" [routerLink]="'/configurateur/' + produit.reference">
+      <div class="icon" *ngIf="svg.getIcon('ico_customize') | async as mecanisme">
+        <svg [innerHTML]="mecanisme" preserveAspectRatio="xMinYMin slice" viewBox="0 0 117 64" height="100%"></svg>
+      </div>
+      Configurer
+    </a>-->
+  </div>
+</ng-template>
+
+<!-- VOIR FICHE -->
+<ng-template #voirFiche>
+  <a class="swaped-text-button raised-button">
+    Voir fiche produit
+  </a>
+</ng-template>
+
+<!-- CONNEXION -->
+<ng-template #connectionRequiredTemplate>
+  <div class="connection-required-message ">
+    Connectez-vous pour voir le <b>prix</b>, les <b>disponibilités</b>, ou pour <b>constituer un panier</b>
+  </div>
+  <button class="swaped-text-button connection-required-button raised-button"
+          (click)="componentsInteractionService.sideNavigationLine.fireOpenSideNav('espaceClient')" appKeyboardFocus>
+    Je me connecte
+  </button>
+</ng-template>
+
+<!-- MODE NORMAL -->
+<ng-container *ngIf="!simple; else modeSimple">
+  <div class="block">
+    <ng-container *ngIf="displayRemoveProductFromComparateurButton">
+      <app-comparateur-button class="removeProductFromComparateurIcon" [produitReference]="produit.reference"
+                              [displayAsXIcon]="true"></app-comparateur-button>
+    </ng-container>
+    <ng-container *ngIf="displayRemoveProductFromFavorisButton">
+      <app-favoris-button class="removeProductFromComparateurIcon" [produitReference]="produit.reference"
+                          [displayAsXIcon]="true"></app-favoris-button>
+    </ng-container>
+    <ng-container *ngIf="!produit.marque; else noError">
+      <div class="erreur">
+        {{ produit.designation }}
+      </div>
+      <app-categorie></app-categorie>
+    </ng-container>
+    <ng-template #noError>
+      <ng-template [ngTemplateOutlet]="statut"></ng-template>
+      <div class="produit raised-1"
+           [ngClass]="{ vignette: format === 'grid', list: format === 'list', config: produit.prodconfig === 'O' }">
+        <a [routerLink]="lienProduit">
+          <ng-template [ngTemplateOutlet]="image"></ng-template>
+        </a>
+        <div id="details" class="id">
+          <div class="right">
+            <!-- FAVORIS BUTTON -->
+            <app-favoris-button [produitReference]="produit.reference"></app-favoris-button>
+            <!-- COMPARATEUR BUTTON -->
+            <app-comparateur-button [produitReference]="produit.reference"></app-comparateur-button>
+            <!-- PDF BUTTON -->
+            <a *ngIf="lastPdfOfPdfs" target="_blank" [href]="environment.produitPdfUrl + lastPdfOfPdfs?.url + '.pdf'">
+              <app-tooltip [type]="'pdf'" [hideDelay]="0" [showDelay]="0" [text]="lastPdfOfPdfs?.label"></app-tooltip>
+            </a>
+            <!-- COTATION BUTTON -->
+            <a *ngIf="hasCotation" [routerLink]="produitService.lienProduit(produit)" fragment="cotation">
+              <app-tooltip [type]="'cotation'" [hideDelay]="0" [showDelay]="0"
+                           text="Vous avez une cotation sur ce produit"></app-tooltip>
+            </a>
+            <!-- LINKED PRODUCTS BUTTON -->
+            <a [routerLink]="lienProduit" fragment="produitsAssocies">
+              <app-tooltip [type]="'assos'" [hideDelay]="0" [showDelay]="0" text="Produits associés"></app-tooltip>
+            </a>
+            <!-- ATTENTION -->
+            <!--<a  [routerLink]="lienProduit">
+              <app-tooltip [type]="'alert'" [hideDelay]="0" [showDelay]="0" [text]="phraseAttention" (mouseenter)="loadAttention()"></app-tooltip>
+            </a>-->
+          </div>
+          <a style="width: 100%;" [routerLink]="lienProduit">
+            <ng-template [ngTemplateOutlet]="refActn"></ng-template>
+          </a>
+          <a [routerLink]="lienProduit">
+            <ng-template [ngTemplateOutlet]="designation"></ng-template>
+          </a>
+          <ng-template [ngTemplateOutlet]="marque"></ng-template>
+        </div>
+        <!-- <ng-template [ngTemplateOutlet]="pdf"></ng-template> -->
+        <ng-container *ngIf="authService.currentUser ; else connectionRequiredTemplate">
+          <ng-template [ngTemplateOutlet]="prix"></ng-template>
+          <ng-template [ngTemplateOutlet]="dispo"></ng-template>
+          <ng-template [ngTemplateOutlet]="panier"></ng-template>
+        </ng-container>
+      </div>
+    </ng-template>
+  </div>
+</ng-container>
+
+<!-- MODE SIMPLE -->
+<ng-template #modeSimple>
+  <ng-container *ngIf="format === 'grid'; else simpleList">
+    <a [routerLink]="lienProduit" routerLinkActive="router-link-active" class="id">
+      <div class="produit raised-1 vignette simple">
+        <ng-template [ngTemplateOutlet]="image"></ng-template>
+        <div class="details">
+          <ng-template [ngTemplateOutlet]="refActn"></ng-template>
+          <ng-template [ngTemplateOutlet]="designation"></ng-template>
+          <ng-template [ngTemplateOutlet]="marque"></ng-template>
+        </div>
+        <div class="ref-constructeur">Réf. constructeur : {{ produit.reffournisseur }}</div>
+        <div *ngIf="produit.division !== ''" class=""
+             style="color: orange; position: abosolute">{{ produit.division }}
+        </div>
+        <div *ngIf="produit.division === ''" class="" style="color: orange; position: abosolute"></div>
+        <ng-container *ngIf="authService.currentUser">
+          <ng-template *ngIf="produit.prix > 0" [ngTemplateOutlet]="prix"></ng-template>
+          <div class="stock" *ngIf="produit.dispo !== ''">{{ produit.dispo }}  <span
+            *ngIf="produit.qteStock1 > 0">: {{ produit.qteStock1 }}</span></div>
+          <div class="stock" *ngIf="produit.dispo === ''"> Produit indisponible</div>
+        </ng-container>
+      </div>
+    </a>
+  </ng-container>
+
+  <ng-template #simpleList>
+    <ng-template [ngTemplateOutlet]="statut"></ng-template>
+    <div class="produit raised-1 list simple">
+      <div class="id" style="width: 100%;">
+        <a [routerLink]="lienProduit">
+          <ng-template [ngTemplateOutlet]="refActn"></ng-template>
+        </a>
+        <a [routerLink]="lienProduit">
+          <ng-template [ngTemplateOutlet]="designation"></ng-template>
+        </a>
+        <a [routerLink]="lienProduit">
+          <ng-template [ngTemplateOutlet]="marque"></ng-template>
+        </a>
+      </div>
+      <ng-container *ngIf="authService.currentUser; else connectionRequiredTemplate">
+        <ng-template [ngTemplateOutlet]="prix"></ng-template>
+        <ng-template [ngTemplateOutlet]="dispo"></ng-template>
+        <ng-template [ngTemplateOutlet]="panier"></ng-template>
+      </ng-container>
+    </div>
+  </ng-template>
+</ng-template>

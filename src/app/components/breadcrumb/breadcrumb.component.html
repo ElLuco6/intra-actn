@@ -1,0 +1,25 @@
+<nav aria-label="breadcrumb">
+  <ul class="breadcrumb">
+    @if(!isHomePage()){
+      <li class="breadcrumb-item">
+        <mat-icon [routerLink]="['/']" class="icon home">home</mat-icon>
+        <mat-icon class="icon" style="margin: 0 10px">chevron_right</mat-icon>
+      </li>
+    }
+    <ng-container *ngFor="let item of breadcrumbs; let i = index; let last = last">
+      <li class="breadcrumb-item"
+          (mouseenter)="enterItem(item.url)" (mouseleave)="leaveItem()">
+        <a *ngIf="i < breadcrumbs.length - 1; else lastBreadcrumb" (click)="redirectToCategory(item.url)" class="top-link">
+          {{ item.label }}
+        </a>
+        <ng-template #lastBreadcrumb> <span style="font-weight: bold; font-size: .77rem;">{{ item.label }}</span></ng-template>
+        <mat-icon *ngIf="!last" class="chevron icon">chevron_right</mat-icon>
+        <div *ngIf="showList && currentUrl.includes('/catalogue') && listCatDyn.length > 0" class="sub-categories-dropdown">
+          <a *ngFor="let subCat of listCatDyn" (click)="redirectToCategory(subCat.url)">
+            {{ subCat.label }}
+          </a>
+        </div>
+      </li>
+    </ng-container>
+  </ul>
+</nav>

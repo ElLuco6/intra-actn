@@ -1,0 +1,26 @@
+<div class="popup" [ngClass]="{active: showPopUp}">
+  <div class="popup-background"></div>
+  <div class="popup-window raised-3">
+    @switch (auth.warn) {
+      @case ('dying') {
+        <div>
+          <p>Vous allez être déconnecté dans quelques instants.</p>
+          <p>Souhaitez-vous prolonger votre session ?</p>
+          <div class="buttons">
+            <button class="raised-button button--color-secondary" (click)="deconnexion()">Déconnexion</button>
+            <button class="raised-button" (click)="stayAlive()">Rester connecté</button>
+          </div>
+        </div>
+      }
+      @case ('dead') {
+        <div>
+          <p>Votre session est arrivé à expiration, vous êtes maintenant deconnecté.</p>
+          <div class="buttons">
+            <button class="raised-button button--color-secondary" (click)="deconnexion()">Fermer</button>
+            <button class="raised-button" (click)="deconnexion()">Se reconnecter</button>
+          </div>
+        </div>
+      }
+    }
+  </div>
+</div>

@@ -1,0 +1,8 @@
+<h2 mat-dialog-title>Confirmation</h2>
+<mat-dialog-content>
+  <p>{{ data.message }}</p>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button class="raised-button button--color-secondary" (click)="onNoClick()">Annuler</button>
+  <button class="raised-button red marginleft" (click)="onYesClick()">Supprimer</button>
+</mat-dialog-actions>

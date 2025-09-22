@@ -1,0 +1,50 @@
+.filters {
+  display: flex;
+  flex-direction: row;
+  gap: 1em
+}
+
+.mat-mdc-row .mat-mdc-cell {
+  border-bottom: 1px solid transparent;
+  border-top: 1px solid transparent;
+  cursor: pointer;
+}
+
+.mat-mdc-row:hover .mat-mdc-cell {
+  border-color: currentColor;
+}
+
+table tr:nth-of-type(even){
+  background-color: #efefef;
+}
+
+.hehe {
+  background-color: #1fa704;
+}
+
+.highlight {
+  background-color: yellow;
+  font-weight: bold;
+}
+
+.elem-trouve-zbi {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0.5em;
+}
+
+.export {
+  background-color: var(--color-secondary);
+  color: white;
+
+  &.nope {
+    opacity: 20%;
+  }
+}
+
+.btn-qui-clc {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 1rem;
+}

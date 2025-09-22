@@ -1,0 +1,210 @@
+<div class="client-body">
+  <app-title-w-line [title]="'Clients & Prospects'"></app-title-w-line>
+  <mat-card appearance="outlined" style="padding: 1em">
+    <div style="display: flex; flex-direction: row;height: 3.3vh">
+      <h2>FILTRES</h2>
+      <i
+        title="Reinitialiser les filtres"
+        class="text-button reset-filter main-reset-filter"
+      >
+        <mat-icon>clear</mat-icon>
+      </i>
+    </div>
+    <div>
+      <form class="filtre">
+        @for (filtre of filtres; track filtre) {
+          <app-filter [filterName]="filtre. name" [filterControl]="filtreControls[filtre. control]"
+                      [filterOptions]="filtre. options" [filterType]="filtre. type"></app-filter>
+        }
+      </form>
+
+      <form class="ca-filter" [formGroup]="filtreCa"
+            (ngSubmit)="caFilter(filtreCa.value.dateCa, filtreCa.value.caMin, filtreCa.value.caMax)">
+        @if (dataSource.data) {
+          <mat-form-field>
+            <mat-label>Année CA</mat-label>
+            <mat-select [formControlName]="'dateCa'" multiple>
+              @for (date of dateCa; track date) {
+                <mat-option [value]="date">{{ date }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>CA min</mat-label>
+            <input [formControlName]="'caMin'" matInput/>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>CA max</mat-label>
+            <input [formControlName]="'caMax'" matInput/>
+          </mat-form-field>
+
+          @if (caIsFiltered) {
+            <button mat-raised-button (click)="cancelCaFilter()" class="annulerca">Annuler le filtre</button>
+          } @else {
+            <button mat-raised-button style="align-self: center" type="submit">Filtrer les CA</button>
+          }
+
+          <button mat-raised-button (click)="openSuiviCA()"> Filtrage avancé </button>
+        }
+      </form>
+
+    </div>
+  </mat-card>
+  <div class="header-liste">
+    <div class="btn-qui-clc">
+
+      @if (!selection.isEmpty()) {
+        <button mat-raised-button class="export" (click)="exportToExcel()">Exporter en xls</button>
+        <button mat-raised-button class="export" (click)="campagnesService.openCampaignDialog(selection)">
+          Affecter à une campagne
+        </button>
+      } @else {
+        <button mat-raised-button class="export nope" [disabled]="true">Exporter en xls</button>
+        <button mat-raised-button class="export nope" [disabled]="true">Affecter à une campagne</button>
+      }
+
+      <button [routerLink]="['/espace-commercial/prospects/add']" mat-raised-button class="export">
+        Ajouter un prospect
+      </button>
+    </div>
+    <mat-paginator class="paginator" [pageSizeOptions]="[25, 50, 100]"
+                   aria-label="Select page of users"></mat-paginator>
+  </div>
+
+  @if (!pageSize) {
+    <table mat-table [dataSource]="this.dataSource" matSort class="mat-elevation-z3" id="client-table">
+      <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-checkbox (change)="$event ? toggleAllRows() : null"
+                        [checked]="selection.hasValue() && isAllSelected()"
+                        [indeterminate]="selection.hasValue() && !isAllSelected()"
+                        [aria-label]="checkboxLabel()">
+          </mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <mat-checkbox (click)="$event.stopPropagation()"
+                        (change)="$event ? selection.toggle(row) : null"
+                        [checked]="selection.isSelected(row)"
+                        [aria-label]="checkboxLabel(row)">
+          </mat-checkbox>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="numclient">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Numéro</th>
+        <td mat-cell *matCellDef="let row">
+          @if (row.type === 'PROSPECT') {
+            <a [href]="'https://www.societe.com/cgi-bin/search?champs='+row.siren" target="_blank"
+               style="text-decoration: underline;">{{ row.siren }} </a>
+          } @else {
+            <p style="margin: 0" (click)="openInNewWindow(row)">{{ row.numclient }}</p>
+          }
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="type">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Type</th>
+        <td mat-cell *matCellDef="let row">
+          @if (row.type === 'PROSPECT') {
+            P
+          } @else {
+            C
+          }
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="bouboule">
+        <th mat-header-cell *matHeaderCellDef>Activité</th>
+        <td mat-cell *matCellDef="let row" (click)="openInNewWindow(row)">
+          <div class="bouboule-triangle">
+            <div class="triangle" [style.border-bottom-color]="row.majcolor" [matTooltip]="row.majTxt"></div>
+            <div class="bouboule" [style.background-color]="row.actifcolor" [matTooltip]="row.actifTxt"></div>
+          </div>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="nom">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Nom</th>
+        <td mat-cell *matCellDef="let row" (click)="openInNewWindow(row)"> {{ row.nom }}</td>
+      </ng-container>
+      <ng-container matColumnDef="adresse1">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Adresse</th>
+        <td mat-cell *matCellDef="let row" (click)="openInNewWindow(row)"> {{ row.adresse1 }}</td>
+      </ng-container>
+      <ng-container matColumnDef="codepostal">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Code Postal</th>
+        <td mat-cell *matCellDef="let row" (click)="openInNewWindow(row)"> {{ row.codepostal }}</td>
+      </ng-container>
+      <ng-container matColumnDef="ville">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Ville</th>
+        <td mat-cell *matCellDef="let row" (click)="openInNewWindow(row)"> {{ row.ville }}</td>
+      </ng-container>
+      <ng-container matColumnDef="groupe">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Groupe</th>
+        <td mat-cell *matCellDef="let row" (click)="openInNewWindow(row)"> {{ row.groupe }}</td>
+      </ng-container>
+      <ng-container matColumnDef="origine">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Origine</th>
+        <td mat-cell *matCellDef="let row" (click)="openInNewWindow(row)"> {{ row.origine }}</td>
+      </ng-container>
+      <ng-container matColumnDef="telephone">
+        <th mat-header-cell *matHeaderCellDef> Téléphone</th>
+        <td mat-cell *matCellDef="let row"><a [href]="'tel:'+row.telephone">{{ row.telephone }}</a></td>
+      </ng-container>
+      <ng-container matColumnDef="note">
+        <th mat-header-cell *matHeaderCellDef style="text-align: center"> Note</th>
+        <td mat-cell *matCellDef="let row" style="text-align: center" (click)="openInNewWindow(row)">{{ row.note }}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="connexion">
+        <th mat-header-cell *matHeaderCellDef style="text-align: center"> Connexion</th>
+        <td mat-cell *matCellDef="let row">
+          @if (row.type == 'PROSPECT') {
+            <p (click)="openInNewWindow(row)" style="margin: 0">Voir le prospect</p>
+          } @else {
+            <button class="raised-button"
+                    (click)="logClient.changeClient(row.numclient)">
+              <mat-icon> login </mat-icon>
+            </button>
+          }
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  } @else {
+    <table mat-table [dataSource]="this.dataSource" matSort class="mat-elevation-z3">
+      <ng-container matColumnDef="numClient">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> N° client</th>
+        <td mat-cell *matCellDef="let row" (click)="openInNewWindow(row.numclient)">{{ row.numclient }}</td>
+      </ng-container>
+      <ng-container matColumnDef="nom">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Nom</th>
+        <td mat-cell *matCellDef="let row" (click)="openInNewWindow(row.numclient)"> {{ row.nom }}</td>
+      </ng-container>
+      <ng-container matColumnDef="connexion">
+        <th mat-header-cell *matHeaderCellDef> Connexion</th>
+        <td mat-cell *matCellDef="let row">
+          @if (!logClient.currentClient) {
+            <button style="padding: 6px 10px;" class="raised-button" (click)="logClient.changeClient(row.numclient)">
+              <mat-icon>login</mat-icon>
+            </button>
+          } @else {
+            @if (logClient.currentClient.name != row.nom) {
+              <button style="padding: 6px 10px;"
+                      class="raised-button" (click)="logClient.changeClient(row.numclient)">
+                <mat-icon>login</mat-icon>
+              </button>
+            } @else {
+              <button class="raised-button"
+                      style="background-color: var(--color-warn); color: white;padding: 6px 10px;"
+                      (click)="logClient.logClientOut().subscribe()">
+                <mat-icon>logout</mat-icon>
+              </button>
+            }
+          }
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumnsSmall"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumnsSmall;"></tr>
+    </table>
+  }
+</div>

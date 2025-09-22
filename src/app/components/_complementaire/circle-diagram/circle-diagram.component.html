@@ -1,0 +1,17 @@
+@if (listCa) {
+  <div class="diagramme-ses-morts">
+    @for (pie of chartOptions; track pie) {
+      <div class="diagramme-ses-morts-items">
+        <h3 class="titre-diagram">Régions {{ pie.nom }}</h3>
+        <apx-chart class="diagram"
+          [series]="pie.series"
+          [chart]="pie.chart"
+          [labels]="pie.labels"
+          [plotOptions]="pie.plotOptions"
+          [responsive]="pie.responsive"
+          [colors]="pie.colors"
+        ></apx-chart>
+      </div>
+    }
+  </div>
+}

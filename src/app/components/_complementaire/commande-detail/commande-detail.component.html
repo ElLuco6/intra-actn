@@ -1,0 +1,95 @@
+@if (!detailCommandeLoading) {
+  <app-title-w-line [title]="'Détail de la commande n° ' + detailCommande[0].numcommande"></app-title-w-line>
+  <!--  <mat-card>
+  <h3>Client : {{ detailClient.nom }}</h3>
+  <p>n° client: {{ detailClient.numclient }}</p>
+  <p>siren : {{ detailClient.siren }}</p>
+  <p>telephone : {{ detailClient.telephone }}</p>
+</mat-card>
+<br>
+  <div class="all-cards">
+    <ng-container *ngFor="let commande of detailCommandeFiltre">
+      <mat-card class="card">
+        <mat-card-header>
+          <mat-card-title>{{ commande.produit }}</mat-card-title>
+          <mat-card-subtitle>{{ commande.designation }}</mat-card-subtitle>
+        </mat-card-header>
+        <div style="border-top: 0.5px solid"></div>
+        <br>
+          <img style="height: 130px; justify-self: center" [src]="environement.vignette + commande.produit + '.jpg'" alt="">
+          <mat-card-content>
+            <br>
+              <div class="detail">
+                <div class="prix">
+                  <p>Prix/u HT : {{ commande.puht }}</p>
+                  <p>Quantité : {{ commande.quantite }}</p>
+                  <p>Prix total : {{ commande['prixTotal'] }}</p>
+                </div>
+                <div class="date">
+                  <p>Date de commande : {{ commande.datecommande }}</p>
+                  <p>Date de facturation : {{ commande.datefacture }}</p>
+                </div>
+              </div>
+              <button mat-button style="width: 100%" class="mat-raised-button btn-voir-plus" [routerLink]="['/produit-detail']" [queryParams]="{produit-detail: commande.produit-detail }">Voir le produit-detail</button>
+            </mat-card-content>
+          </mat-card>
+        </ng-container>
+      </div>-->
+      <mat-card appearance="outlined">
+        <mat-card-content>
+          <div class="entete">
+            <div class="addr-liv">
+              <div style="font-size: larger; font-weight: bold">Adresse de livraison</div>
+              <div>{{ infoLivCde.nomliv }}</div>
+              <div>{{ infoLivCde.adr1liv }}</div>
+              <div>{{ infoLivCde.cposliv }}</div>
+              <div>{{ infoLivCde.villliv }}</div>
+            </div>
+            <div class="info-client">
+              <div style="font-size: larger; font-weight: bold">Info client n° {{ detailClient.numclient }}</div>
+              <div>{{ detailClient.nom }}</div>
+              <div>{{ detailClient.adresse1 }}</div>
+              <div>{{ detailClient.telephone }}</div>
+              <div>{{ detailClient.codepostal }} {{ detailClient.ville }}</div>
+            </div>
+          </div>
+          <div class="card-content">
+            <p>BL</p>
+            <p>Facture</p>
+            <p>Suivi de livraison</p>
+            <p>Statut</p>
+            <div style="display: flex; flex-direction: row">
+              <a style="text-decoration: underline" [href]="environment.apiUrlActn + '/document/generate_intra.php?document=BON/' + detailClient.numclient + '/' + detailCommandeFiltre[0].numbl"
+              target="_blank">{{ detailCommandeFiltre[0].numbl }} du {{ detailCommandeFiltre[0].datebl }}</a>
+            </div>
+            <div style="display: flex; flex-direction: row">
+              <a style="text-decoration: underline" [href]="environment.apiUrlActn + '/document/generate_intra.php?document=FACTURE/' + detailClient.numclient + '/' + detailCommandeFiltre[0].numfacture"
+              target="_blank">{{ detailCommandeFiltre[0].numfacture }} du {{ detailCommandeFiltre[0].datefacture }}</a>
+            </div>
+            <div style="font-style: italic; font-size: small">{{ infoLivCde.transporteur }}</div>
+            <p>{{ detailCommandeFiltre[0].statut }}</p>
+          </div>
+          <br>
+            <div class="tab-produit-header">
+              <p>Marque</p>
+              <p>Produit</p>
+              <p>Désignation</p>
+              <p>Quantité</p>
+            </div>
+            @for (produit of detailCommandeFiltre; track produit) {
+              <div class="tab-produit-info" style="font-weight: bold">
+                <p>{{ produit.marque }}</p>
+                <div class="produit">
+                  <a style="text-decoration: underline" (click)="linkToProduct(produit.produit)">{{ produit.produit }}</a>
+                  <app-tooltip (click)="addProduitToCart(produit)" text="Ajouter le produit au panier" type="cart"></app-tooltip>
+                </div>
+                <p>{{ produit.designation }}</p>
+                <p>{{ produit.quantite }}</p>
+              </div>
+              <br>
+              }
+            </mat-card-content>
+          </mat-card>
+          <br>
+          }
+

@@ -1,0 +1,131 @@
+.basic-chip {
+	font-family: Roboto, "Helvetica Neue", sans-serif;
+    cursor: pointer;
+    height: 32px;
+    width: max-content;
+    min-width: max-content;
+    padding: 0px 12px;
+    // border: 1px solid var(--color-primary-second);
+    border-radius: 4em;
+    display: flex;
+    margin: 4px 8px 4px 0;
+    flex-wrap: wrap;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.1);
+    font-size: 0.885rem;
+    opacity: 1;
+
+    span {
+        padding-top: 1px;
+    }
+
+    &.hidden {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    &.empty {
+        margin: 0px;
+    }
+
+    &.disabled {
+        opacity: 0.5;
+        cursor: default;
+    }
+
+    &.selected {
+        background-color: var(--color-primary-second);
+        color: white;
+
+        &:hover {
+            transition: background-color 200ms ease-in-out;
+            background-color: var(--color-primary-dark);
+        }
+    }
+
+    &:not(.selected, .disabled):hover {
+        transition: background-color 200ms ease-in-out;
+        background-color: rgba(0, 0, 0, 0.2);
+    }
+
+    fa-icon {
+        color: var(--color-primary-second);
+        cursor: pointer;
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    span ~ fa-icon {
+        margin-left: 8px;
+    }
+}
+
+.plus {
+    --t:2px;   /* Thickness */
+    --l:32px;  /* size of the symbol */
+    --s:9px;  /* space around the symbol */
+    --c1:#fff; /* Plus color*/
+    --c2:var(--color-primary-second); /* background color*/
+
+    cursor: pointer;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    width:var(--l);
+    height:var(--l);
+    padding:var(--s);
+    margin: 4px 8px 4px 0;
+    // box-sizing:border-box; /*Remove this if you don't want space to be included in the size*/
+
+    background:
+      linear-gradient(var(--c1),var(--c1)) content-box,
+      linear-gradient(var(--c1),var(--c1)) content-box,
+      var(--c2);
+    background-position:center;
+    background-size: 100% var(--t),var(--t) 100%;
+    background-repeat:no-repeat;
+
+    fa-icon {
+        margin-top: 3px;
+        color: var(--c1);
+        fill: var(--c1);
+    }
+  }
+
+  .minus {
+    --t:2px;   /* Thickness */
+    --l:40px;  /* size of the symbol */
+    --s:10px;  /* space around the symbol */
+    --c1:#fff; /* Plus color*/
+    --c2:var(--color-primary-second); /* background color*/
+
+    cursor: pointer;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    width:var(--l);
+    height:var(--l);
+    padding:var(--s);
+    margin: 4px 8px 4px 0;
+    // box-sizing:border-box; /*Remove this if you don't want space to be included in the size*/
+
+    background:
+      linear-gradient(var(--c1),var(--c1)) content-box,
+      var(--c2);
+    background-position:center;
+    background-size: 100% var(--t),var(--t) 100%;
+    background-repeat:no-repeat;
+
+    fa-icon {
+        color: var(--c1);
+        fill: var(--c1);
+    }
+  }
+
+  .radius {
+    border-radius:50%;
+  }

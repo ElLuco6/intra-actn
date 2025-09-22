@@ -1,0 +1,102 @@
+@if (classementDataSource && classementDataSource.data.length > 0) {
+<app-title-w-line [title]="'Classement marques'"></app-title-w-line>
+
+<div class="table-classement">
+  <table mat-table [dataSource]="classementDataSource" matSort class="mat-elevation-z3" multiTemplateDataRows>
+
+    <ng-container matColumnDef="marque">
+      <th mat-header-cell *matHeaderCellDef> Marque </th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.marque }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="classement">
+      <th mat-header-cell *matHeaderCellDef> Classement </th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.classement }}
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="classementDisplayedColumns"></tr>
+    <tr mat-row *matRowDef="let element; columns: classementDisplayedColumns;" class="example-element-row">
+    </tr>
+  </table>
+</div>
+<br />
+
+}
+
+@if (remisesDataSource && remisesDataSource.data.length > 0) {
+<app-title-w-line [title]="'Remise'"></app-title-w-line>
+
+<table mat-table [dataSource]="remisesDataSource" matSort class="mat-elevation-z3 table-remise" multiTemplateDataRows>
+
+  @for (column of remisesDisplayedColumns; track column) {
+  <ng-container matColumnDef="{{column}}">
+    <th mat-header-cell *matHeaderCellDef> {{column}} </th>
+    @if (column == 'marque') {
+    <td mat-cell *matCellDef="let element"><a
+        [routerLink]="['/grille-tarif/' + element.marqueCode]">{{element[column]}}</a></td>
+    } @else {
+    <td mat-cell *matCellDef="let element"> {{element[column]}} </td>
+    }
+  </ng-container>
+  }
+  <ng-container matColumnDef="expand">
+    <th mat-header-cell *matHeaderCellDef aria-label="row actions">&nbsp;</th>
+    <td mat-cell *matCellDef="let element">
+      <button mat-icon-button aria-label="expand row"
+        (click)="(expandedElement = expandedElement === element ? null : element); $event.stopPropagation()">
+        @if (expandedElement !== element) {
+        <mat-icon>keyboard_arrow_down</mat-icon>
+        }
+        @if (expandedElement === element) {
+        <mat-icon>keyboard_arrow_up</mat-icon>
+        }
+      </button>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="expandedDetail">
+    <td mat-cell *matCellDef="let element" [attr.colspan]="expandRemisesDisplayedColumns.length">
+      <div class="example-element-detail" [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
+        <table class="grille-tarif">
+          <tr>
+            <td class="weight-bold">Désignation</td>
+            <td class="weight-bold">CA d'égibilité</td>
+            <td class="weight-bold">Mini</td>
+            <td class="weight-bold">Maxi</td>
+            <td class="weight-bold">% Remis </td>
+            <td class="weight-bold">% Marge</td>
+          </tr>
+          @for (tarif of element.tarifMarque; track tarif; let i = $index) {
+          <tr [ngClass]="{bold: element.colonnelibelle == tarif.colonnedesignation}">
+            <td>{{ tarif.colonnedesignation }}</td>
+            @if (tarif.CAmini != 0) {
+            <td>{{ tarif.CAmini }}</td>
+            }
+            @if (tarif.CAmmaxi!= 0) {
+            <td>{{ tarif.CAmmaxi }}</td>
+            }
+            @if (tarif.remiseinfo!= 0) {
+            <td>{{ tarif.remiseinfo }}</td>
+            }
+            @if (tarif.margeinfo != 0) {
+            <td>{{ tarif.margeinfo }}</td>
+            }
+          </tr>
+          }
+        </table>
+      </div>
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="expandRemisesDisplayedColumns"></tr>
+  <tr mat-row *matRowDef="let element; columns: expandRemisesDisplayedColumns;" class="example-element-row"
+    [class.example-expanded-row]="expandedElement === element"
+    (click)="expandedElement = expandedElement === element ? null : element">
+  </tr>
+  <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr>
+</table>
+}

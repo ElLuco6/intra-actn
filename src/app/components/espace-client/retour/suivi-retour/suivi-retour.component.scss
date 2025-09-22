@@ -1,0 +1,255 @@
+@import "variables.scss";
+@import "styles/bandeau.scss";
+@import "src/style/temp";
+@import "filtres.scss";
+
+
+
+.container-filtres {
+  margin-bottom: 10px;
+  padding: 10px;
+  margin: 20px 0px;
+}
+
+.flex{
+  display: flex;
+}
+
+.conteneur{
+  width: 50%;
+  text-align: end;
+}
+
+.action-row {
+  display: flex;
+  align-items: center;
+
+  #filtresToggle {
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+    padding: 0;
+
+    &.active {
+      color: var(--color-secondary);
+    }
+  }
+}
+
+.historique{
+  align-self: flex-end;
+  font-size: 1em - $font-scale;
+}
+
+.filtresPetit {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.fields {
+  display: flex;
+  width: 100%;
+  gap: 1rem;
+  flex-direction: row;
+}
+
+.field {
+  width: 16rem;
+}
+
+/*.marque-filtres {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  width: 100%;
+  align-items: center;
+}*/
+
+/*.marque-options {
+  background-color: white;
+  $margin: 5px;
+  margin: $margin;
+  border: 3px solid rgba(0, 0, 0, 0.3);
+  border-radius: 5px;
+  cursor: pointer;
+
+  font-size: 1.1em;
+  font-weight: 600;
+  display: flex;
+  text-align: center;
+  width: calc(100% / 8 - #{$margin} * 2);
+  transition: all 0ms ease-in-out;
+
+  @media screen and (min-width: 1650px) {
+    width: calc(100% / 10 - #{$margin} * 2);
+  }
+
+  @media screen and (max-width: 1300px) {
+    width: calc(100% / 7 - #{$margin} * 2);
+    border-width: 2px;
+  }
+
+  @media screen and (max-width: 767.98px) {
+    width: calc(100% / 4 - #{$margin} * 2);
+    border-width: 2px;
+  }
+
+  &:hover {
+    transition: all 100ms ease-in-out;
+    background-color: rgba(105, 105, 105, 0.1);
+    border-color: rgba(0, 0, 0, 0.6);
+
+    img {
+      transition: opacity 100ms ease-in-out;
+      filter: grayscale(0%);
+      opacity: 1;
+    }
+  }
+
+  img {
+    mix-blend-mode: multiply;
+    transition: opacity 0ms ease-in-out;
+    width: 100%;
+    filter: grayscale(100%);
+    opacity: 0.4;
+  }
+
+  &.selected {
+    background-color: rgba(105, 105, 105, 0.1);
+    border-color: var(--color-primary-second);
+
+    img {
+      filter: grayscale(0%);
+      opacity: 1;
+    }
+  }
+}*/
+
+.labelsSuivi {
+  display: flex;
+  font-weight: 550;
+  justify-content: space-between;
+  background-color: #fafafa;
+  box-shadow: 0 2px 3px 1px rgba(0, 0, 0, 0.2);
+  padding:15px 5px;
+}
+
+.fondBlanc{
+  background-color: white;
+  position: sticky !important;
+  top: 160px;
+  padding-top: 20px;
+  z-index: 15;
+}
+
+.grow1 {
+  flex-grow: 1;
+  flex-basis: 0;
+  padding: 0 5px;
+  align-self: center;
+}
+
+.grow2 {
+  flex-grow: 2;
+  flex-basis: 0;
+  padding: 0 5px;
+  align-self: center;
+}
+
+.grow3 {
+  flex-grow: 3;
+  flex-basis: 0;
+  padding: 0 5px;
+  align-self: center;
+}
+
+.grow1C {
+  flex-grow: 1;
+  flex-basis: 0;
+  padding: 0 5px;
+  align-self: center;
+  text-align: center;
+}
+
+.grow1F {
+  flex-grow: 1;
+  flex-basis: 0;
+  padding: 0 5px;
+  display: flex;
+  align-self: center;
+}
+
+.cadreSuivi{
+  background-color: white;
+  box-shadow: 0 2px 3px 1px rgba(0, 0, 0, 0.2);
+}
+
+.ligneRMA {
+  display: flex;
+  justify-content: space-between;
+  padding:15px 5px;
+}
+
+.iconComp{
+  margin: 10px;
+  align-self: center;
+}
+
+.taille{
+  width: 180px;
+}
+
+.popDetails{
+  width: 10%;
+  display: flex;
+  box-shadow: 0px 3px 3px 1px rgba(0, 0, 0, 0.2);
+  border-radius: 0 0px 8px 8px;
+  padding: 5px 10px;
+  justify-content: space-evenly;
+  color: var(--color-primary-second);
+  cursor: pointer;
+  align-items: center;
+  background-color: white;
+  @media screen and (max-width:768px){
+    width: 100%;
+
+  }
+}
+
+.popDetails{
+  .unroll-button {
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    font-size: 0.65em;
+  }
+}
+
+.margin{
+  margin: 15px 0px;
+}
+
+.details{
+  display: flex;
+  max-height: 0px;
+  transition: all 300ms ease-in-out;
+  overflow: hidden;
+
+  &.show {
+    padding-bottom: 15px;
+    max-height: 500px;
+  }
+}
+
+.labelDetB {
+  padding: 0 10px;
+  font-weight: bold;
+}
+
+.labelDet {
+  padding: 0 10px;
+}
+
+.rmapdflink {
+  cursor: pointer;
+  text-decoration: underline;
+}

@@ -1,0 +1,20 @@
+@if (title) {
+  <div id="title" [ngClass]="{ 'cursor-pointer': collapsible }" (click)="toggleCollapsed()">
+    <span class="barre"></span>
+    @if (collapsible) {
+      <fa-icon [ngClass]="{'collapse-icon--collapsed': collapsed}" [icon]="faChevronDown" class="collapse-icon"></fa-icon>
+    }
+    <h1 [ngClass]="{'makeWrap': doWrap === true, size}" >{{ title }}@if (annotation) {
+      <span class="annotation">&nbsp;{{ annotation }}</span>
+    }</h1>
+    @if (withLine) {
+      <span class="barre"></span>
+    }
+  </div>
+}
+
+@if (!title) {
+  <div>
+    <span class="barre-without-title"></span>
+  </div>
+}

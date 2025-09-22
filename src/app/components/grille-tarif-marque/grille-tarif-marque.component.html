@@ -1,0 +1,245 @@
+<app-title-w-line [title]="'Tarifs & Documents : ' + nomMarque"></app-title-w-line>
+
+
+<table class="grille-tarif">
+  <tr>
+    <td class="weight-bold">Désignation</td>
+    <td class="weight-bold">CA d'égibilité</td>
+    <td class="weight-bold">Mini</td>
+    <td class="weight-bold">Maxi</td>
+    <td class="weight-bold">% Remis</td>
+    <td class="weight-bold">% Marge</td>
+  </tr>
+  @for (tarif of grilleTarif; track tarif; let i = $index) {
+    <tr>
+      <td>{{ tarif.colonnedesignation }}</td>
+      @if (tarif.CAmini != 0) {
+        <td>{{ tarif.CAmini }}</td>
+      }
+      @if (tarif.CAmmaxi != 0) {
+        <td>{{ tarif.CAmmaxi }}</td>
+      }
+      @if (tarif.remiseinfo != 0) {
+        <td>{{ tarif.remiseinfo }}</td>
+      }
+      @if (tarif.margeinfo != 0) {
+        <td>{{ tarif.margeinfo }}</td>
+      }
+    </tr>
+  }
+</table>
+
+
+<div class="mTop20">
+
+  <app-title-w-line [title]="'Fichiers de la marque ' + nomMarque"></app-title-w-line>
+</div>
+<div class="gest-fichier">
+  <div class="items-gest" style="width: 70%">
+
+    <div class="mat-elevation-z3">
+      <mat-form-field style="margin: 10px 0 0 10px;">
+        <mat-label>Rechercher</mat-label>
+        <input matInput (keyup)="applyFilter($event,dataSource)" placeholder="Exemple.txt" #input>
+      </mat-form-field>
+      <table mat-table [dataSource]="dataSource" matSort #empTbSort="matSort">
+
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Nom</th>
+          <td mat-cell *matCellDef="let row"
+              (click)="fileService.downloadFileMarque(row.name, this.marque)"> {{ row.name }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="createdAt">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Date de créa.</th>
+          <td mat-cell *matCellDef="let row"
+              (click)="fileService.downloadFileMarque(row.name, this.marque)"> {{ row.createdAt }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="size">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Taille</th>
+          <td mat-cell *matCellDef="let row"
+              (click)="fileService.downloadFileMarque(row.name, this.marque)"> {{ row.size }} ko
+          </td>
+        </ng-container>
+
+          <ng-container matColumnDef="share">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let row">
+              <button mat-button (click)="onShareClicked(row.name, this.marque)">
+                <mat-icon style="color: var(--color-primary-second); margin: 0">share</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="action">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let row">
+              <button mat-button (click)="openSupprConfirm(row)">
+                <mat-icon style="color: var(--color-warn); margin: 0">delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell" colspan="4">Pas de résultats</td>
+          </tr>
+      </table>
+      <mat-paginator showFirstLastButtons #paginator [pageSizeOptions]="[5, 10, 25, 100]"
+                     aria-label="Select page of users"></mat-paginator>
+    </div>
+  </div>
+  <div class="items-gest drop-zone" appUpload (onFileDropped)="uploadFile($event)" style="width: 28%">
+    <div class="text-drop-zone">
+      <div style="display: flex; width: 100%; justify-content: center">
+        <mat-icon>cloud_upload</mat-icon>
+      </div>
+      <p>Glisser et Déposer un fichier ici ou (50Mo max)</p>
+      <input type="file" #fileInput>
+      <button mat-raised-button (click)="uploadFile(fileInput.files[0])">Envoyer</button>
+    </div>
+  </div>
+
+</div>
+
+<div class="popup" [ngClass]="{active: showPopup}">
+  <div class="popup-background" (click)="showPopup = false" (tap)="showPopup = false"></div>
+  <div class="popup-window size-default raised-3">
+    <h2>Êtes-vous sur de vouloir supprimer ce fichier ?</h2>
+    <h4>Suppression de : {{ rowSelected.name }}</h4>
+    <div class="btn-action">
+      <button mat-raised-button class="btn-zbi delete" (click)="deleteFile(rowSelected.name)">Supprimer</button>
+      <button mat-raised-button class="btn-zbi cancel" (click)="showPopup = false;">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<div class="popup" [ngClass]="{active: tesGrosseMelissandre}">
+  <div class="popup-background" (click)="tesGrosseMelissandre = false" (tap)="tesGrosseMelissandre = false"></div>
+  <div class="popup-window size-default raised-3">
+    <h2>Fichier trop volumineux 50mo max</h2>
+    <div class="btn-action">
+      <button mat-raised-button class="btn-zbi cancel" (click)="tesGrosseMelissandre = false;">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<div class="popup" [ngClass]="{active: pasLesBonsChiffres}">
+  <div class="popup-background" (click)="pasLesBonsChiffres = false" (tap)="pasLesBonsChiffres = false"></div>
+  <div class="popup-window size-default raised-3">
+    <h2>Extension de fichier interdite</h2>
+    <div class="btn-action">
+      <button mat-raised-button class="btn-zbi cancel" (click)="pasLesBonsChiffres = false;">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<div class="mTop20">
+  <app-title-w-line [title]="'Liste des clients colonnés ' + nomMarque"></app-title-w-line>
+</div>
+
+<div class="mat-elevation-z3">
+  <div style="margin-top: .5rem; display: flex; gap: 20px">
+    @for (filtre of filtres; track filtre) {
+      <app-filter [filterName]="filtre.name" [filterControl]="filtreControls[filtre.control]"
+                  [filterOptions]="filtre.options" [filterType]="filtre.type"></app-filter>
+    }
+  </div>
+
+  <div class="exporting">
+    @if (!this.selection.isEmpty()) {
+      <button mat-raised-button class="btn-export"
+              (click)="exportToXsl.exportToXls(this.selection.selected, 'Client Colonne')">Exporter
+      </button>
+      <button mat-raised-button class="export" (click)="campagnesService.openCampaignDialog(selection)">Affecter à une
+        campagne
+      </button>
+    } @else {
+      <button mat-raised-button class="export nope" [disabled]="true"
+              (click)="exportToXsl.exportToXls(this.selection.selected, 'Client Colonne')">Exporter
+      </button>
+      <button mat-raised-button class="export nope" [disabled]="true">Affecter à une campagne</button>
+    }
+  </div>
+
+  <table mat-table [dataSource]="clientColonne" matSort #empTbSortWithObject="matSort">
+
+    <ng-container matColumnDef="select">
+      <th mat-header-cell *matHeaderCellDef>
+        <mat-checkbox (change)="$event ? toggleAllRows() : null"
+                      [checked]="selection.hasValue() && isAllSelected()"
+                      [indeterminate]="selection.hasValue() && !isAllSelected()"
+                      [aria-label]="checkboxLabel()">
+        </mat-checkbox>
+      </th>
+      <td mat-cell *matCellDef="let row">
+        <mat-checkbox (click)="$event.stopPropagation()"
+                      (change)="$event ? selection.toggle(row) : null"
+                      [checked]="selection.isSelected(row)"
+                      [aria-label]="checkboxLabel(row)">
+        </mat-checkbox>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="client">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Client</th>
+      <td mat-cell *matCellDef="let row" [routerLink]="['/client-detail/'+ row.numclient]"> {{ row.numclient }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="raison">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Raison</th>
+      <td mat-cell *matCellDef="let row" [routerLink]="['/client-detail/'+ row.numclient]"> {{ row.raison }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="adresse">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Adresse</th>
+      <td mat-cell *matCellDef="let row"
+          [routerLink]="['/client-detail/'+ row.numclient]"> {{ row.adresse }} {{ row.codepostal }}  {{ row.ville }}
+      </td>
+    </ng-container>
+
+
+    <ng-container matColumnDef="region">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Region</th>
+      <td mat-cell *matCellDef="let row" [routerLink]="['/client-detail/'+ row.numclient]"> {{ row.region }}</td>
+    </ng-container>
+    <ng-container matColumnDef="telephone">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Telephone</th>
+      <td mat-cell *matCellDef="let row" [routerLink]="['/client-detail/'+ row.numclient]"> {{ row.telephone }}</td>
+    </ng-container>
+    <ng-container matColumnDef="datedebut">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Date debut</th>
+      <td mat-cell *matCellDef="let row"
+          [routerLink]="['/client-detail/'+ row.numclient]"> {{ row.datedebut |ericdateFormat }}
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="datefin">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Date fin</th>
+      <td mat-cell *matCellDef="let row"
+          [routerLink]="['/client-detail/'+ row.numclient]"> {{ row.datefin| ericdateFormat }}
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="collibelle">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Libelle</th>
+      <td mat-cell *matCellDef="let row" [routerLink]="['/client-detail/'+ row.numclient]"> {{ row.collibelle }}</td>
+    </ng-container>
+    <ng-container matColumnDef="colonne">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Colonne</th>
+      <td mat-cell *matCellDef="let row" [routerLink]="['/client-detail/'+ row.numclient]"> {{ row.colonne }}</td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="clientDisplayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: clientDisplayedColumns;" (click)="selection.toggle(row)"></tr>
+
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell" colspan="4">Pas de résultats</td>
+    </tr>
+  </table>
+  <mat-paginator #clientPaginator [pageSizeOptions]="[5, 10, 25, 100]"
+                 aria-label="Select page of users"></mat-paginator>
+</div>

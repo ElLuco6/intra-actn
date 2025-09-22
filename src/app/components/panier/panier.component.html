@@ -1,0 +1,43 @@
+@if (!loadingCart) {
+  <app-title-w-line [title]="'Panier'"></app-title-w-line>
+  <div class="bar-prodression raised-1">
+    <app-stepper></app-stepper>
+  </div>
+  <div class="panier raised-1">
+    <app-label-panier></app-label-panier>
+    @if (cartService.cart.length == 0; as i = index) {
+      <div class="size-big weight-bold">Le panier est vide</div>
+    } @else {
+      <div cdkDropList (cdkDropListDropped)="drop($event)" class="list-panier">
+        @for (cartItem of itemsArray; track cartItem; let i = $index) {
+          <app-panier-row [cartItem]="cartItem" [indexRow]="i" (error)="panierRowError(i, $event)" [displayFormationForm]="true"></app-panier-row>
+        }
+      </div>
+      <div style="border-top: 1px solid lightgrey"></div>
+      <div class="pied-panier">
+        <div class="total size-bigger weight-bold">
+          Total&nbsp;<p class="for-phone"> du Panier</p>
+          <div>{{ cartService.cart.total | currency:'EUR':'symbol':'1.2-2' }}<span class="size-smaller">&nbsp;HT</span></div>
+        </div>
+        <div class="total" style="padding: 0">Marge totale {{ cartService.cart.margeTotal }} %</div>
+      </div>
+    }
+  </div>
+  <br/>
+  @if (cartService.cart.margeTotal < 0) {
+    <p class="small-texte error">Il faut que la marge soit supérieure ou égale à 0</p>
+  }
+  @if (isErrorInPanier()) {
+    <p class="small-texte error">Certaines quantités de produit dans le panier sont invalides.</p>
+  }
+  <div class="action-row">
+    <div>
+      @if (savingCart) {
+        <mat-spinner [diameter]="50"></mat-spinner>
+      }
+    </div>
+    <button class="raised-button marge-phone" [disabled]="cartService.cart.length == 0 || isErrorInPanier() || (cartService.cart.margeTotal < 0 && !priceIsEdited) || cartService.checkQteCotation()" [routerLink]="['/panier/commander/devis']" routerLinkActive="active">
+      Valider DEVIS
+    </button>
+  </div>
+}

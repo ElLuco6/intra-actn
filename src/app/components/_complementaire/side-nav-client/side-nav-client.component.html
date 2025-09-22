@@ -1,0 +1,433 @@
+<div class="side-nav__panel" [ngClass]="{ show: currentMenu === 'espaceClient' }" (keydown.escape)="currentMenu = ''">
+  @if (authServiceClient.currentClient) {
+  <div class="user-details">
+    <div class="details">
+      <p>Numéro client : {{ userID }}</p>
+      <p>Compte : {{ authServiceClient.currentClient?.name }}</p>
+      <p>Utilisateur : {{ authServiceClient.currentClient?.TIERSUSR }} @if (authServiceClient.currentClient?.role) {
+        <span>({{ authServiceClient.currentClient?.role }})</span>
+        }
+      </p>
+    </div>
+    <div class="user">
+      <div style="display: grid; justify-items: center; cursor: pointer"
+        [routerLink]="['/client-detail/' + authServiceClient.currentClient.id]">
+        <fa-icon class="delete-on-xs" [icon]="faUser"></fa-icon>
+        <p class="delete-on-xs">{{ authServiceClient.currentClient?.TIERSIND }}</p>
+      </div>
+      <div class="deconnexion">
+        <a (click)="showPopup = true"><fa-icon [icon]="faSignOutAlt"></fa-icon>Se déconnecter</a>
+      </div>
+    </div>
+  </div>
+  <div class="contacts size-smaller">
+    <h3>{{ userService.contactGroupName }}</h3>
+    @if (userService.contacts$ | async; as contacts) {
+    @for (contact of contacts; track contact) {
+    <div class="contact">
+      <span class="weight-bold nom">{{ contact.nom }}&nbsp;:&nbsp;</span>
+      <div class="tel-mail">
+        <span class="tel">
+          <a class="text-link" [href]="'tel:' + contact.telLink">
+            <span>{{ contact.tel }}</span>
+          </a>
+        </span>
+        @if (contact.mail.length > 0) {
+        <span class="mail">
+          <a class="text-link" [href]="'mailto:' + contact.mail">
+            <span>{{ contact.mail }}</span>
+          </a>
+        </span>
+        }
+      </div>
+    </div>
+    }
+    }
+    <!--<a routerLink="/espace-client/contacts" class="size-smaller contacts-link" (click)="close()" (tap)="close()">Voir tous vos contacts</a>-->
+  </div>
+  }
+  <div class="side-nav__content">
+    <div class="menu-espace-client">
+      @if (this.authServiceClient.currentClient) {
+      <div>
+        <!-- <div class="infos-client">
+          <div class="infos-client__id">
+            ID : {{ this.authService.currentClient.id }}
+          </div>
+          <div class="infos-client__nom">
+            {{ this.authService.currentClient.name }}
+          </div>
+        </div> -->
+        <mat-tab-group mat-stretch-tabs dynamicHeight [disablePagination]="true" animationDuration="0"
+          class="side-nav__tabs">
+          <mat-tab label="Espace client">
+            <div class="menu menu--orientation-vertical">
+              <!-- COMMANDES -->
+              <a routerLink="/espace-client/commandes" routerLinkActive="active" class="menu__item" (click)="close()"
+                (tap)="close()">
+                <fa-icon [icon]="faShoppingCart"></fa-icon>
+                <div class="label">Commandes</div>
+              </a>
+              <!-- RELIQUATS -->
+              <a routerLink="/espace-client/reliquats" routerLinkActive="active" class="menu__item" (click)="close()"
+                (tap)="close()">
+                <fa-icon [icon]="faFileInvoice"></fa-icon>
+                <div class="label">Reliquats</div>
+              </a>
+              <!-- DEVIS -->
+              <a routerLink="/espace-client/devis" routerLinkActive="active" class="menu__item" (click)="close()"
+                (tap)="close()">
+                <fa-icon [icon]="faReceipt"></fa-icon>
+                <div class="label">Devis</div>
+              </a>
+              <!-- COTATIONS -->
+              <a routerLink="/espace-client/cotation" routerLinkActive="active" class="menu__item" (click)="close()"
+                (tap)="close()">
+                <div class="taggedItem">
+                  <fa-icon [icon]="faEuroSign"></fa-icon>
+                  <div class="tag" [ngClass]="{ show: cotationService.nbrOfCriticalCotations > 0 }"
+                    matTooltip="Des cotations inépuisées vont expirer" matTooltipClass="tooltip-problem-cotation"
+                    matTooltipPosition="above" matTooltipShowDelay="0" matTooltipHideDelay="800">
+                    {{ +cotationService.nbrOfCriticalCotations }}
+                  </div>
+                </div>
+                <div class="label">Cotations spéciales</div>
+              </a>
+              <!-- RMA -->
+              <a routerLink="/espace-client/suivi" routerLinkActive="active" class="menu__item" (click)="close()"
+                (tap)="close()">
+                <fa-icon [icon]="faUndo"></fa-icon>
+                <div class="label">Suivi de RMA</div>
+              </a>
+              <!-- LICENCE -->
+              <a routerLink="/espace-client/contrats" routerLinkActive="active" class="menu__item" (click)="close()"
+                (tap)="close()">
+                <div class="taggedItem">
+                  <fa-icon [icon]="faWrench"></fa-icon>
+                  <div class="tag" [ngClass]="{ show: licenceService.prioritaire > 0 }">{{ +licenceService.prioritaire
+                    }}</div>
+                </div>
+                <div class="label">Licences et contrats de maintenance</div>
+              </a>
+              <!-- TARIFS -->
+              <a routerLink="/espace-client/tarif-marque" routerLinkActive="active" class="menu__item" (click)="close()"
+                (tap)="close()">
+                <fa-icon [icon]="faTag"></fa-icon>
+                <div class="label">Téléchargement de tarifs</div>
+              </a>
+              <!-- NUMEROS DE SERIE -->
+              <a routerLink="/espace-client/numeros-de-serie" routerLinkActive="active" class="menu__item"
+                (click)="close()" (tap)="close()">
+                <fa-icon [icon]="faBarcode"></fa-icon>
+                <div class="label">Numeros de serie</div>
+              </a>
+              <!-- UTILISATEURS ET PERMISSIONS -->
+              <a routerLink="/espace-client/utilisateurs" routerLinkActive="active" class="menu__item" (click)="close()"
+                (tap)="close()">
+                <fa-icon [icon]="faUserCog"></fa-icon>
+                <div class="label">Utilisateurs et droits</div>
+              </a>
+              <!-- SUIVI D'ACTIVITE -->
+              <a [routerLink]="'/espace-client/suivi-activite/'+ userID" routerLinkActive="active" class="menu__item"
+                (click)="close()" (tap)="close()">
+                <fa-icon [icon]="faChartLine"></fa-icon>
+                <div class="label">Suivi d'activité</div>
+              </a>
+              <!-- ADRESSES -->
+              <a routerLink="/espace-client/adresses" routerLinkActive="active" class="menu__item" (click)="close()"
+                (tap)="close()">
+                <fa-icon [icon]="faHome"></fa-icon>
+                <div class="label">Adresses</div>
+              </a>
+              <!-- FRAIS DE LIVRAISON -->
+              <a routerLink="/espace-client/frais-de-livraison" routerLinkActive="active" class="menu__item"
+                (click)="close()" (tap)="close()">
+                <fa-icon [icon]="faTruck"></fa-icon>
+                <div class="label">Frais de livraison</div>
+              </a>
+              <a routerLink="/espace-client/remise" routerLinkActive="active" class="menu__item" (click)="close()"
+                (tap)="close()">
+                <fa-icon [icon]="faEuroSign"></fa-icon>
+                <div class="label">Remise</div>
+              </a>
+              <a routerLink="/espace-client/documents" routerLinkActive="active" class="menu__item" (click)="close()"
+                (tap)="close()">
+                <fa-icon [icon]="faFolderBlank"></fa-icon>
+                <div class="label">Documents</div>
+              </a>
+            </div>
+          </mat-tab>
+        </mat-tab-group>
+        <!-- <div class="menu menu--orientation-vertical">
+        <a class="menu__item clickable" (click)="logOut()" tabindex="0">
+          <fa-icon  [icon]="['fas', 'sign-out-alt']"></fa-icon>
+          <span class="label">Déconnexion </span>
+        </a>
+      </div> -->
+      </div>
+      } @else {
+      <div class="side-nav__header">
+        <h2 class="side-nav__header__title">Espace Client</h2>
+      </div>
+      <div class="log-required-message">
+        {{
+        currentMenu === 'panierPreview'
+        ? 'Connectez-vous pour accéder à votre panier'
+        : 'Connectez un client pour accéder à son espace'
+        }}
+      </div>
+      <app-log-client (EventLogIn)="EventLog.emit()"></app-log-client>
+      }
+    </div>
+
+    @if (currentMenu === 'panierPreview') {
+    <div class="panier-preview">
+      <div class="side-nav__header">
+        <h2 class="side-nav__header__title">Panier</h2>
+      </div>
+      @if (this.authServiceClient.currentClient) {
+      <div></div>
+      } @else {
+      <div class="side-nav__header">
+        <h2 class="side-nav__header__title">Espace Client</h2>
+      </div>
+      <div class="log-required-message">
+        {{
+        currentMenu === 'panierPreview'
+        ? 'Connectez-vous pour accéder à votre panier'
+        : 'Connectez un client pour accéder à son espace'
+        }}
+      </div>
+      <app-log-client (EventLogIn)="EventLog.emit()"></app-log-client>
+      }
+    </div>
+    }
+
+    @if (currentMenu === 'favorisPreview') {
+    <div class="favoris-preview">
+      <div class="side-nav__header">
+        <h2 class="side-nav__header__title">Favoris</h2>
+      </div>
+    </div>
+    }
+  </div>
+
+</div>
+<!-- change "mousemove" with "click"
+(mousemove)="close()"
+-->
+<div class="dark-overlay" [ngClass]="{ show: currentMenu.length }" (click)="close()" (tap)="close()"></div>
+
+<!--
+
+ESPACE DU COMMERCIAL
+
+-->
+
+
+<div class="side-nav__panel" [ngClass]="{ show: currentMenu === 'espaceCommercial' }">
+  <div class="user-details">
+    <div class="details">
+      <p>Identifiant : {{ authCom.currentUser?.id }}</p>
+      <p>Compte : {{ authCom.currentUser?.name }}</p>
+      <!--<p>Utilisateur : {{ authCom.currentUser?. }} <span *ngIf="authCom.currentUser?.role">({{ authCom.currentUser?.role }})</span></p>-->
+    </div>
+    <div class="user">
+      <div style="display: grid; justify-items: center; cursor: pointer"
+        [routerLink]="['/client-detail/' + authCom.currentUser.id]">
+        <fa-icon class="delete-on-xs" [icon]="faUser"></fa-icon>
+        <p class="delete-on-xs">{{ authCom.currentUser?.TIERSIND }}</p>
+      </div>
+      <div class="deconnexion">
+        <a (click)="showPopupCom = true"><fa-icon [icon]="faSignOutAlt"></fa-icon>Se déconnecter</a>
+      </div>
+    </div>
+  </div>
+  <div class="contacts size-smaller">
+    <h3>{{ userService.contactGroupName }}</h3>
+    @if (userService.contacts$ | async; as contacts) {
+    @for (contact of contacts; track contact) {
+    <div class="contact">
+      <span class="weight-bold nom">{{ contact.nom }}&nbsp;:&nbsp;</span>
+      <div class="tel-mail">
+        <span class="tel">
+          <a class="text-link" [href]="'tel:' + contact.telLink">
+            <span>{{ contact.tel }}</span>
+          </a>
+        </span>
+        @if (contact.mail.length > 0) {
+        <span class="mail">
+          <a class="text-link" [href]="'mailto:' + contact.mail">
+            <span>{{ contact.mail }}</span>
+          </a>
+        </span>
+        }
+      </div>
+    </div>
+    }
+    }
+    <!--<a routerLink="/espace-client/contacts" class="size-smaller contacts-link" (click)="close()" (tap)="close()">Voir tous vos contacts</a>-->
+  </div>
+  <div class="side-nav__content">
+    <div class="menu-espace-client">
+      <mat-tab-group mat-stretch-tabs dynamicHeight [disablePagination]="true" animationDuration="0"
+        class="side-nav__tabs">
+        <mat-tab [label]="'Espace commercial'">
+          <div class="menu menu--orientation-vertical">
+            <!-- COMMANDES -->
+            <a routerLink="/espace-commercial/commandes" routerLinkActive="active" class="menu__item" (click)="close()"
+              (tap)="close()">
+              <fa-icon [icon]="faShoppingCart"></fa-icon>
+              <div class="label">Commandes</div>
+            </a>
+            <!-- RELIQUATS -->
+            <a routerLink="/espace-commercial/reliquats" routerLinkActive="active" class="menu__item" (click)="close()"
+              (tap)="close()">
+              <fa-icon [icon]="faFileInvoice"></fa-icon>
+              <div class="label">Reliquats</div>
+            </a>
+            <!-- DEVIS -->
+            <a routerLink="/espace-commercial/devis" routerLinkActive="active" class="menu__item" (click)="close()"
+              (tap)="close()">
+              <fa-icon [icon]="faReceipt"></fa-icon>
+              <div class="label">Devis</div>
+            </a>
+            <!-- COTATIONS -->
+            <!--<a class="menu__item work-in-progress">
+              <fa-icon  [icon]="faEuroSign"></fa-icon>
+              <div class="label"><a href="https://rickrolled.fr/">Cotations spéciales (Work in progress)</a></div>
+            </a>-->
+            <a routerLink="/espace-commercial/cotation" routerLinkActive="active" class="menu__item" (click)="close()"
+              (tap)="close()">
+              <div class="taggedItem">
+                <fa-icon [icon]="faEuroSign"></fa-icon>
+              </div>
+              <div class="label">Cotations spéciales</div>
+            </a>
+            <!-- RMA -->
+            <a routerLink="/espace-commercial/suivi-rma" routerLinkActive="active" class="menu__item" (click)="close()"
+              (tap)="close()">
+              <fa-icon [icon]="faUndo"></fa-icon>
+              <div class="label">Suivi de RMA</div>
+            </a>
+            <!-- SUIVI D'ACTIVITE -->
+            <!-- <a routerLink="/espace-commercial/suivi-activite" routerLinkActive="active" class="menu__item" (click)="close()" (tap)="close()">
+          <fa-icon  [icon]="faChartLine"></fa-icon>
+          <div class="label">Suivi d'objectifs</div>
+        </a> -->
+            <!-- Compte rendu de visite -->
+            <a routerLink="/espace-commercial/compte-rendu-visite" routerLinkActive="active" class="menu__item"
+              (click)="close()" (tap)="close()">
+              <fa-icon [icon]="faNewspaper"></fa-icon>
+              <div class="label">Compte rendu de visite</div>
+            </a>
+            <!-- ABONNEMENTS -->
+            <a [routerLink]="['/abonnements']" routerLinkActive="active" class="menu__item" (click)="close()"
+              (tap)="close()">
+              <img style="height: 15px; width: 15px; justify-self: center;" id="logoOnlywan"
+                src="assets/img/O_onlywan_black.png" alt="logo onlywan">
+              <div class="label">Abonnements</div>
+            </a>
+
+            <!-- GRAPH -->
+            <a class="menu__item" [ngClass]="{ focused: menuRMA }" (click)="show()">
+              <fa-icon [icon]="faChartLine"></fa-icon>
+              <div class="label">Suivi d'activité
+                <i class="icon-caret-down" [ngClass]="{ focused: menuRMA }"></i>
+              </div>
+            </a>
+            <!-- <a *ngIf='menuRMA' routerLink="/espace-client/ticket" routerLinkActive="active" class="menu__item sous_item" (click)="close()" (tap)="close()">
+        <fa-icon [icon]="['fas', 'ticket-alt']"></fa-icon>
+        <div class="label">Déclarer un incident</div>
+      </a> -->
+
+
+            <!-- SUIVI D'ACTIVITE -->
+            @if (menuRMA) {
+            <a routerLink="/espace-commercial/suivi-activite/suivi-objectifs" routerLinkActive="active"
+              class="menu__item sous_item" (click)="close()" (tap)="close()">
+              <fa-icon [icon]="faChartSimple"></fa-icon>
+              <div class="label">Suivi d'objectifs</div>
+            </a>
+            }
+
+            @if (menuRMA) {
+            <a routerLink="/espace-commercial/suivi-activite/ca-journalier" routerLinkActive="active"
+              class="menu__item sous_item" (click)="close()" (tap)="close()">
+              <fa-icon [icon]="faCoins"></fa-icon>
+              <div class="label">CA Journalier</div>
+            </a>
+            }
+            @if (menuRMA) {
+            <a routerLink="/espace-commercial/suivi-activite/suivi-ca" routerLinkActive="active"
+              class="menu__item sous_item" (click)="close()" (tap)="close()">
+              <fa-icon [icon]="faEarthEurope"></fa-icon>
+              <div class="label">Suivi CA</div>
+            </a>
+            }
+
+            <!--<a class="menu__item work-in-progress">
+      <fa-icon [icon]="faUserFriends"></fa-icon>
+      <div class="label">Prospects (Work in progress)</div>
+    </a>-->
+            <!--
+    <a [routerLink]="['/espace-commercial/prospects']" routerLinkActive="active" class="menu__item" (click)="close()" (tap)="close()">
+      <fa-icon [icon]="faUserFriends"></fa-icon>
+      <div class="label">Prospects</div>
+    </a>
+    <a [routerLink]="['/espace-commercial/commande-rapide']" routerLinkActive="active" class="menu__item" (click)="close()" (tap)="close()">
+      <fa-icon [icon]="faBolt"></fa-icon>
+      <div class="label">Saisie rapide</div>
+    </a>
+    <a [routerLink]="['/microsoft/calendar']" routerLinkActive="active" class="menu__item" (click)="close()" (tap)="close()">
+      <fa-icon [icon]="faCalendarAlt"></fa-icon>
+      <div class="label">Calendrier Microsoft</div>
+    </a>
+    -->
+            <a [routerLink]="['/espace-commercial/campagne']" class="menu__item" (click)="close()" (tap)="close()">
+              <fa-icon [icon]="faCampground"></fa-icon>
+              <div class="label">Campagnes</div>
+            </a>
+            <!--<a class="menu__item work-in-progress" (click)="close()" (tap)="close()">
+    <fa-icon [icon]="faCampground"></fa-icon>
+    <div class="label">Campagnes (Work In Progress)</div>
+  </a>-->
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </div>
+</div>
+
+
+<div class="pupup-compterendu" [ngClass]="{active: showPopup}">
+  <div class="popup-background" (click)="showPopup = false" (tap)="showPopup = false"></div>
+  <div class="popup-window">
+    <h1>Êtes vous sûr de vouloir vous deconnecter du client ?</h1>
+    <div class="popup-buttons">
+      <button class="raised-button button--color-secondary" (click)="showPopup = false" (tap)="showPopup = false">
+        Annuler
+      </button>
+      <button class="raised-button button--color-warn" (click)="showPopup = false; this.logOut()"
+        (tap)="showPopup = false">
+        Se déconnecter
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="pupup-compterendu" [ngClass]="{active: showPopupCom}">
+  <div class="popup-background" (click)="showPopupCom = false" (tap)="showPopupCom = false"></div>
+  <div class="popup-window">
+    <h1>Êtes vous sûr de vouloir vous deconnecter ?</h1>
+    <div class="popup-buttons">
+      <button class="raised-button button--color-secondary" (click)="showPopupCom = false" (tap)="showPopupCom = false">
+        Annuler
+      </button>
+      <button class="raised-button button--color-warn" (click)="showPopupCom = false; this.logOutComm()"
+        (tap)="showPopupCom = false">
+        Se déconnecter
+      </button>
+    </div>
+  </div>
+</div>

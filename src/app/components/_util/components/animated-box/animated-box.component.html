@@ -1,0 +1,50 @@
+<ng-container [ngSwitch]="type">
+
+  <div *ngIf="loginBarrier" class="raised-button login-barrier" (click)="componentsInteractionService.sideNavigationLine.fireOpenSideNav('espaceClient')">
+    <button class="raised-button" appKeyboardFocus>
+      Je me connecte
+    </button>
+  </div>
+
+  <a *ngSwitchCase="'routerlink'" class="cat" [routerLink]="linkUrl" >
+    <div class="inner raised-2">
+
+      <div class="front">
+        <p class="title">{{ titre }}</p>
+        <div class="front-img-container">
+          <!-- <img default="/assets/img/maxresdefault.jpg" alt="animated-box-image" [src]="imgUrl"/> -->
+          <img alt="animated-box image" [src]="imgUrl"/>
+        </div>
+      </div>
+
+      <div class="back">
+        <p class="title">{{ libelle }}</p>
+        <p class="size-small description">
+          {{ description }}
+        </p>
+      </div>
+
+    </div>
+  </a>
+
+  <a *ngSwitchDefault class="cat" target="_blank" href="{{ linkUrl }}" >
+    <div class="inner raised-2">
+
+      <div class="front">
+        <p class="title">{{ titre }}</p>
+        <div class="front-img-container">
+          <img alt="animated-box image" [src]="imgUrl"/>
+        </div>
+      </div>
+
+      <div class="back">
+        <p class="title">{{ libelle }}</p>
+        <p class="size-small description">
+          {{ description }}
+        </p>
+      </div>
+
+    </div>
+  </a>
+
+</ng-container>

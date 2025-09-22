@@ -1,0 +1,155 @@
+<app-title-w-line [title]="'Suivi RMA'"></app-title-w-line>
+<div>
+  <mat-card appearance="outlined" style="padding: 1em">
+    <div style="display: flex; flex-direction: row;height: 3.3vh; margin-bottom: 1em">
+      <h2>FILTRES</h2>
+      <i
+        title="Reinitialiser les filtres"
+        class="text-button main-reset-filter"
+        (click)="filtreForm.setValue(
+        {client: '', region: '', status: ''});
+        this.saf.resetFiltre('rma', 'clientincludes');
+        this.saf.resetFiltre('rma', 'regionincludes');
+        this.saf.resetFiltre('rma', 'statusincludes');
+        this.processedRma$.next(this.saf.filtrer('rma', this.listRma));"
+        >
+        <mat-icon>clear</mat-icon>
+      </i>
+    </div>
+    <div class="filters">
+      <form [formGroup]="filtreForm" class="filters">
+        <mat-form-field>
+          <mat-label>Filtre tout</mat-label>
+          <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Quercy" #input>
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>N° Client</mat-label>
+          <input [matAutocomplete]="autoGroup" (click)="autocomplete.openPanel()" formControlName="client" matInput
+            [ngModel]="saf.getFiltre('rma', 'client', 'includes')"
+            (keydown)="onSearch('client', 'string', 'includes', $event)"
+            (focusin)="inputFocused()"
+            (focusout)="inputFocused()"/>
+            @if (filtreForm.value.client) {
+              <button matSuffix mat-icon-button aria-label="Clear" (click)="resetOneFilters('client')">
+                <mat-icon>close</mat-icon>
+              </button>
+            }
+          </mat-form-field>
+          <mat-form-field >
+            <mat-label>Region</mat-label>
+            <mat-select formControlName="region" [(ngModel)]="regionSelected" (ngModelChange)="onSearch('region', 'array', 'includes', $event, 'regionSelected')" multiple>
+              @for (region of region; track region) {
+                <mat-option [value]="region">{{ region }}</mat-option>
+              }
+            </mat-select>
+            @if (filtreForm.value.region != '') {
+              <button matSuffix mat-icon-button aria-label="Clear" (click)="filtreForm.get('region').setValue('')">
+                <mat-icon>close</mat-icon>
+              </button>
+            }
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Statut</mat-label>
+            <mat-select formControlName="status" [(ngModel)]="statusSelected" (ngModelChange)="onSearch('status', 'array', 'includes', $event, 'statusSelected')" multiple>
+              @for (status of status; track status) {
+                <mat-option [value]="status">{{ status }}</mat-option>
+              }
+            </mat-select>
+            @if (filtreForm.value.status != '') {
+              <button matSuffix mat-icon-button aria-label="Clear" (click)="filtreForm.get('status').setValue('')">
+                <mat-icon>close</mat-icon>
+              </button>
+            }
+          </mat-form-field>
+        </form>
+      </div>
+      @if (proccessedMarque$ | async; as marques) {
+        <div class="marque-filtres del-for-phone1">
+          @for (marque of marques; track marque) {
+            <div class="marque-options"  [ngClass]="{'selected': marqueSelected.includes(marque)}"
+              (click)="filtreMarqueToggle(marque)" (tap)="filtreMarqueToggle(marque)">
+              <img class="marque-img" [src]="environment.logoMarquesCouleurs200x80 + marque + '.gif'" [alt]="marque" />
+            </div>
+          }
+        </div>
+      }
+    </mat-card>
+  </div>
+
+  <div>
+    <mat-paginator [pageSizeOptions]="[25, 50, 100]" aria-label="Select page of users"></mat-paginator>
+    <table mat-table
+      [dataSource]="this.dataSource" multiTemplateDataRows matSort
+      class="mat-elevation-z3">
+      @for (column of columnsToDisplay; track column; let i = $index) {
+        <ng-container matColumnDef="{{column}}">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> {{test[i]}} </th>
+          <td mat-cell *matCellDef="let element">
+            @if (column == 'numerorma') {
+              @if (element.pdfrma) {
+                <a target="_blank" style="text-decoration: underline" [href]="environment.apiUrlActn + '/document/generate_intra.php?document=RMA/' + element.numclient + '/' + element[column]">
+                  {{ element[column] }} <fa-icon [icon]="faFilePdf"></fa-icon>
+                </a>
+                {{ ' du ' + element.daterma }}
+              } @else {
+                {{ element[column] + ' du ' + element.daterma }}
+              }
+            } @else {
+              {{element[column]}}
+            }
+          </td>
+        </ng-container>
+      }
+      <ng-container matColumnDef="expand">
+        <th mat-header-cell *matHeaderCellDef aria-label="row actions">&nbsp;</th>
+        <td mat-cell *matCellDef="let element">
+          <button mat-icon-button aria-label="expand row" (click)="(expandedElement = expandedElement === element ? null : element); $event.stopPropagation()">
+            @if (expandedElement !== element) {
+              <mat-icon>keyboard_arrow_down</mat-icon>
+            }
+            @if (expandedElement === element) {
+              <mat-icon>keyboard_arrow_up</mat-icon>
+            }
+          </button>
+        </td>
+      </ng-container>
+
+      <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+      <ng-container matColumnDef="expandedDetail">
+        <td mat-cell style="background-color: #f4f4f4fa" *matCellDef="let element" [attr.colspan]="columnsToDisplayWithExpand.length">
+          <div class="example-element-detail"
+            [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
+            <div><strong>Commentaire du SAV :</strong> {{ element.commentaires }}</div>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columnsToDisplayWithExpand"></tr>
+      <tr mat-row *matRowDef="let element; columns: columnsToDisplayWithExpand;"
+        class="example-element-row"
+        [class.example-expanded-row]="expandedElement === element"
+        (click)="expandedElement = expandedElement === element ? null : element">
+      </tr>
+      <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr>
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell" colspan="4">Pas de résultat pour la recherche "{{input.value}}"</td>
+      </tr>
+    </table>
+
+  </div>
+
+  <mat-autocomplete #autoGroup="matAutocomplete" (optionSelected)="selectOnPredict($event.option)">
+    @if (autoCompleteOptions$ | async; as options) {
+      @for (client of options.clients; track client) {
+        <mat-option [value]="client.code">
+          {{ start(client.code) }}@if (client.code.includes(searching)) {
+          <span style="font-weight: bold;">{{ searching }}</span>
+          }{{ end(client.code) }}
+          <br>
+            {{ start(client.designation) }}@if (client.designation.includes(searching)) {
+            <span style="font-weight: bold;">{{ searching }}</span>
+            }{{ end(client.designation) }}
+          </mat-option>
+        }
+      }
+    </mat-autocomplete>

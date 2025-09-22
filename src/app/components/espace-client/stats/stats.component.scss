@@ -1,0 +1,273 @@
+.ca-array-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.marque-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.collapsible {
+  display: block;
+  overflow: hidden;
+}
+
+.annee-column {
+  flex: 1;
+  min-width: 70px;
+  text-align: right;
+  /* border-right: solid 1px black;
+  border-bottom: solid 1px black; */
+  padding: 6px 4px 6px 0px;
+
+  @media screen and (max-width: 425px) {
+    min-width: 50px;
+    font-size: 0.8rem;
+    padding: 1px 1px 1px 5px;
+  }
+
+  @media screen and (max-width: 320px) {
+    min-width: 40px;
+    font-size: 0.8rem;
+    padding: 1px 1px 1px 5px;
+  }
+}
+.marque-link {
+  cursor: pointer;
+}
+.marque-link:hover {
+  text-decoration: underline;
+}
+
+.blank-col {
+  /* margin-left: 1px; */
+  flex: 1.6;
+  min-width: 124px;
+  @media screen and (max-width: 425px) {
+    min-width: 105px;
+  }
+  @media screen and (max-width: 320px) {
+    min-width: 70px;
+  }
+}
+
+.ca-labels {
+  font-weight: 600;
+  font-size: 1rem;
+  text-align: left;
+  @media screen and (max-width: 425px) {
+    font-size: 0.8rem;
+  }
+  &.columnLabel {
+    /* border-top: solid 1px black; */
+    text-align: right;
+    /* COLOR */
+  }
+  &.rowLabel {
+    /* color: var(--color-primary-second); */
+    /* border-left: solid 1px black; */
+    flex: 1.6;
+    min-width: 125px;
+    padding-left: 4px;
+    @media screen and (max-width: 425px) {
+      min-width: 105px;
+      padding-left: 0px;
+    }
+    @media screen and (max-width: 320px) {
+      min-width: 70px;
+      padding-left: 0px;
+    }
+  }
+}
+
+.ca-even-odd:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.lightrow:hover,
+.on {
+  background-color: var(--color-primary-second);
+  color: white;
+}
+
+.off {
+  background-color: var(--color-primary-second);
+  opacity: 0.6;
+  color: white;
+}
+
+.graph {
+  fill: transparent;
+  stroke: var(--color-primary-second);
+  stroke-width: 1px;
+}
+
+.marge {
+  @media screen and (max-width: 1400px) {
+    margin-left: -60px;
+  }
+  @media screen and (max-width: 1200px) {
+    margin-left: -70px;
+  }
+}
+
+.del-for-phone {
+  @media screen and (max-width: 1100px) {
+    display: none;
+  }
+}
+.child {
+  display: grid;
+  grid-template-columns: 1fr 1fr 4fr 1fr 1fr 1fr;
+  flex: 1;
+  min-width: 70px;
+  padding: 6px 4px 6px 0px;
+}
+
+.gauche {
+  text-align: left;
+}
+
+.droite {
+  text-align: right;
+}
+
+.centre {
+  text-align: center;
+  padding: 5px;
+}
+
+.centreNombre {
+  text-align: right;
+  padding-right: 40%;
+}
+
+.centreCA {
+  text-align: right;
+  padding-right: 40%;
+}
+
+// .centrageVertical {
+// 	align-self: center;
+// }
+
+.label {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.classement:hover {
+  cursor: pointer;
+}
+
+::ng-deep .tooltip-suivi {
+  background-color: var(--color-primary-second);
+  color: var(--color-primary-contrast);
+}
+
+.marge-col {
+  min-width: 200px;
+  padding-left: 4px;
+  &.label:hover {
+    text-decoration: underline;
+    cursor: pointer;
+  }
+}
+
+@media screen and (max-width: 1000px) {
+  .marge-col {
+    min-width: 120px;
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  .centreCA {
+    padding-right: 30%;
+  }
+}
+
+.activityTitleOneContainer {
+  display: flex;
+  flex-direction: row;
+  @media screen and (max-width:1000px){
+    flex-direction: column;
+  }
+
+}
+.activityTitleOne {
+  flex: 1;
+}
+
+.pizzaPlate {
+  // display: flex;
+  // flex-wrap: wrap;
+  // justify-content: space-around;
+  display: grid;
+  margin-top: 15px;
+}
+.categoriesPizzaPlate {
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+}
+.marquesPizzaPlate {
+  grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+}
+.pizza {
+  margin: auto;
+  // transform: translateX(-50%);
+}
+.pizzaTitle {
+  text-align: center;
+
+  .pizzaTitleCategories {
+    margin-left: 30%;
+  }
+  .pizzaTitleMarques {
+    display: block;
+    width: 100%;
+    text-align: center;
+  }
+  font-weight: 600;
+}
+
+.formatButtonsContainer {
+  display: flex;
+  flex-direction: row;
+  @media screen and (max-width:1000px) {
+    margin-left: auto;
+    padding-bottom: 20px;
+  }
+}
+.text-button {
+  margin-top: -12px;
+  margin-bottom: -12px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.listFormatButton {
+  margin-left: 15px;
+}
+.gridFormatButton {
+  @media screen and (max-width:425px){
+    margin-right: 5px;
+  }
+}
+/* .format-button {
+	opacity: 0.6;
+	cursor: pointer;
+
+	@media screen and (max-width: 767.98px) {
+		display: none;
+	}
+
+	&.disabled {
+		cursor: default;
+		filter: grayscale(100%);
+	}
+
+	&:hover:not(:disabled),
+	&.active {
+		filter: none !important;
+		opacity: 1;
+	}
+} */

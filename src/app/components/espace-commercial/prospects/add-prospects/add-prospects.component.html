@@ -1,0 +1,118 @@
+<app-title-w-line [title]="'Création d\'un prospect'"></app-title-w-line>
+
+<form [formGroup]="addProspectForm" class="form-add">
+
+  <div class="input-add">
+    <h2>Information société <app-tooltip class="iconComp" position="right" type="help" [text]="infoBulleSociete"></app-tooltip></h2>
+    <mat-form-field>
+      <mat-label>N° SIRET</mat-label>
+      <input matInput [formControlName]="'siret'">
+      @if (addProspectForm.get('siret').hasError('invalidSiret')) {
+        <mat-error> {{ addProspectForm.get('siret')?.getError('invalidSiret') }}
+        </mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Nom société</mat-label>
+      <input matInput formControlName="nom">
+      @if (!addProspectForm.get('nom').valid) {
+        <mat-error>Obligatoire</mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Activité</mat-label>
+      <input matInput formControlName="activite">
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>N° APE</mat-label>
+      <input matInput formControlName="ape">
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>N° Téléphone</mat-label>
+      <input matInput formControlName="telephone">
+      @if (!addProspectForm.get('telephone').valid) {
+        <mat-error>Le numéro de téléphone doit faire entre 1 et 15
+        caractères, exemple : 0000000000. Caractères autorisés : Chiffres, +</mat-error>
+      }
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Adresse</mat-label>
+      <input matInput formControlName="adresse1">
+    </mat-form-field>
+    <div class="cp-ville">
+      <mat-form-field class="largeur-input-binome">
+        <mat-label>Code postal</mat-label>
+        <input matInput type="text" formControlName="codepostal">
+        @if (addProspectForm.get('codepostal').hasError('required')) {
+          <mat-error>Obligatoire</mat-error>
+          }@else if (addProspectForm.get('codepostal').invalid) {
+          <mat-error>Doit faire 5 caractères et que des chiffres de 0 à 9</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field class="largeur-input-binome">
+        <mat-label>Ville</mat-label>
+        <input matInput formControlName="ville">
+        @if (!addProspectForm.get('ville').valid) {
+          <mat-error>Ne doit pas contenir de caractères spéciaux</mat-error>
+        }
+      </mat-form-field>
+    </div>
+    <mat-form-field>
+      <mat-label>Site web</mat-label>
+      <input matInput formControlName="siteweb">
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Secteur représentant</mat-label>
+      <mat-select formControlName="region">
+        @for (reg of prospectService.region; track reg) {
+          <mat-option [value]="reg">
+            {{reg}}
+          </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Groupement</mat-label>
+      <mat-select formControlName="groupe">
+        @for (grp of groupement; track grp) {
+          <mat-option [value]="grp.argument">
+            {{grp.argument + '-' + grp.libelle}}
+          </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div class="input-add">
+    <h2>Infos complémentaires</h2>
+    <mat-form-field>
+      <mat-label>Origine</mat-label>
+      <input matInput formControlName="originerecrutement">
+    </mat-form-field>
+    <mat-form-field class="size-default">
+      <mat-label>Date de recrutement</mat-label>
+      <input matInput [max]="this.maxDate" [matDatepicker]="picker" [formControlName]="'daterecrutement'" disabled>
+      <mat-hint>DD/MM/YYYY</mat-hint>
+      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker [disabled]="false"></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Commentaire</mat-label>
+      <textarea matInput #comm formControlName="commentaire"
+        cdkTextareaAutosize
+        [maxLength]="2000"
+        #autosize="cdkTextareaAutosize"
+        cdkAutosizeMinRows="1"
+      cdkAutosizeMaxRows="5"></textarea>
+      <mat-hint align="end">{{comm.value?.length || 0}}/2000</mat-hint>
+    </mat-form-field>
+    <p style="color: red">* Champs obligatoires</p>
+    <div class="button-action">
+      <button mat-raised-button class="button-enregistrer" (click)="addProspect()">
+        Enregistrer
+      </button>
+      <button mat-raised-button class="button-annuler" [routerLink]="['/espace-commercial/prospects']">
+        Annuler
+      </button>
+    </div>
+  </div>
+</form>

@@ -1,0 +1,60 @@
+@if (type == 'encours') {
+  <app-title-w-line [title]="'Clients bloqués sur encours'"></app-title-w-line>
+} @else {
+  <app-title-w-line [title]="'Retards de paiement'"></app-title-w-line>
+}
+<mat-card appearance="outlined" style="margin-bottom: 1em">
+    <div class="filters">
+      @for (filtre of filtres; track filtre) {
+        <app-filter [filterName]="filtre. name" [filterControl]="filtreControls[filtre. control]" [filterOptions]="filtre. options" [filterType]="filtre. type"></app-filter>
+      }
+    </div>
+</mat-card>
+
+<div class="mat-elevation-z3">
+  <table mat-table [dataSource]="dataSource" matSort>
+    <ng-container matColumnDef="numclient">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> N° Client </th>
+      <td  mat-cell *matCellDef="let row"  (click)="openTab(row.numclient)" routerLinkActive="active" target="_blank" > {{row.numclient}} </td>
+    </ng-container>
+    <ng-container matColumnDef="nom">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Nom </th>
+      <td mat-cell *matCellDef="let row"  (click)="openTab(row.numclient)" routerLinkActive="active" target="_blank" > {{row.nom}} </td>
+    </ng-container>
+    <ng-container matColumnDef="adresse">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Adresse </th>
+      <td mat-cell *matCellDef="let row"  (click)="openTab(row.numclient)" routerLinkActive="active" target="_blank"  > {{row.adresse1}} {{ row.codepostal }} {{ row.ville }} </td>
+    </ng-container>
+    <ng-container matColumnDef="telephone">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Téléphone </th>
+      <td mat-cell *matCellDef="let row"><a [href]="'tel:' + row.telephone" >{{row.telephone}}</a></td>
+    </ng-container>
+    <ng-container matColumnDef="info-finance">
+      <th mat-header-cell *matHeaderCellDef> Finance </th>
+      <td mat-cell *matCellDef="let row"  (click)="openTab(row.numclient)" routerLinkActive="active" target="_blank" >
+        <div style="display: flex; flex-direction: column">
+          <p>Risque global : {{ row.EncoursBL + row.EncoursCompta }} €</p>
+          <p>Dont BL : {{ row.EncoursBL }} €</p>
+          <p>Limite de crédit : {{ row.limiteCredit }} €</p>
+          <p>Limite de crédit excep : <strong>{{ row.limiteCreditExceptionnel }} €</strong>
+          @if (row.limiteCreditExceptionnelDate != '0') {
+            jusqu'au {{ row.limiteCreditExceptionnelDate }}
+          }
+        </p>
+        <p>Bilan : {{ row.Bilan }}</p>
+      </div>
+    </td>
+  </ng-container>
+  <ng-container matColumnDef="blocage">
+    <th mat-header-cell *matHeaderCellDef> Blocage </th>
+    <td mat-cell *matCellDef="let row"  (click)="openTab(row.numclient)" routerLinkActive="active" target="_blank" >{{row.blocage}}</td>
+  </ng-container>
+
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row  *matRowDef="let row; columns: displayedColumns;"   routerLinkActive="active" target="_blank" ></tr>
+
+</table>
+
+<mat-paginator [pageSizeOptions]="[25, 50, 100]" aria-label="Select page of users"></mat-paginator>
+</div>

@@ -1,0 +1,13 @@
+@if (produit.pdf) {
+  <a
+    class="pdf"
+    target="_blank"
+    [href]="urlStart + produit.pdf + '.pdf'">
+    <span title="Fiche Technique PDF" class="pdf-icon"></span>
+    @if (showLibelle) {
+      <p class="libelle-pdf">Voir la fiche technique</p>
+    }
+  </a>
+} @else {
+  &nbsp;
+}

@@ -1,0 +1,66 @@
+<div class="recherche" infiniteScroll
+  [infiniteScrollDistance]="2"
+  [infiniteScrollUpDistance]="4"
+  [infiniteScrollThrottle]="20"
+  (scrolled)="onScrollDown()"
+  (scrolledUp)="onScrollUp()">
+  <div style="display: flex; flex-direction: row">
+    <div class="basic-chip" (click)="btnFiltreProduit()"
+      [ngClass]="{'selected': produitSelected, 'disabled': produitCount === 0}">
+      Produits ({{ this.produitCount }})
+    </div>
+    <div class="basic-chip" (click)="btnFiltreClient()"
+      [ngClass]="{'selected': clientSelected, 'disabled': clientCount === 0}">
+      Clients ({{ this.clientCount }})
+    </div>
+    <div class="basic-chip" (click)="btnFiltreCommande()"
+      [ngClass]="{'selected': cdeSelected, 'disabled': cdeCount === 0}">
+      Transactions ({{ this.cdeCount }})
+    </div>
+  </div>
+  @if (!produitSelected && !clientSelected && !cdeSelected) {
+    @for (elem of produitsFiltered; track elem) {
+      @if (elem) {
+        <app-produit-preview [produit]="elem"></app-produit-preview>
+      }
+    }
+    @for (elem of tabClientFinal; track elem) {
+      @if (elem) {
+        <app-client-preview [clients]="elem"></app-client-preview>
+      }
+    }
+    @for (elem of tab; track elem) {
+      @if (elem) {
+        <app-client-preview [clientCde]="elem"></app-client-preview>
+      }
+    }
+  } @else {
+    @if (produitSelected) {
+      @for (prod of produitsFiltered | slice:0:toDisplay; track prod) {
+        <app-produit-preview [produit]="prod"></app-produit-preview>
+      }
+    }
+    @if (clientSelected) {
+      @for (client of tabClientFinal | slice:0:toDisplay; track client) {
+        <app-client-preview [clients]="client"></app-client-preview>
+      }
+    }
+    @if (cdeSelected) {
+      @for (elem of tab; track elem) {
+        @if (elem) {
+          <app-client-preview [clientCde]="elem"></app-client-preview>
+        }
+      }
+    }
+  }
+  @if (!clientsFiltered.length && !produitsFiltered.length && !clientCdeFiltered.length && aucunRes) {
+    <div style="height: 57.6vh">
+      Aucun résultat pour votre recherche
+    </div>
+  }
+</div>
+@if (errorSearch == true) {
+  <div>
+    <p>Erreur lors de la recherche</p>
+  </div>
+}

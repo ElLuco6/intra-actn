@@ -1,0 +1,44 @@
+.labels-panier {
+
+  $padding: 10px;
+  position: sticky !important;
+  top: 58px;
+  width: calc(100% + 2 * #{$padding});
+  padding: $padding;
+  margin-left: -#{$padding};
+  background-color: white;
+  z-index: 19;
+
+  @media screen and (max-width:768px){
+    display: none;
+  }
+
+  ul {
+    display: grid;
+    grid-gap: 20px;
+    // grid-template-columns: minmax(0, 1.5fr) minmax(0, 6fr) minmax(0, 2fr) minmax(0, 3fr) minmax(0, 1px) minmax(0, 2fr) minmax(0, 2fr) minmax(0, 1fr);
+    grid-template-rows: 100%;
+    text-align: left;
+    justify-items: center;
+    align-items: center;
+
+    background-color: #fafafa;
+    list-style: none;
+    margin: 0;
+    padding: 15px 0;
+  }
+
+  li {
+    font-weight: bold;
+    // display: inline-block;
+  }
+}
+
+.affichage-0 {
+  //grid-template-columns: minmax(0, 1px) minmax(0, 7.5fr) minmax(0, 1.5fr) minmax(0, 4fr) minmax(0, 1px) minmax(85px, 2fr) minmax(0, 2fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7.5fr) minmax(0, 1.5fr) minmax(0, 4fr) minmax(0, 1px) minmax(85px, 2fr) minmax(0, 2fr) minmax(0, 1fr);
+}
+
+.affichage-1 {
+  grid-template-columns: minmax(0, 1px) minmax(0, 7.5fr) minmax(0, 2fr) minmax(0, 4fr) minmax(0, 1px) minmax(0, 1fr) minmax(0, 2fr);
+}

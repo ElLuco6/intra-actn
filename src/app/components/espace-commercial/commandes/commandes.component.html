@@ -1,0 +1,265 @@
+<div infiniteScroll
+  [infiniteScrollDistance]="2"
+  [infiniteScrollUpDistance]="4"
+  [infiniteScrollThrottle]="20">
+  <app-title-w-line [title]="'Commandes'"></app-title-w-line>
+
+  <mat-card appearance="outlined" style="padding: 1em">
+    <div style="display: flex; flex-direction: row;height: 3.3vh">
+      <h2>FILTRES</h2>
+      <i
+        title="Reinitialiser les filtres"
+        class="text-button main-reset-filter"
+        (click)="resetFilters()"
+        >
+        <mat-icon>clear</mat-icon>
+      </i>
+      <!--<mat-slide-toggle (click)="regionChecked()">TEST</mat-slide-toggle>-->
+    </div>
+
+    <div>
+      <form style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px" [formGroup]="filtresForm">
+        <mat-form-field>
+          <mat-label>N° Client</mat-label>
+          <input [matAutocomplete]="autoGroup" (click)="autocomplete.openPanel()" formControlName="numclient" matInput
+            [ngModel]="saf.getFiltre('commande', 'numclient', 'includes')"
+            (keydown)="onSearch('numclient', 'string', 'includes', $event)"
+            (focusin)="inputFocused()"
+            (focusout)="inputFocused()"/>
+            @if (filtresForm.value.numclient) {
+              <button matSuffix mat-icon-button aria-label="Clear" (click)="resetOneFilters('numclient')">
+                <mat-icon>close</mat-icon>
+              </button>
+            }
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Société</mat-label>
+            <input formControlName="nom" matInput [ngModel]="saf.getFiltre('commande', 'nom', 'includes')"
+              (keydown)="onSearch('nom', 'string', 'includes', $event)"/>
+              @if (filtresForm.value.nom) {
+                <button matSuffix mat-icon-button aria-label="Clear" (click)="resetOneFilters('nom')">
+                  <mat-icon>close</mat-icon>
+                </button>
+              }
+            </mat-form-field>
+            <mat-form-field>
+              <mat-label>N° Commande</mat-label>
+              <input formControlName="numCde" matInput [ngModel]="saf.getFiltre('commande', 'numCde', 'includes')"
+                (keydown)="onSearch('numCde', 'string', 'includes', $event)"/>
+                @if (filtresForm.value.numCde) {
+                  <button matSuffix mat-icon-button aria-label="Clear" (click)="resetOneFilters('numCde')">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                }
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>N° Bl</mat-label>
+                <input formControlName="numBl" matInput [ngModel]="saf.getFiltre('commande', 'numBl', 'includes')"
+                  (keydown)="onSearch('numBl', 'string', 'includes', $event)"/>
+                  @if (filtresForm.value.numBl) {
+                    <button matSuffix mat-icon-button aria-label="Clear" (click)="resetOneFilters('numBl')">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  }
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-label>N° Facture</mat-label>
+                  <input formControlName="numFacture" matInput [ngModel]="saf.getFiltre('commande', 'numFacture', 'includes')"
+                    (keydown)="onSearch('numFacture', 'string', 'includes', $event)"/>
+                    @if (filtresForm.value.numFacture) {
+                      <button matSuffix mat-icon-button aria-label="Clear" (click)="resetOneFilters('numFacture')">
+                        <mat-icon>close</mat-icon>
+                      </button>
+                    }
+                  </mat-form-field>
+                  <mat-form-field>
+                    <mat-label>Ref. Commande</mat-label>
+                    <input formControlName="refCde" matInput [ngModel]="saf.getFiltre('commande', 'refCde', 'includes')"
+                      (keydown)="onSearch('refCde', 'string', 'includes', $event)"/>
+                      @if (filtresForm.value.refCde) {
+                        <button matSuffix mat-icon-button aria-label="Clear" (click)="resetOneFilters('refCde')">
+                          <mat-icon>close</mat-icon>
+                        </button>
+                      }
+                    </mat-form-field>
+                    <mat-form-field>
+                      <mat-label>montant HT</mat-label>
+                      <input formControlName="montantHt" matInput [ngModel]="saf.getFiltre('commande', 'montantHt', 'includes')"
+                        (keydown)="onSearch('montantHt', 'string', 'includes', $event)"/>
+                        @if (filtresForm.value.montantHt) {
+                          <button matSuffix mat-icon-button aria-label="Clear" (click)="resetOneFilters('montantHt')">
+                            <mat-icon>close</mat-icon>
+                          </button>
+                        }
+                      </mat-form-field>
+                      <mat-form-field>
+                        <mat-label>Département</mat-label>
+                        <mat-select formControlName="departement" [(ngModel)]="depSelected"
+                          (ngModelChange)="onSearch('departement', 'array', 'includes', $event, 'depSelected')" multiple>
+                          @for (dep of departement; track dep) {
+                            <mat-option [value]="dep">{{ dep }}</mat-option>
+                          }
+                        </mat-select>
+                        @if (filtresForm.value.departement != '') {
+                          <button matSuffix mat-icon-button aria-label="Clear"
+                            (click)="resetOneFilters('departement'); $event.stopPropagation()">
+                            <mat-icon>close</mat-icon>
+                          </button>
+                        }
+                      </mat-form-field>
+                      <mat-form-field>
+                        <mat-label>Region</mat-label>
+                        <mat-select formControlName="region" [(ngModel)]="regionSelected"
+                          (ngModelChange)="onSearch('region', 'array', 'includes', $event, 'regionSelected')" multiple>
+                          @for (reg of region; track reg) {
+                            <mat-option [value]="reg">{{ reg }}</mat-option>
+                          }
+                        </mat-select>
+                        @if (filtresForm.value.region != '') {
+                          <button matSuffix mat-icon-button aria-label="Clear"
+                            (click)="resetOneFilters('region')">
+                            <mat-icon>close</mat-icon>
+                          </button>
+                        }
+                      </mat-form-field>
+                      <mat-form-field>
+                        <mat-label>Produit</mat-label>
+                        <input formControlName="produit" matInput [ngModel]="saf.getFiltre('commande', 'produits', 'includes')"
+                          (keydown)="onSearch('produits.produit', 'string', 'includes', $event)"/>
+                          @if (filtresForm.value.produit) {
+                            <button matSuffix mat-icon-button aria-label="Clear" (click)="resetOneFilters('produit')">
+                              <mat-icon>close</mat-icon>
+                            </button>
+                          }
+                        </mat-form-field>
+                      </form>
+                      @if (proccessedMarque$ | async; as marques) {
+                        <div class="marque-filtres del-for-phone1">
+                          @for (marque of marques; track marque) {
+                            <div class="marque-options"  [ngClass]="{'selected': marquesSelected.includes(marque)}"
+                              (click)="filtreMarqueToggle(marque)" (tap)="filtreMarqueToggle(marque)">
+                              <img class="marque-img" [src]="environment.logoMarquesCouleurs200x80 + marque + '.gif'" [alt]="marque" />
+                            </div>
+                          }
+                        </div>
+                      }
+                    </div>
+                  </mat-card>
+
+                  @if (processedCommande$ | async; as commandes) {
+                    <div class="header-liste">
+                      <div class="btn-qui-clc">
+                        @if (!selection.isEmpty()) {
+                          <button mat-raised-button class="export" (click)="exportToExcel()">Exporter en xls</button>
+                          <button mat-raised-button class="export" (click)="campagnesService.openCampaignDialog(selection)">Affecter à une campagne</button>
+                        } @else {
+                          <button mat-raised-button class="export nope" [disabled]="true">Exporter en xls</button>
+                          <button mat-raised-button class="export nope" [disabled]="true">Affecter à une campagne</button>
+                        }
+                      </div>
+                      <mat-paginator [pageSizeOptions]="[25, 50, 100]" [showFirstLastButtons]="true" aria-label="Select page of users" style="background-color: transparent"></mat-paginator>
+                    </div>
+                    <div>
+                      <table mat-table [dataSource]="this.dataSource" matSort class="mat-elevation-z3">
+                        <ng-container matColumnDef="select">
+                          <th mat-header-cell *matHeaderCellDef>
+                            <mat-checkbox (change)="$event ? toggleAllRows() : null"
+                              [checked]="selection.hasValue() && isAllSelected()"
+                              [indeterminate]="selection.hasValue() && !isAllSelected()"
+                              [aria-label]="checkboxLabel()">
+                            </mat-checkbox>
+                          </th>
+                          <td mat-cell *matCellDef="let row">
+                            <mat-checkbox (click)="$event.stopPropagation()"
+                              (change)="$event ? selection.toggle(row) : null"
+                              [checked]="selection.isSelected(row)"
+                              [aria-label]="checkboxLabel(row)">
+                            </mat-checkbox>
+                          </td>
+                        </ng-container>
+                        <ng-container matColumnDef="numClient">
+                          <th mat-header-cell *matHeaderCellDef mat-sort-header> N° Client </th>
+                          <td mat-cell *matCellDef="let row" (click)="openInNewWindow(row.numClient)">
+                            {{row.numClient}}
+                          </td>
+                        </ng-container>
+                        <ng-container matColumnDef="nom">
+                          <th mat-header-cell *matHeaderCellDef mat-sort-header> Société </th>
+                          <td mat-cell *matCellDef="let row" (click)="openInNewWindow(row.numClient)">
+                            {{row.nom}}
+                          </td>
+                        </ng-container>
+                        <ng-container matColumnDef="numCde">
+                          <th mat-header-cell *matHeaderCellDef mat-sort-header> N° Commande </th>
+                          <td mat-cell *matCellDef="let row" [routerLink]="['/commande-detail']"
+                            [queryParams]="{client: row.numclient, commande: row.numCde}">
+                            {{row.numCde}}
+                          </td>
+                        </ng-container>
+                        <ng-container matColumnDef="refCde">
+                          <th mat-header-cell *matHeaderCellDef mat-sort-header> Ref. Commande </th>
+                          <td mat-cell *matCellDef="let row" [routerLink]="['/commande-detail']"
+                            [queryParams]="{client: row.numclient, commande: row.numCde}">
+                            {{row.refCde}}
+                          </td>
+                        </ng-container>
+                        <ng-container matColumnDef="numBl">
+                          <th mat-header-cell *matHeaderCellDef mat-sort-header> N° BL </th>
+                          <td mat-cell *matCellDef="let row">
+                            <a style="text-decoration: underline" target="_blank"
+                              [href]="environment.apiUrlActn + '/document/generate_intra.php?document=BON/' + row.numclient + '/' + row.numBl">
+                              {{ row.numBl }} <app-tooltip class="marge-button" type="pdf" [text]="'Acceder à la facture'"></app-tooltip>
+                            </a>
+                          </td>
+                        </ng-container>
+                        <ng-container matColumnDef="numFacture">
+                          <th mat-header-cell *matHeaderCellDef mat-sort-header> N° Facture </th>
+                          <td mat-cell *matCellDef="let row">
+                            <a style="text-decoration: underline" target="_blank"
+                              [href]="environment.apiUrlActn + '/document/generate_intra.php?document=FACTURE/' + row.numclient + '/' + row.numFacture">
+                              {{ row.numFacture }} <app-tooltip class="marge-button" type="pdf" [text]="'Acceder à la facture'"></app-tooltip>
+                            </a>
+                          </td>
+                        </ng-container>
+                        <ng-container matColumnDef="dateCde">
+                          <th mat-header-cell *matHeaderCellDef mat-sort-header> Date </th>
+                          <td mat-cell *matCellDef="let row" [routerLink]="['/commande-detail']"
+                          [queryParams]="{client: row.numclient, commande: row.numCde}"> {{row.dateCde}} </td>
+                        </ng-container>
+                        <ng-container matColumnDef="departement">
+                          <th mat-header-cell *matHeaderCellDef mat-sort-header> Département </th>
+                          <td mat-cell *matCellDef="let row" [routerLink]="['/commande-detail']"
+                          [queryParams]="{client: row.numclient, commande: row.numCde}"> {{row.departement}} </td>
+                        </ng-container>
+                        <ng-container matColumnDef="montantHt">
+                          <th mat-header-cell *matHeaderCellDef mat-sort-header> Montant HT </th>
+                          <td mat-cell *matCellDef="let row" [routerLink]="['/commande-detail']"
+                          [queryParams]="{client: row.numclient, commande: row.numCde}"> {{row.montantHt}} € </td>
+                        </ng-container>
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                        <!-- Row shown when there is no matching data. -->
+                        <!--<tr class="mat-row" *matNoDataRow>
+                        <td class="mat-cell" colspan="4">No data matching the filter "{{input.value}}"</td>
+                      </tr>-->
+                    </table>
+                  </div>
+                }
+              </div>
+
+
+              <mat-autocomplete #autoGroup="matAutocomplete" (optionSelected)="selectOnPredict($event.option)">
+                @if (autoCompleteOptions$ | async; as options) {
+                  @for (client of options.clients; track client) {
+                    <mat-option [value]="client.code">
+                      {{ start(client.code) }}@if (client.code.includes(searching)) {
+                      <span style="font-weight: bold;">{{ searching }}</span>
+                      }{{ end(client.code) }}
+                      <br>
+                        {{ start(client.designation) }}@if (client.designation.includes(searching)) {
+                        <span style="font-weight: bold;">{{ searching }}</span>
+                        }{{ end(client.designation) }}
+                      </mat-option>
+                    }
+                  }
+                </mat-autocomplete>

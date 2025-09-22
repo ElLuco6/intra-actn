@@ -1,0 +1,216 @@
+<app-title-w-line [title]="'Prospect'"></app-title-w-line>
+
+@if (prospect) {
+  <mat-card class="bandeau-prospect">
+
+    <div class="info-prospect">
+      <p>{{ prospect.nom }}</p>
+      <p>Adresse 1 : {{ prospect.adresse1 }}</p>
+      @if (prospect.adresse2) {
+        <p>Adresse 2 : {{ prospect.adresse2 }}</p>
+      }
+      <p>Code postal : {{ prospect.codepostal }} </p>
+      <p>Ville : {{ prospect.ville }} </p>
+      <p>Region : {{ prospect.region }}</p>
+      <p>Téléphone : <a [href]="'tel:'+prospect.telephone">{{ prospect.telephone }}</a></p>
+    </div>
+    <div class="info-prospect">
+      <p>Siret : <a [href]="'https://www.societe.com/cgi-bin/search?champs='+prospect.siret" target="_blank"
+                    style="text-decoration: underline;">{{ prospect.siret }}</a></p>
+      <p>Ape : {{ prospect.ape }}</p>
+      <p>Activité : {{ prospect.activite }}</p>
+      <p>Groupement : {{ prospect.groupe }}</p>
+      @if (prospect.siteweb) {
+        <p>Site web : <a [href]="prospect.siteweb" target="_blank">{{ prospect.siteweb }}</a></p>
+      }
+      @if (prospect.origine) {
+        <p>Origine : {{ prospect.origine }}</p>
+      }
+      <p>Recrutement : {{ prospect.daterecrutement | date:'dd/MM/yyyy' }}</p>
+    </div>
+    <div class="info-prospect">
+      <div class="commerciaux">
+        <p>{{ prospect.commercialNom1 }}</p>
+        <a [href]="'mailto:'+prospect.commercialMail1">{{ prospect.commercialMail1 }}</a>
+        <a [href]="'tel:'+prospect.commercialTel1">{{ prospect.commercialTel1 }}</a>
+      </div>
+      <div class="commerciaux">
+        <p>{{ prospect.commercialNom2 }}</p>
+        <a [href]="'mailto:'+prospect.commercialMail2">{{ prospect.commercialMail2 }}</a>
+        <a [href]="'tel:'+prospect.commercialTel2">{{ prospect.commercialTel2 }}</a>
+      </div>
+    </div>
+    <div class="bimbamboum">
+      <mat-icon (click)="popUpModif = true" [matTooltip]="'Modifier la fiche prospect'"
+                style="cursor: pointer; color: #006c98">edit
+      </mat-icon>
+      <mat-icon (click)="openDeleteProspectPopup()" [matTooltip]="'Supprimer la fiche prospect'"
+                style="cursor: pointer; color: #9b0037">delete
+      </mat-icon>
+    </div>
+  </mat-card>
+
+  <div class="info-prospect">
+    <app-title-w-line [title]="'Commentaire'"></app-title-w-line>
+    <p class="commentaire">{{ prospect.commentaire }}</p>
+  </div>
+
+  <div>
+    <app-title-w-line [title]="'Contacts'"></app-title-w-line>
+    <app-list-users-contacts [contactList]="contactsList" [idClient]="siretNumber" [isProspect]="true"
+                             (contactListChanged)="onContactListFilled($event)"></app-list-users-contacts>
+  </div>
+
+  <div>
+    <app-title-w-line [title]="'Compte rendu de visite'"></app-title-w-line>
+    <app-compte-rendu [isClient]="false" [idIdentity]="idProspect" [prospect]="prospect"
+                      (reportsListFilled)="onReportsListFilled($event)"></app-compte-rendu>
+  </div>
+  <div>
+    <app-documents [idClient]="prospect.siret"></app-documents>
+  </div>
+
+  @if (formUpdateProspect) {
+    <div class="popup" [ngClass]="{active: popUpModif}">
+      <div class="popup-background" (click)="popUpModif = false"></div>
+      <div class="popup-window size-default raised-3">
+        <form [formGroup]="formUpdateProspect">
+          <div class="input-add">
+            <h2>Information société</h2>
+            <div class="brrrrt">
+              <mat-form-field>
+                <mat-label>N° SIRET</mat-label>
+                <input matInput formControlName="numSiret" disabled>
+                @if (!formUpdateProspect.get('numSiret').valid) {
+                  <mat-error>Le numéro de SIRET doit faire entre 9 et 14
+                    caractères. Caractères autorisés : Chiffres
+                  </mat-error>
+                }
+              </mat-form-field>
+              <mat-form-field appearance="fill">
+                <mat-label>Nom société</mat-label>
+                <input matInput formControlName="nomSociete">
+                @if (!formUpdateProspect.get('nomSociete').valid) {
+                  <mat-error>Obligatoire</mat-error>
+                }
+              </mat-form-field>
+              <mat-form-field appearance="fill">
+                <mat-label>Activité</mat-label>
+                <input matInput formControlName="activite">
+              </mat-form-field>
+              <mat-form-field appearance="fill">
+                <mat-label>N° APE</mat-label>
+                <input matInput formControlName="numApe">
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>N° Téléphone</mat-label>
+                <input matInput formControlName="numTelephone">
+              </mat-form-field>
+              <mat-form-field appearance="fill">
+                <mat-label>Adresse</mat-label>
+                <input matInput formControlName="adresse">
+              </mat-form-field>
+            </div>
+            <div class="brrrrt">
+              <mat-form-field appearance="fill" class="largeur-input-binome">
+                <mat-label>Code postal</mat-label>
+                <input matInput formControlName="codePostal">
+                @if (!formUpdateProspect.get('codePostal').valid) {
+                  <mat-error>Doit faire 5 caractères et que des chiffres de 0 à 9</mat-error>
+                }
+              </mat-form-field>
+              <mat-form-field appearance="fill" class="largeur-input-binome">
+                <mat-label>Ville</mat-label>
+                <input matInput formControlName="ville">
+                @if (!formUpdateProspect.get('ville').valid) {
+                  <mat-error>Ne doit pas contenir de caractères spéciaux</mat-error>
+                }
+              </mat-form-field>
+              <mat-form-field appearance="fill">
+                <mat-label>Site web</mat-label>
+                <input matInput formControlName="siteWeb">
+              </mat-form-field>
+              <mat-form-field appearance="fill">
+                <mat-label>Secteur représentant</mat-label>
+                <mat-select formControlName="region">
+                  @for (reg of prospectService.region; track reg) {
+                    <mat-option [value]="reg">
+                      {{ reg }}
+                    </mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>Origine</mat-label>
+                <input formControlName="origine" matInput/>
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>Groupement</mat-label>
+                <mat-select formControlName="groupe">
+                  @for (grp of groupement; track grp) {
+                    <mat-option [value]="grp.argument">
+                      {{ grp.argument + '-' + grp.libelle }}
+                    </mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+          <h2>Infos complémentaires</h2>
+          <div class="brrrrt-colonne">
+            <mat-form-field class="size-default zazizou" appearance="fill">
+              <mat-label>Date de recrutement</mat-label>
+              <input matInput [max]="this.maxDate" [matDatepicker]="picker" formControlName="dateRecrutement"
+                     [value]="formUpdateProspect.get('dateRecrutement').value" readonly>
+              <mat-hint>DD/MM/YYYY</mat-hint>
+              <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker [disabled]="false"></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+              <mat-label>Commentaire</mat-label>
+              <textarea matInput #comm formControlName="commentaire"
+                        cdkTextareaAutosize
+                        [maxLength]="2000"
+                        #autosize="cdkTextareaAutosize"
+                        cdkAutosizeMinRows="1"
+                        cdkAutosizeMaxRows="5"></textarea>
+              <mat-hint align="end">{{ comm.value?.length || 0 }}/2000</mat-hint>
+            </mat-form-field>
+            <p style="color: red">* Champs obligatoires</p>
+          </div>
+          <div class="button-action">
+            <button mat-raised-button class="button-annuler" (click)="popUpModif = false">
+              Annuler
+            </button>
+            <button mat-raised-button class="button-enregistrer" (click)="updateProspect()">
+              Valider
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <div class="popup" [ngClass]="{active: popupDeleteProspect}">
+    <div class="popup-background" (click)="popupDeleteProspect = false"></div>
+    <div class="popup-window size-default raised-3">
+      Voulez-vous vraiment supprimer ce prospect ?
+      <div class="prout">
+        <button mat-raised-button class="button-annuler" (click)="popupDeleteProspect = false">Annuler</button>
+        <button mat-raised-button class="button-enregistrer" (click)="this.deleteProspect()">Confirmer</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="popup" [ngClass]="{active: forbiddenDelete}">
+    <div class="popup-background" (click)="forbiddenDelete = false"></div>
+    <div class="popup-window size-default raised-3">
+      <h2>Vous ne pouvez pas supprimer ce prospect</h2>
+      <p>Pour supprimer une fiche prospect elle ne doit pas contenir de contact</p>
+      <div class="prout">
+        <button mat-raised-button class="button-annuler" (click)="forbiddenDelete = false">Annuler</button>
+      </div>
+    </div>
+  </div>
+
+}

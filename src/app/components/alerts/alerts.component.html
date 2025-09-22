@@ -1,0 +1,10 @@
+@for (alert of alertsService.alerts; track alert) {
+  <div>
+    <ngb-alert type="{{alert.type}}" (close)="close(alert)">
+      {{alert.message}}
+      @if (alert.debug) {
+        <pre class="alert-pre border bg-light p-2 mt-2"><code>{{alert.debug}}</code></pre>
+      }
+    </ngb-alert>
+  </div>
+}

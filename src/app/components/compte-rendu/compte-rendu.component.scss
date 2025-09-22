@@ -1,0 +1,94 @@
+@import 'styles/popup';
+
+p {
+  margin: 0;
+}
+
+.card-compt-rendu {
+  display: grid;
+  gap: 20px;
+  @media screen and (min-width: 1200px){
+    grid-template-columns: 15em 35em 15em 1fr;
+  }
+}
+
+.compt-rendu {
+  display: flex;
+  flex-direction: column;
+  width: 15em;
+}
+
+.date {
+  display: flex;
+  flex-direction: row;
+  gap: 5px
+}
+
+.action {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.hihi {
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  height: 32px;
+  width: max-content;
+  min-width: max-content;
+  padding: 0 12px;
+  border-radius: 4em;
+  display: flex;
+  margin: 4px 8px 4px 0;
+  flex-wrap: wrap;
+  align-items: center;
+  font-size: 0.885rem;
+  color: white;
+
+  &.action {
+    background-color: #fb5e00;
+  }
+
+  &.aappel {
+    background-color: #1fa704;
+  }
+}
+
+.action-date {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.laclassadallas {
+  display: flex;
+  justify-content: end;
+  gap: 20px;
+}
+
+.popup-window {
+  width: fit-content !important;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+}
+
+.fields {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+
+.mail-region {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  gap: 1rem;
+}

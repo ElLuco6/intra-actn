@@ -1,0 +1,12 @@
+<mat-dialog-content>
+  <h1>Sauvegarde d'un filtrage</h1>
+  <p>Vous êtes sur le point de sauvegarder un nouveau filtrage.<br/>
+    Veuillez entrer un nom pour le retrouver facilement.</p>
+  <mat-form-field>
+    <input matInput placeholder="Nom du filtrage" [(ngModel)]="displayName">
+  </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button class="annuler" mat-button mat-dialog-close>Annuler</button>
+  <button class="valider" mat-button [mat-dialog-close]="displayName">Ajouter</button>
+</mat-dialog-actions>

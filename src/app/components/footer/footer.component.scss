@@ -1,0 +1,121 @@
+/*  @import "variables.scss";
+*/
+footer {
+  width: 100%;
+  padding: 30px;// $window-padding-screen;
+  background: var(--color-primary);
+  color: white;
+  column-count: auto;
+  column-width: 200px;
+  display: grid;
+  grid-template-columns: 2fr 2fr 2fr 2fr 2fr;
+
+  a {
+    color: white;
+  }
+
+  h1 {
+    margin-top: 15px;
+    margin-bottom: 5px;
+  }
+
+  h4 {
+    margin: 15px 0 0 0;
+  }
+
+  > div {
+    break-inside: avoid-column;
+    /* Pour Firefox : */
+    page-break-inside: avoid;
+    /* Pour WebKit : */
+    -webkit-column-break-inside: avoid;
+    margin-bottom: 15px;
+  }
+  .support_technique{
+    display: flex;
+    flex-direction: column;
+    > a{
+      margin: 5px 0px;
+    }
+  }
+  .presentation , .adresse {
+    display: flex;
+    flex-direction: column;
+    margin-top: 5px;
+    > a{
+      margin: 5px 0px;
+    }
+  }
+
+  .terms-of-service, .presentation {
+    > a {
+      display: inline;
+      margin: 5px 0px;
+
+      &:first-of-type {
+        margin-top: 0;
+      }
+    }
+  }
+
+  .contacts{
+
+    display: inline;
+  }
+  .aicon{
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    color: var(--color-primary);
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: x-large;
+  }
+
+  .social-networks {
+    a {
+      &:not(:last-of-type) {
+        margin-right: 10px;
+      }
+    }
+
+    .icons{
+      display: flex;
+
+    }
+
+    img {
+      height: 40px;
+    }
+  }
+
+  @media screen and (min-width: 1650px) {
+   // padding: 30px $window-padding-large-screen;
+  }
+
+  @media screen and (max-width: 1300px) {
+  //  padding: 30px $window-padding-tablet;
+
+  }
+
+
+
+ /*  @media screen and (max-width: $top-nav-small-breakpoint) {
+    padding: 30px $window-padding-mobile;
+    text-align: center;
+    .icons{
+      justify-content: center;
+    }
+  } */
+
+}
+@media screen and (max-width:800px) {
+  footer{
+   display: flow-root ;
+  }
+  h1{
+    margin-top: 0px;
+  }
+}

@@ -1,0 +1,45 @@
+<form [formGroup]="campagneForm" (ngSubmit)="addCampagne()" class="campagne-form">
+  <mat-form-field appearance="fill">
+    <mat-label>Campagne</mat-label>
+    <input matInput type="text" formControlName="campagne">
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Libelle</mat-label>
+    <input matInput type="text" formControlName="libelle">
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Date Debut</mat-label>
+    <input matInput [matDatepicker]="datedebPicker" formControlName="datedeb" disabled>
+    <mat-hint>MM/DD/YYYY</mat-hint>
+    <mat-datepicker-toggle matSuffix [for]="datedebPicker"></mat-datepicker-toggle>
+    <mat-datepicker #datedebPicker disabled="false"></mat-datepicker>
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Date Fin</mat-label>
+    <input matInput [matDatepicker]="datefinPicker" formControlName="datefin" disabled>
+    <mat-hint>MM/DD/YYYY</mat-hint>
+    <mat-datepicker-toggle matSuffix [for]="datefinPicker"></mat-datepicker-toggle>
+    <mat-datepicker #datefinPicker disabled="false"></mat-datepicker>
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Commercial 1</mat-label>
+    <input matInput type="text" formControlName="user1">
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Commercial 2</mat-label>
+    <input matInput type="text" formControlName="user2">
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Commercial 3</mat-label>
+    <input matInput type="text" formControlName="user3">
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Commercial 4</mat-label>
+    <input matInput type="text" formControlName="user4">
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Texte</mat-label>
+    <textarea matInput formControlName="texte"></textarea>
+  </mat-form-field>
+  <button mat-raised-button type="submit">Ajouter la campagne</button>
+</form>

@@ -1,0 +1,39 @@
+<app-title-w-line [title]="'Chiffres d\'affaires journalier'"></app-title-w-line>
+
+@if(loading === false){
+
+  <mat-table [dataSource]="caArray" class="table">
+
+    <!-- Date Column -->
+    <ng-container matColumnDef="date">
+      <mat-header-cell *matHeaderCellDef></mat-header-cell>
+      <mat-cell *matCellDef="let item" class="text_end"> {{item.jour}}  </mat-cell>
+    </ng-container>
+
+    <!-- Region Columns -->
+    @for (key of regionKeys; track key; let i = $index) {
+      <ng-container [matColumnDef]="'region' + key">
+        <mat-header-cell *matHeaderCellDef> </mat-header-cell>
+        <mat-cell  class="text_end" *matCellDef="let item" (click)="goDetails(item.region[key])"  [ngClass]="{'boldText': toggleBoldClass(i)}">
+          @if (item.region[key] && item.region[key] !== '0') {
+            <ng-container class="text_end"   >
+              {{item.region[key]}}
+            </ng-container>
+          }
+        </mat-cell>
+      </ng-container>
+    }
+
+    <!--   <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row> Mais madame je suis  la mal
+    -->  <mat-row  *matRowDef="let row; columns: displayedColumns;" class="my-row"></mat-row>
+  </mat-table>
+
+  <h4 class="legend">Cliquez sur le nom des régions pour accéder aux détails.</h4>
+
+
+  }@else{
+
+  <h2 style="padding: 15px;">Chargement  <span class="dots"></span></h2>
+
+
+}

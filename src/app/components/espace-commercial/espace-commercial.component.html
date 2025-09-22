@@ -1,0 +1,3 @@
+<div id="content" [@routerFade]="o.isActivated ? o.activatedRoute : ''">
+  <router-outlet (activate)="onActivate($event)" #o="outlet"></router-outlet>
+</div>

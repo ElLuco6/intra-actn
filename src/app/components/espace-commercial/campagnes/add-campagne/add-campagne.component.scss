@@ -1,0 +1,19 @@
+.campagne-form {
+  display: flex;
+  flex-direction: column;
+  max-width: 600px;
+}
+
+.mat-mdc-form-field {
+  margin-bottom: 15px;
+}
+
+button {
+  align-self: flex-end;
+}
+
+@media (max-width: 600px) {
+  .campagne-form {
+    padding: 0 15px;
+  }
+}

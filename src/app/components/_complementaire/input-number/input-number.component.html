@@ -1,0 +1,5 @@
+<div class="container" [ngClass]="{small: size === 'small', 'wrongValue': wrongValue}">
+  <button type="button" class="minus" (click)="reduire()" (tap)="reduire()" [disabled]="isDisabled">−</button>
+  <input [ngModel]="number" digitOnly inputmode="numeric" pattern="[0-9]*" [decimal]="false" [min]="min" [max]="max" [disabled]="isDisabled" (ngModelChange)="onChange($event)"/>
+  <button type="button" class="plus" (click)="ajouter()" (tap)="ajouter()" [disabled]="isDisabled">+</button>
+</div>

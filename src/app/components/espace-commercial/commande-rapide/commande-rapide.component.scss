@@ -1,0 +1,143 @@
+.commande-rapide {
+  padding: 25px;
+  background: white;
+}
+
+.labels {
+  font-size: 1rem;
+  font-weight: 550;
+  justify-items: center;
+}
+
+.input-grid {
+  display: grid;
+  justify-items: start;
+  grid-auto-flow: column;
+  grid-gap: 20px;
+  grid-template-columns: 12vw 5vw 2fr 7vw 11vw 11vw 2vw;
+}
+
+mat-form-field {
+  margin: 10px;
+}
+
+.input-reference {
+  width: 100%;
+  max-width: 500px;
+  font-size: 1rem;
+}
+
+.ref-status {
+  position: absolute;
+  bottom: -25px;
+  color: red;
+}
+.qte-reference {
+  height: 100%;
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  justify-content: space-between;
+
+  @media screen and (max-width: 768px) {
+    grid-area: qte;
+  }
+
+  .qte-input {
+    display: block;
+    border: none;
+    width: 50px;
+    font-size: 14px;
+    text-align: center;
+  }
+}
+.statusIconDiv {
+  width: 100%;
+  display: table;
+}
+.statusIcon {
+  display: table-cell;
+  margin: 0;
+  width: auto;
+  vertical-align: middle;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--color-warn);
+}
+
+
+.lib-display {
+  width: 100%;
+  max-width: 500px;
+  display: table;
+
+  p {
+    display: table-cell;
+    margin: 0;
+    vertical-align: middle;
+
+    font-weight: 550;
+    font-size: 1rem;
+  }
+}
+.stock-display {
+  color: var(--color-soft-warn);
+  display: table;
+  vertical-align: middle;
+
+  &.active {
+    color: rgb(34, 206, 0);
+  }
+
+  div {
+    display: table-cell;
+    margin: 0;
+    vertical-align: middle;
+
+    font-weight: 550;
+    font-size: 1.1rem;
+  }
+}
+.prix-display {
+  display: table;
+  justify-self: center;
+
+  div {
+    display: table-cell;
+    margin: 0;
+    vertical-align: middle;
+
+    font-weight: 550;
+    font-size: 1.1rem;
+  }
+}
+
+.total-display {
+  float: right;
+  font-weight: 600;
+  font-size: 1.1rem;
+
+  margin-bottom: 15px;
+}
+
+.action-row {
+  display: flex;
+  justify-content: flex-end;
+  padding: 15px;
+
+  button {
+    margin-left: 20px;
+  }
+}
+
+.status-return {
+  margin-right: 20px;
+
+  text-align: right;
+  font-size: 1rem;
+  font-weight: 400;
+
+  color: green;
+}

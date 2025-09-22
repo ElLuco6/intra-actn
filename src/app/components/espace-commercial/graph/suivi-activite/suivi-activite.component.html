@@ -1,0 +1,171 @@
+<app-title-w-line
+  [title]="'Suivi d\'objectifs'"
+  size="small"
+></app-title-w-line>
+
+@if (this.done === true) {
+  <mat-tab-group
+    animationDuration="0ms"
+    class="tabGroup"
+    >
+    @for (tab of this.firstArray; track tab; let i = $index) {
+      <mat-tab
+        class="custom-tab"
+        >
+        <ng-template mat-tab-label>
+          Region {{ this.firstArray[i][0][0][0].region }}
+        </ng-template>
+        @for (sousTab of tab; track sousTab; let j = $index) {
+          <div
+            [expanded]="j === defaultExpandedIndex"
+            >
+            <h3 class="annee">{{ sousTab[0][0].annee }}</h3>
+            @for (sousouTab of sousTab; track sousouTab; let x = $index) {
+              <div class="execel">
+                <!--  -->
+                @if (this.done === true) {
+                  <table
+                    mat-table
+                    [dataSource]="sousouTab"
+                    class="table"
+                    >
+                    <ng-container matColumnDef="item">
+                      <th mat-header-cell *matHeaderCellDef>Catégories</th>
+                      <!--  [attr.rowspan]="transaction.type !== 'OBJ' ? '2' : ''"  -->
+                      <td
+                        [ngClass]="{ 'hidden-cell': shouldHide(transaction) }"
+                        mat-cell
+                        *matCellDef="let transaction"
+                        >
+                        {{ transaction?.categorielib }}
+                      </td>
+                      <!-- <td mat-footer-cell *matFooterCellDef> Total </td> -->
+                    </ng-container>
+                    <ng-container matColumnDef="type">
+                      <th mat-header-cell *matHeaderCellDef>Type</th>
+                      <td mat-cell *matCellDef="let transaction">
+                        {{ transaction?.type }}
+                      </td>
+                      <!--  <td mat-footer-cell *matFooterCellDef> {{this.getTotalCost(sousTab) | currency:'EUR':'symbol':'3.2-2':'fr'}} </td> -->
+                    </ng-container>
+                    <ng-container matColumnDef="data1"
+                      ><!--  [ngClass]="{'moula': data1.data[0] > this.zukex }" -->
+                      <th mat-header-cell *matHeaderCellDef>Jan.<!-- ier --></th>
+                      <td  [ngStyle]="getColor(data1.type,data1.data[0])" class="text_end" mat-cell *matCellDef="let data1">
+                        {{ data1?.data[0] | moulaPipe }}
+                      </td>
+                      <!--
+                      <td mat-cell *matCellDef="let data1"> zozoozo </td>
+                      -->
+                      <!-- <td mat-footer-cell *matFooterCellDef> Total </td> -->
+                    </ng-container>
+                    <ng-container matColumnDef="data2">
+                      <th mat-header-cell *matHeaderCellDef>Fév.<!-- ier --></th>
+                      <td   [ngStyle]="getColor(data2.type,data2.data[1])" class="text_end" mat-cell *matCellDef="let data2">
+                        {{ data2?.data[1] | moulaPipe }}
+                      </td>
+                      <!-- <td mat-footer-cell *matFooterCellDef> Total </td> -->
+                    </ng-container>
+                    <ng-container matColumnDef="data3">
+                      <th mat-header-cell *matHeaderCellDef>Mars</th>
+                      <td  [ngStyle]="getColor(data3.type,data3.data[2])" class="text_end" mat-cell *matCellDef="let data3">
+                        {{ data3?.data[2] | moulaPipe }}
+                      </td>
+                      <!-- <td mat-footer-cell *matFooterCellDef> Total </td> -->
+                    </ng-container>
+                    <ng-container matColumnDef="data4">
+                      <th mat-header-cell *matHeaderCellDef>Avr.<!-- l --></th>
+                      <td  [ngStyle]="getColor(data4.type,data4.data[3])" class="text_end" mat-cell *matCellDef="let data4">
+                        {{ data4?.data[3] | moulaPipe }}
+                      </td>
+                      <!-- <td mat-footer-cell *matFooterCellDef> Total </td> -->
+                    </ng-container>
+                    <ng-container matColumnDef="data5">
+                      <th mat-header-cell *matHeaderCellDef>Mai</th>
+                      <td class="text_end"  [ngStyle]="getColor(data5.type,data5.data[4])" mat-cell *matCellDef="let data5">
+                        {{ data5?.data[4] | moulaPipe }}
+                      </td>
+                      <!-- <td mat-footer-cell *matFooterCellDef> Total </td> -->
+                    </ng-container>
+                    <ng-container matColumnDef="data6">
+                      <th mat-header-cell *matHeaderCellDef>Juin</th>
+                      <td class="text_end" mat-cell  [ngStyle]="getColor(data6.type,data6.data[5])" *matCellDef="let data6">
+                        {{ data6?.data[5] | moulaPipe }}
+                      </td>
+                      <!-- <td mat-footer-cell *matFooterCellDef> Total </td> -->
+                    </ng-container>
+                    <ng-container matColumnDef="data7">
+                      <th mat-header-cell *matHeaderCellDef>Jui.<!-- let --></th>
+                      <td class="text_end" mat-cell  [ngStyle]="getColor(data7.type,data7.data[6])" *matCellDef="let data7">
+                        {{ data7?.data[6] | moulaPipe }}
+                      </td>
+                      <!-- <td mat-footer-cell *matFooterCellDef> Total </td> -->
+                    </ng-container>
+                    <ng-container matColumnDef="data8">
+                      <th mat-header-cell *matHeaderCellDef>Août</th>
+                      <td class="text_end"  [ngStyle]="getColor(data8.type,data8.data[7])" mat-cell *matCellDef="let data8">
+                        {{ data8?.data[7] | moulaPipe }}
+                      </td>
+                      <!-- <td mat-footer-cell *matFooterCellDef> Total </td> -->
+                    </ng-container>
+                    <ng-container matColumnDef="data9">
+                      <th mat-header-cell *matHeaderCellDef>Sep.<!-- embre --></th>
+                      <td class="text_end" mat-cell  [ngStyle]="getColor(data9.type,data9.data[8])" *matCellDef="let data9">
+                        {{ data9?.data[8] | moulaPipe }}
+                      </td>
+                      <!-- <td mat-footer-cell *matFooterCellDef> Total </td> -->
+                    </ng-container>
+                    <ng-container matColumnDef="data10">
+                      <th mat-header-cell *matHeaderCellDef>Oct.<!-- bre --></th>
+                      <td class="text_end" mat-cell  [ngStyle]="getColor(data10.type,data10.data[9])" *matCellDef="let data10">
+                        {{ data10?.data[9] | moulaPipe }}
+                      </td>
+                      <!-- <td mat-footer-cell *matFooterCellDef> Total </td> -->
+                    </ng-container>
+                    <ng-container matColumnDef="data11">
+                      <th mat-header-cell *matHeaderCellDef>Nov.<!-- mbre --></th>
+                      <td class="text_end"  [ngStyle]="getColor(data11.type,data11.data[10])" mat-cell *matCellDef="let data11">
+                        {{ data11?.data[10] | moulaPipe }}
+                      </td>
+                      <!-- <td mat-footer-cell *matFooterCellDef> Total </td> -->
+                    </ng-container>
+                    <ng-container matColumnDef="data12">
+                      <th mat-header-cell *matHeaderCellDef>Déc.<!-- mbre  --></th>
+                      <td class="text_end"  [ngStyle]="getColor(data12.type,data12.data[11])" mat-cell *matCellDef="let data12">
+                        {{ data12?.data[11] | moulaPipe }}
+                      </td>
+                      <!-- <td mat-footer-cell *matFooterCellDef> Total </td> -->
+                    </ng-container>
+                    <ng-container matColumnDef="mttotal">
+                      <th mat-header-cell *matHeaderCellDef>Montant total</th>
+                      <td class="text_end" mat-cell  [ngStyle]="getColor(transaction.type,transaction.mttotal)" *matCellDef="let transaction">
+                        {{ transaction?.mttotal | moulaPipe }}
+                      </td>
+                      <!--  <td mat-footer-cell *matFooterCellDef> {{this.getTotalCost(sousTab) | currency:'EUR':'symbol':'3.2-2':'fr'}} </td> -->
+                    </ng-container>
+                    <tr
+                      mat-header-row
+                      *matHeaderRowDef="displayedColumns; sticky: true"
+                      class="bgGreen"
+                    ></tr>
+                    <tr
+                      mat-row
+                      *matRowDef="let row; columns: displayedColumns"
+            [ngStyle]="{
+              'background-color': getCategoryColor(row.categorielib)
+            }"
+                    ></tr>
+                    <!-- <tr mat-footer-row *matFooterRowDef="displayedColumns"></tr> -->
+                  </table>
+                }
+                <mat-divider></mat-divider>
+              </div>
+            }
+          </div>
+        }
+      </mat-tab>
+    }
+  </mat-tab-group>
+}
+
+<ng-container> </ng-container>

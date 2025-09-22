@@ -1,0 +1,451 @@
+<app-title-w-line [title]="'Devis'"></app-title-w-line>
+
+<div class="container">
+  <div class="container-filtres raised-1">
+    <button class="text-button">Filtres</button>
+    <div style="display: flex; flex-direction: row">
+      <div style="margin-right: 8px">Régions</div>
+      <mat-slide-toggle (click)="isChecked()" [color]="'primary'">Tous</mat-slide-toggle>
+    </div>
+    <div class="filtres">
+      <div class="filtre">
+        <mat-form-field>
+          <mat-label>N° Client</mat-label>
+          <input [formControl]="clientSearch" matInput
+                 [ngModel]="saf.getFiltre('devis', 'client', 'includes')"
+                 (keydown)="onSearch('client', 'string', 'includes', $event); eventClientSearch = $event;"
+                 (focusin)="inputFocused()"
+                 (focusout)="inputFocused()"
+                 [matAutocomplete]="autoGroup"
+                 (click)="autocomplete.openPanel()"
+          />
+        </mat-form-field>
+      </div>
+      <mat-autocomplete #autoGroup="matAutocomplete"
+                        (optionSelected)="onSearch('client', 'string', 'includes', eventClientSearch)"
+                        class="single-autocomplete">
+        @if (autoCompleteOptions$ | async; as options) {
+          @for (client of options.clients; track client) {
+            <mat-option [value]="client.code">
+              {{ start(client.code) }}@if (client.code.includes(searching)) {
+              <span style="font-weight: bold;">{{ searching }}</span>
+            }{{ end(client.code) }}
+              <br>
+              {{ start(client.designation) }}@if (client.designation.includes(searching)) {
+              <span style="font-weight: bold;">{{ searching }}</span>
+            }{{ end(client.designation) }}
+            </mat-option>
+          }
+        }
+      </mat-autocomplete>
+      <div class="filtre">
+        <mat-form-field>
+          <mat-label>Nom du devis</mat-label>
+          <input matInput [ngModel]="saf.getFiltre('devis', 'referencecommande', 'includes')"
+                 (keydown)="onSearch('referencecommande', 'string', 'includes', $event)"/>
+        </mat-form-field>
+      </div>
+      <div class="filtre">
+        <mat-form-field>
+          <mat-label>N° de devis</mat-label>
+          <input matInput [ngModel]="saf.getFiltre('devis', 'numcommande', 'includes')"
+                 (keydown)="onSearch('numcommande', 'string', 'includes', $event)"/>
+        </mat-form-field>
+      </div>
+      <div class="filtre">
+        <mat-form-field>
+          <mat-label>Référence produit</mat-label>
+          <input matInput [ngModel]="saf.getFiltre('devis', 'produits.prod', 'includes')"
+                 (keydown)="onSearch('produits.prod', 'string', 'includes', $event)"/>
+        </mat-form-field>
+      </div>
+      <div class="filtre">
+        <mat-form-field>
+          <mat-label>Marque</mat-label>
+          <mat-select multiple [(ngModel)]="marquesSelected"
+                      (ngModelChange)="onSearch('produits.marquelib', 'array', 'includes', $event, 'marquesSelected')">
+            @for (marque of marqueArray | keyvalue; track marque) {
+              <mat-option [value]="marque.value">{{ marque.value }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="filtre">
+        <mat-form-field>
+          <mat-label>Statut</mat-label>
+          <mat-select [ngModel]="saf.getFiltre('devis', 'statut', 'includes')">
+            <mat-option value="" (click)="onSearch('statut', 'string', 'includes', $event)"
+                        (tap)="onSearch('statut', 'string', 'includes', $event)"></mat-option>
+            @for (statut of statutArray; track statut) {
+              <mat-option [value]="statut" (click)="onSearch('statut', 'string', 'includes', $event)"
+                          (tap)="onSearch('statut', 'string', 'includes', $event)">{{ statut }}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <!--<div class="filtre">
+      <mat-form-field>
+        <mat-label>Region</mat-label>
+        <mat-select [ngModel]="saf.getFiltre('devis', 'statut', 'includes')">
+          <mat-option (click)="onSearch('statut', 'string', 'includes', $event)"
+          (tap)="onSearch('statut', 'string', 'includes', $event)"></mat-option>
+          <mat-option *ngFor="let statut of statutArray" [value]="statut" (click)="onSearch('statut', 'string', 'includes', $event)"
+          (tap)="onSearch('statut', 'string', 'includes', $event)">{{ statut }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>-->
+    </div>
+    <!--<div class="marque-filtres del-for-phone1" *ngIf="marqueArray">
+    <div class="marque-options"  *ngFor="let marque of marqueArray | keyvalue" [ngClass]="{'selected': marquesSelected.includes(marque.value)}"
+      (click)="filtreMarqueToggle(marque.value)" (tap)="filtreMarqueToggle(marque.value)">
+      <img class="marque-img" [src]="environment.logoMarquesCouleurs200x80 + marque.key + '.gif'" [alt]="marque.value" />
+    </div>
+  </div>-->
+  </div>
+
+  <div class="bandeau"
+       [ngClass]="{'top-zbi': predictionService.currentClient, 'top-pas-zbi': !predictionService.currentClient}">
+    <ul class="raised-1 size-smaller devis-header">
+      <li class="sort phone" (click)="onTri('referencecommande', 'string')">Nom du devis
+        <app-tab-sort [state]="selected('referencecommande')"></app-tab-sort>
+      </li>
+      <li class="sort phone" (click)="onTri('typedevis', 'string')">Type de devis
+        <app-tab-sort [state]="selected('typedevis')"></app-tab-sort>
+      </li>
+      <li class="sort phone" (click)="onTri('client', 'string')">N° Client
+        <app-tab-sort [state]="selected('client')"></app-tab-sort>
+      </li>
+      <li class="sort" (click)="onTri('numcommande', 'string')">N° de devis
+        <app-tab-sort [state]="selected('numcommande')"></app-tab-sort>
+      </li>
+      <li class="sort del-for-phone" (click)="onTri('datecommande', 'date')">Date de création
+        <app-tab-sort [state]="selected('datecommande')"></app-tab-sort>
+      </li>
+      <li class="sort" (click)="onTri('mthtcommande', 'number')">Montant HT
+        <app-tab-sort [state]="selected('mthtcommande')"></app-tab-sort>
+      </li>
+      <li class="sort del-for-phone" (click)="onTri('mtttccommande', 'number')">Montant TTC
+        <app-tab-sort [state]="selected('mtttccommande')"></app-tab-sort>
+      </li>
+      <li class="sort del-for-phone" (click)="onTri('mtfraisdeport', 'number')">Frais de port
+        <app-tab-sort [state]="selected('mtfraisdeport')"></app-tab-sort>
+      </li>
+      <!-- <li class="sort center del-for-phone" (click)="onTri('transactionlib', 'string')">Type<app-tab-sort [state]="selected('transactionlib')"></app-tab-sort></li>
+      -->
+      <li class="sort center del-for-phone" (click)="onTri('statut', 'string')">Statut
+        <app-tab-sort [state]="selected('')"></app-tab-sort>
+      </li>
+    </ul>
+  </div>
+
+
+  @if (processedDevis$ | async; as listeDevis) {
+    <div class="licences">
+      @if (authService.currentUser) {
+        @if (listeDevis.length > 0) {
+          <!--<mat-paginator [length]="listeDevis.length"
+          [pageIndex]="paginator.pageIndex"
+          [pageSize]="paginator.pageSize"
+          [pageSizeOptions]="paginator.pageSizeOptions"
+          (page)="onPaginatorEvent($event)"
+          showFirstLastButtons>
+        </mat-paginator>-->
+          @for (devis of (listeDevis | slice: paginator.low: paginator.high); track devis; let index = $index) {
+            <div class="licence phone">
+              <div class="raised-1">
+                <ul class="devis-header">
+                  <li class="phone">{{ devis.referencecommande }}</li>
+                  <li class="phone">{{ devis.typedevis === 'CLIENT' ? 'Devis Client' : 'Devis ACTN' }}</li>
+                  <li class="phone" style="cursor: pointer;"
+                      (click)="openInNewWindow(devis.client)">{{ devis.client }}
+                  </li>
+                  <li class="phone">
+                    @if (devis.haspdf) {
+                      <a class="text-link"
+                         target="_blank"
+                         [href]="environment.apiUrlActn + '/document/generate_intra.php?document=DEVIS/' + numClient + '/' + devis.numcommande"
+                      >
+                        {{ devis.numcommande }}
+                        <fa-icon [icon]="faFilePdf"></fa-icon>
+                      </a>
+                    } @else {
+                      {{ devis.numcommande }}
+                      <!-- <fa-icon [icon]="['fas', 'file-pdf']"></fa-icon> -->
+                      <br/>
+                      <span class="size-small no-wrap">
+                      PDF indisponible
+                      <app-tooltip type="help" [text]="explicationPDFindispo"></app-tooltip>
+                    </span>
+                    }
+                  </li>
+                  <li class="del-for-phone">{{ devis.datecommande | date: 'shortDate' }}</li>
+                  <li class="phone">
+                    <div>{{ devis.mthtcommande | currency:'EUR':'symbol':'1.2-2' }}</div>
+                  </li>
+                  <li class="del-for-phone">
+                    <div>{{ devis.mtttccommande | currency:'EUR':'symbol':'1.2-2' }}</div>
+                  </li>
+                  <li class="del-for-phone">
+                    @if (devis.mtfraisdeport > 0) {
+                      <div>{{ devis.mtfraisdeport | currency:'EUR':'symbol':'1.2-2' }}</div>
+                    } @else {
+                      Gratuit
+                    }
+                  </li>
+                  <!--
+                  <li class="center del-for-phone">{{ devis.transactionlib }}</li>-->
+                  <li class="center statut">@if (devis.statut === 'Actif') {
+                    Valide jusqu'au {{ add30Days(devis.datecommande) | date: 'shortDate' }}
+                  } @else {
+                    Périmé
+                  }</li>
+                </ul>
+                <div class="details size-smaller" [ngClass]="{'show': isActive(index)}">
+                  <hr/>
+                  <div class="adresse">
+                    <h3>Adresse de livraison</h3>
+                    @if (devis.wnom) {
+                      <p>{{ devis.wnom }}</p>
+                    }
+                    @if (devis.wadresse1) {
+                      <p>{{ devis.wadresse1 }}</p>
+                    }
+                    @if (devis.wadresse2) {
+                      <p>{{ devis.wadresse2 }}</p>
+                    }
+                    @if (devis.wcodepostal || devis.wville) {
+                      <p>{{ devis.wcodepostal }} {{ devis.wville }}</p>
+                    }
+                    @if (devis.wpays) {
+                      <p>{{ devis.wpays }}</p>
+                    }
+                    @if (devis.wphone) {
+                      <p>{{ devis.wphone }}</p>
+                    }
+                    <!-- <p>Transporteur : {{ devis.transporteur }}</p> -->
+                  </div>
+                  @if (devis.usercde) {
+                    <div class="adresse">
+                      <h3>Personne ayant réalisé le devis</h3>
+                      <p>Identifiant : {{ devis.usercde }}</p>
+                      <p>Email : {{ devis.usercdemail }}</p>
+                    </div>
+                  }
+                  @if (devis.enduser.nom) {
+                    <div class="adresse">
+                      <h3>Client final</h3>
+                      @if (devis.enduser.nom) {
+                        <p>{{ devis.enduser.nom }}</p>
+                      }
+                      @if (devis.enduser.adresse1) {
+                        <p>{{ devis.enduser.adresse1 }}</p>
+                      }
+                      @if (devis.enduser.adresse2) {
+                        <p>{{ devis.enduser.adresse2 }}</p>
+                      }
+                      @if (devis.enduser.ville) {
+                        <p>{{ devis.enduser.ville }}
+                          <ng-container>, {{ devis.enduser.codepostal }}</ng-container>
+                          <ng-container>, {{ devis.enduser.payscode }}</ng-container>
+                        </p>
+                      }
+                      @if (devis.enduser.telephone) {
+                        <p>{{ devis.enduser.telephone }}</p>
+                      }
+                      @if (devis.enduser.mail) {
+                        <p>{{ devis.enduser.mail }}</p>
+                      }
+                    </div>
+                  }
+                  <hr/>
+                  <div class="produits">
+                    <h3>Produits</h3>
+                    <ul class="weight-bold">
+                      <li>Marque</li>
+                      <li>Référence</li>
+                      <li class="designation">Désignation</li>
+                      <li class="center size-smaller stock"><span>Stock</span><span
+                        class="del-for-phone">Stock ext.</span><span class="del-for-phone">Réappro.</span></li>
+                      <li class="center">Quantité</li>
+                      <li class="align-right">Prix unitaire</li>
+                      <li class="align-right del-for-phone1">Écopart.</li>
+                    </ul>
+                    @for (produit of devis.produits; track produit) {
+                      <ul class="ligne">
+                        <li>{{ produit.marquelib }}</li>
+                        <li class="weight-bold"><a (click)="onClickReference(produit.prod)"
+                                                   (tap)="onClickReference(produit.prod)">{{ produit.prod }}</a></li>
+                        <li class="cut designation-produit">{{ produit.designation }}</li>
+                        <li class="center relative" [ngClass]="{'stock': produit.gabarit !== 'V'}">
+                          @if (produit.gabarit === 'V') {
+                            Produit virtuel
+                          } @else {
+                            <span>{{ produit.qteStock1 }}</span>
+                            <span class="del-for-phone">{{ produit.qteStock2 }}</span>
+                            <span class="del-for-phone">{{ produit.qteEnReappro }}</span>
+                            @if ((produit.delaisReappro) === 'Date') {
+                              @if (produit.qteStock1 + produit.qteStock2 < produit.quantitecommande && produit.qteEnReappro > 0 && produit.gabarit !== 'V') {
+                                <app-tooltip class="date-reappro"
+                                             [text]="'Réapprovisionnement prévu aux alentours du : ' + (produit.delaisReappro | date: 'shortDate') + '.'"
+                                >
+                                </app-tooltip>
+                              }
+                            } @else {
+                              @if (produit.qteStock1 + produit.qteStock2 < produit.quantitecommande && produit.qteEnReappro > 0 && produit.gabarit !== 'V') {
+                                <app-tooltip class="date-reappro"
+                                             text="Aucune date de réapprovisionnement n'a été communiquée par notre fournisseur."
+                                >
+                                </app-tooltip>
+                              }
+                            }
+                          }
+                        </li>
+                        <li class="center"
+                            [ngStyle]="{'color': produit.qteStock1 >= produit.quantitecommande || produit.gabarit === 'V' ? '#000000' : produit.qteStock1 + produit.qteStock2 >= produit.quantitecommande ? 'var(--color-soft-warn)' : 'var(--color-warn)'}">{{ produit.quantitecommande | number: '1.0-0' }}
+                        </li>
+                        <li class="align-right">
+                          <div>{{ produit.prixnet | currency:'EUR':'symbol':'1.2-2' }}<span class="size-smaller">&nbsp;HT</span>
+                          </div>
+                        </li>
+                        <li class="align-right eco-par">
+                          <div>{{ produit.prixd3e | currency:'EUR':'symbol':'1.2-2' }}<span class="size-smaller">&nbsp;HT</span>
+                          </div>
+                          <sub class="for-phone">éco-part</sub></li>
+                      </ul>
+                    }
+                  </div>
+                </div>
+              </div>
+              <div class="boutons">
+                <div class="bouton-details" (click)="showDetails(index)">
+                  @if (!isActive(index)) {
+                    <fa-icon class="prefix icon size-big" [icon]="faPlus"></fa-icon>
+                  } @else {
+                    <fa-icon class="prefix icon size-big" [icon]="faMinus"></fa-icon>
+                  }
+                  <span class="texte size-bigger ">de détails</span>
+                </div>
+                <div class="action">
+                  <!--<div class="bouton-details bouton-details&#45;&#45;icon-only" *ngIf="devis.statut === 'Actif'; else inactifBouton" (click)="onShowRefreshDevis(devis)" (tap)="onShowRefreshDevis(devis)">
+                  <app-tooltip type="reload" text="Ajouter les produits du devis au panier afin d'actualiser l'offre"></app-tooltip>
+                </div>
+                <ng-template #inactifBouton>
+                  <div>&nbsp;</div>
+                </ng-template>
+                <div class="bouton-details bouton-details&#45;&#45;icon-only" (click)="onShowEditPopup(devis)" (tap)="onShowEditPopup(devis)">
+                  <app-tooltip type="edit" text="Demander une modification à votre commercial"></app-tooltip>
+                </div>-->
+                  <div class="bouton-details" (click)="onShowRefreshDevis(devis)" (tap)="onShowRefreshDevis(devis)">
+                    <fa-icon class="" [icon]="faCheck"></fa-icon>
+                    <span>Modifier</span>
+                  </div>
+                  <ng-template #inactifBouton2>
+                    <div class="bouton-details" (click)="onShowRefreshDevis(devis)" (tap)="onShowRefreshDevis(devis)"
+                         matTooltip="Ajouter les produits du devis au panier afin d'actualiser l'offre"
+                         matTooltipPosition="above" matTooltipClass="devis-tooltip"
+                    >
+                      <fa-icon class="" [icon]="faRedoAlt"></fa-icon>
+                      <span>Actualiser</span>
+                    </div>
+                  </ng-template>
+                </div>
+              </div>
+            </div>
+          }
+          <mat-paginator [length]="listeDevis.length"
+                         [pageIndex]="paginator.pageIndex"
+                         [pageSize]="paginator.pageSize"
+                         [pageSizeOptions]="paginator.pageSizeOptions"
+                         (page)="onPaginatorEvent($event)"
+                         showFirstLastButtons>
+          </mat-paginator>
+        } @else {
+          <h3>Vous n'avez pas de devis.</h3>
+        }
+      }
+    </div>
+  }
+</div>
+@if (showEditPopup) {
+  <div class="popup" [ngClass]="{active: showEditPopup}">
+    <div class="popup-background" (click)="onHideEditPopup()" (tap)="onHideEditPopup()"></div>
+    <div class="popup-window raised-3">
+      @if (!demandeEnvoye) {
+        <h3>Demande de modification du devis : {{ devisPopup.referencecommande }} - {{ devisPopup.numcommande }}</h3>
+        <h4>Vos informations personnelles</h4>
+        <p>Contact : {{ authService.currentUser.TIERSIND }}</p>
+        <p>Email : {{ authService.currentUser.TIERSMEL }}</p>
+        <p>Téléphone : {{ authService.currentUser.TIERSTEL }}</p>
+        <h4>Personne ayant réalisée le devis</h4>
+        <p>Identifiant : {{ devisPopup.usercde }}</p>
+        <p>Email : {{ devisPopup.usercdemail }}</p>
+        <br/><br/>
+        <p>Description de la demande :</p>
+        <mat-form-field class="input-modif">
+          <textarea matInput cdkTextareaAutosize [(ngModel)]="commentaireModification"
+                    placeholder="Décrivez ici le motif de la demande en précisant toutes les modifications que vous souhaitez apporter à votre devis"></textarea>
+        </mat-form-field>
+        <br/>
+        <div class="buttons">
+          <button class="raised-button button--color-secondary" (click)="onHideEditPopup()" (tap)="onHideEditPopup()">
+            Annuler
+          </button>
+          <button class="raised-button" (click)="onDemandeEdition()" (tap)="onDemandeEdition()">Envoyer la demande
+          </button>
+        </div>
+      } @else {
+        <h3>Confirmation de votre demande de modification</h3>
+        <p>Votre demande a été transmise et sera traitée dès que possible par notre équipe.</p>
+        <br/>
+        <div class="buttons">
+          <button class="raised-button" (click)="onHideEditPopup()" (tap)="onHideEditPopup()">Ok</button>
+        </div>
+      }
+    </div>
+  </div>
+}
+
+@if (showMissingPopup) {
+  <div class="popup" [ngClass]="{active: showMissingPopup}">
+    <div class="popup-background" (click)="onHideMissingPopup()" (tap)="onHideMissingPopup()"></div>
+    <div class="popup-window raised-3">
+      <h3>Produit indisponible sur le web</h3>
+      <p>La fiche du produit que vous essayez de consulter est indisponible sur notre site web.</p><br/>
+      <div class="buttons">
+        <button class="raised-button" (click)="onHideMissingPopup()" (tap)="onHideMissingPopup()">Ok</button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (showRefreshDevis) {
+  <div class="popup" [ngClass]="{active: showRefreshDevis}">
+    <div class="popup-background" (click)="onHideRefreshDevis()" (tap)="onHideRefreshDevis()"></div>
+    <div class="popup-window raised-3">
+      <h3>Actualisation d'un devis</h3>
+      <p>Vous souhaitez ajouter les produits du devis {{ devisPopup.referencecommande }} - {{ devisPopup.numcommande }}
+        au panier afin de mettre à jour les prix et les quantités.</p>
+      @if (devisPopup.transactioncode === 'DEV') {
+        <p class="red">Attention : ce devis a été créé par un de nos commerciaux, certains produits ne pourront
+          peut-être pas être ajoutés au panier.</p>
+      }
+      <br/>
+      <p class="size-bigger weight-bold">Comment souhaitez-vous ajouter ces produits à votre panier ?</p>
+      <br/>
+      <div class="buttons">
+        <button class="raised-button button--color-secondary" (click)="onHideRefreshDevis()"
+                (tap)="onHideRefreshDevis()">Annuler
+        </button>
+        <div class="boutons-ajout-panier">
+          <button class="raised-button" (click)="onRefreshDevis(true)" (tap)="onRefreshDevis(true)">
+            Écraser mon panier actuel
+          </button>
+          <button class="raised-button" (click)="onRefreshDevis(false)" (tap)="onRefreshDevis(false)">
+            Ajouter ces produits à mon panier
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

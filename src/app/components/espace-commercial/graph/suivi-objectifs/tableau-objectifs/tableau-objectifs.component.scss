@@ -1,0 +1,93 @@
+.titre-et-slider {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.tableau {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    text-align: center;
+    background: #fff;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.tableau-container {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.tableau thead {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: #444444;
+  color: white;
+}
+
+.tableau th {
+    font-weight: bold;
+}
+
+.tableau th,
+.tableau td {
+    padding: 0.4rem;
+    border: 1px solid #666;
+}
+
+.tableau tbody tr:nth-child(odd) {
+    background: #eeeeee;
+}
+
+.tableau tbody tr:nth-child(even) {
+    background: #ffffff;
+}
+
+.tableau tbody tr:hover {
+    background: rgba(0, 123, 255, 0.1);
+    transition: 0.3s;
+}
+
+.tableau td:first-child {
+    font-weight: bold;
+    color: var(--color-primary);
+}
+
+.tableau td:last-child {
+    font-weight: bold;
+}
+
+.tableau .marque {
+    white-space: nowrap;
+    font-weight: bold;
+}
+
+.tableau .ligne-objectif td {
+    white-space: nowrap;
+    font-weight: bold;
+    background-color: var(--color-primary);
+    color: white;
+}
+
+.tableau .ligne-total td {
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.montants {
+    text-align: right;
+}
+
+.cliquable {
+    cursor: pointer;
+}
+
+.etoile-grise {
+    color: grey;
+}
+
+.etoile-doree {
+    color: gold;
+}

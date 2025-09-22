@@ -1,0 +1,147 @@
+<div class="container">
+  <div class="left">
+    @if(currentCampagne){
+    <h2>{{ currentCampagne.campagne }}</h2>
+    <h3>Story board</h3>
+    <p>{{ currentCampagne.texte }}</p>
+    <p>Société : {{ currentIndex + 1 }} / {{ peoples.length }}</p>
+    @if(this.chartOptions){
+    <div id="chart">
+      <apx-chart [series]="chartOptions.series" [chart]="chartOptions.chart" [plotOptions]="chartOptions.plotOptions"
+        [labels]="chartOptions.labels" [colors]="chartOptions.colors"></apx-chart>
+    </div>
+    }
+    }
+  </div>
+
+  <div class="right">
+    @if(currentPeople){
+    <h1>
+      @if(currentPeople.type == 'C'){
+      Infos Client
+      } @else {
+      Infos Prospect
+      <button class="edit-button" mat-raised-button (click)="openModifInfosSocieteDialog(currentPeople)">
+        <mat-icon>edit</mat-icon>
+        Modifier les informations
+      </button>
+      }
+    </h1>
+
+    <div class="infos-societe">
+      <div>
+        <p>
+          @if(currentPeople.type == 'C'){
+          N°Client :
+          <span class="num-people" (click)="openPeopleInOtherWindows(currentPeople)">
+            {{ currentPeople.numero }}
+          </span>
+          } @else {
+          N°Siret :
+          <span class="num-people" (click)="openPeopleInOtherWindows(currentPeople)">
+            {{ currentPeople.siret }}
+          </span>
+          }
+        </p>
+
+        <p>
+          <strong>Raison sociale : {{ currentPeople.raisonSociale }}</strong>
+        </p>
+
+        @if(currentPeople.type == 'C'){
+        <p>N°Siret : {{ currentPeople.siret }}</p>
+        }
+
+        <p>Téléphone : {{ currentPeople.telephone }}</p>
+      </div>
+      <div>
+        <p>Adresse : </p>
+        <p>{{ currentPeople.adresse1 }}</p>
+        <p>{{ currentPeople.adresse2 }}</p>
+        <p>{{ currentPeople.adresse3 }}</p>
+        <p>{{ currentPeople.codepostal + ' ' + currentPeople.ville }}</p>
+      </div>
+    </div>
+
+    <h1>Contacts
+      <button class="edit-button" mat-raised-button (click)="openEditContactDialog('add')">
+        <mat-icon>add</mat-icon>
+        Ajouter un contact
+      </button>
+    </h1>
+    <table mat-table [dataSource]="contacts" class="table-contact mat-elevation-z3">
+      <ng-container matColumnDef="nom">
+        <th mat-header-cell *matHeaderCellDef> Nom </th>
+        <td mat-cell *matCellDef="let element" (click)="openDialogCompteRendu(element)"> {{element.nom}} </td>
+      </ng-container>
+      <ng-container matColumnDef="telephone">
+        <th mat-header-cell *matHeaderCellDef> Téléphone portable </th>
+        <td mat-cell *matCellDef="let element" (click)="openDialogCompteRendu(element)"><a
+            [href]="'tel:' + element.gsm.split(' ').join('')">{{element.gsm}}</a> </td>
+      </ng-container>
+      <ng-container matColumnDef="mail">
+        <th mat-header-cell *matHeaderCellDef> Mail </th>
+        <td mat-cell *matCellDef="let element" (click)="openDialogCompteRendu(element)"><a
+            [href]="'mailto:' + element.mail">{{element.mail}}</a> </td>
+      </ng-container>
+      <ng-container matColumnDef="servicelib">
+        <th mat-header-cell *matHeaderCellDef> Service </th>
+        <td mat-cell *matCellDef="let element" (click)="openDialogCompteRendu(element)">{{element.service}}</td>
+      </ng-container>
+      <ng-container matColumnDef="commentaire">
+        <th mat-header-cell *matHeaderCellDef style="text-align: center"> Commentaire </th>
+        <td mat-cell *matCellDef="let element" (click)="openDialogCompteRendu(element)" style="text-align: center"><mat-icon
+            style="color: var(--color-primary)">sms</mat-icon></td>
+      </ng-container>
+      <ng-container matColumnDef="modifier">
+        <th mat-header-cell *matHeaderCellDef style="text-align: center"> Modifier </th>
+        <td mat-cell *matCellDef="let element; let i = index"
+          (click)="openEditContactDialog('edit', i); $event.stopPropagation()" style="text-align: center">
+          <mat-icon style="color: var(--color-primary)">edit</mat-icon>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+    }
+    <div style="margin-top: 1rem">
+      @if (visiteOfCampaignByPeople.length > 0){
+      <h1>Comptes rendus de visites</h1>
+      } @else {
+      <h1>Aucun compte rendu de visite associé à cette campagne</h1>
+      }
+      <button mat-raised-button (click)="openDialogCompteRenduGroupe()">Faire un compte rendu groupé</button>
+    </div>
+    <div class="container-cmpt-rendu">
+      @for(visite of visiteOfCampaignByPeople; track visite){
+      <mat-card class="cmpt-rendu">
+        <mat-card-subtitle style="padding: 1rem;">
+          {{ visite.contactnom }} <span class="subtitle"> {{ visite.date ? 'le ' + visite.date : '' }} {{ visite.user ?
+            'par ' + visite.user : '' }} </span>
+          <mat-divider style="margin-top: .5rem"></mat-divider>
+        </mat-card-subtitle>
+        <mat-card-content>
+
+          {{ visite.texte }}
+        </mat-card-content>
+      </mat-card>
+      }
+    </div>
+
+  </div>
+</div>
+
+@if(currentCampagne) {
+<div class="btn-enbasla">
+  <button mat-raised-button [routerLink]="['/espace-commercial/campagne/' + currentCampagne.campagne]" class="annuler"
+    style="margin-right: auto;">Retour à la campagne</button>
+  <button mat-raised-button (click)="onPreviousClick()" class="action">
+    <div class="btn-w-icon"><mat-icon>arrow_back</mat-icon> Client précédent</div>
+  </button>
+  <button mat-raised-button (click)="onNextClick()" class="action">
+    <div class="btn-w-icon">Client suivant <mat-icon>arrow_forward</mat-icon></div>
+  </button>
+  <!--<button mat-raised-button><div class="btn-w-icon">Valider le client <mat-icon>check</mat-icon></div></button>-->
+</div>
+}

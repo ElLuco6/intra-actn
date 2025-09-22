@@ -1,0 +1,41 @@
+@if (outils === null) {
+  <h3>
+    Echec de la récupération des outils :/
+  </h3>
+}
+
+<!-- <div class="outils-maindiv">
+<ng-container *ngFor="let key of outilsKeys">
+  <app-animated-box
+    class="outils-box"
+    [type]="(outils[key].modeblank == 'N') ? 'routerlink' : 'href'"
+    [titre]="outils[key].nomoption"
+    [libelle]="outils[key].nomoption"
+    [description]="outils[key].description"
+    [imgUrl]="environment.logoMarquesCouleurs200x80 + outils[key].image + '.gif'"
+    [linkUrl]="outils[key].murl"
+    >
+  </app-animated-box>
+</ng-container>
+</div> -->
+
+@for (key of sortedOutilsKeys; track key; let i = $index) {
+  <!-- <h3>{{ sortedOutils[key].outils[0].categorieLib }}</h3> -->
+  <img [src]="environment.img + sortedOutils[key].outils[0].categorie + '.jpg'" alt="{{ sortedOutils[key].outils[0].categorieLib }}" class="categorie-metiers" />
+  <div class="outils-maindiv">
+    @for (outil of sortedOutils[key].outils; track outil) {
+      <app-animated-box
+        class="outils-box"
+        [type]="(outil.modeblank == 'N') ? 'routerlink' : 'href'"
+        [titre]="outil.nomoption"
+        [libelle]="outil.nomoption"
+        [description]="outil.description"
+        [imgUrl]="environment.logoMarquesCouleurs200x80 + outil.image + '.gif'"
+        [linkUrl]="outil.murl"
+        [couleur]="colors[i]"
+        [loginBarrier]="(!userIsConnected && outil.modeconnect == 'O')"
+        >
+      </app-animated-box>
+    }
+  </div>
+}

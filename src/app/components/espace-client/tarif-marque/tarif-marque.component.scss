@@ -1,0 +1,96 @@
+$nbItem: 7;
+$margin: 10px;
+
+.container {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+}
+
+.marque {
+  width: calc(100% / #{$nbItem} - 2 * #{$margin});
+  height: 110px;
+  margin: $margin;
+  margin-bottom: 40px;
+  padding-top: 5px;
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+
+  transition: all 0ms ease-in-out;
+  filter: grayscale(100%);
+  background-color: inherit;
+
+  &:hover {
+    transition: all 100ms ease-in-out;
+    filter: grayscale(0%);
+    background-color: rgba(105, 105, 105, 0.1);
+  }
+
+  @media screen and (min-width: 1650px) {
+    $nbItem: 8;
+    width: calc(100% / #{$nbItem} - 2 * #{$margin});
+  }
+
+  @media screen and (max-width: 1300px) {
+    $nbItem: 6;
+    width: calc(100% / #{$nbItem} - 2 * #{$margin});
+  }
+
+  @media screen and (max-width: 900px) {
+    $nbItem: 5;
+    width: calc(100% / #{$nbItem} - 2 * #{$margin});
+  }
+
+  @media screen and (max-width: 720px) {
+    $nbItem: 3;
+    width: calc(100% / #{$nbItem} - 2 * #{$margin});
+  }
+
+  @media screen and (max-width: 480px) {/*taille telephone moyen*/
+    $nbItem: 1;
+    width: calc(100% / #{$nbItem} - 2 * #{$margin});
+  }
+
+  p {
+    margin: 0;
+    text-transform: capitalize;
+  }
+
+  a {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+  }
+
+  img {
+    mix-blend-mode: multiply;
+    max-width: 90%;
+    object-fit: scale-down;
+  }
+}
+.firstLetterLinks {
+  display: flex;
+  justify-content: space-around;
+  wrap: nowrap;
+  align-items: center;
+  direction: row;
+  font-weight: 600;
+  color: var(--color-primary-second);
+  margin-bottom: 10px;
+
+  .firstLetterLink {
+    cursor: pointer;
+  }
+  .firstLetterLink:hover {
+    transform: scale(1.5);
+  }
+}

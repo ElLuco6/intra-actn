@@ -1,0 +1,92 @@
+@import "styles/popup";
+@import "styles/button-action";
+
+.filter {
+  display: flex;
+  flex-direction: row;
+  gap: 1em;
+  padding: 1em;
+  margin: 1em 0;
+  align-items: center;
+}
+
+td {
+  cursor: pointer;
+}
+
+.button-action {
+  display: flex;
+  gap: 20px;
+  justify-content: right;
+}
+
+.button-enregistrer {
+  color: white;
+  background-color: var(--color-secondary);
+}
+
+.button-annuler {
+  color: white;
+  background-color: var(--color-warn);
+}
+
+.brrrrt {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.brrrrt-colonne {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.zazizou {
+  width: fit-content;
+}
+
+.bouboule {
+  width: 10px;
+  height: 10px;
+  border-radius: 100px;
+}
+
+.triangle {
+  display: inline-block;
+  border-right: 6px solid transparent;
+  border-bottom: 10px solid;
+  border-left: 6px solid transparent;
+}
+
+.bouboule-triangle {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 5px;
+}
+
+.filter-bouboule-triangle {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+
+.export {
+  background-color: var(--color-secondary);
+  color: white;
+  &.nope {
+    opacity: 20%;
+  }
+}
+
+.card-filter {
+  margin-bottom: 1rem;
+}
+
+.nb {
+  margin: 0;
+  font-style: italic;
+}

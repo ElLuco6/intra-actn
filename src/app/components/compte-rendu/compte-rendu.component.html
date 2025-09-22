@@ -1,0 +1,195 @@
+<button mat-raised-button style="background-color: var(--color-secondary); color: white; margin-bottom: 16px"
+  (click)="openPopUp('add')">Ajouter</button>
+
+@for(report of reportsList; track report.date){
+<mat-card style="margin: 3px">
+  <mat-card-content>
+    <div class="card-compt-rendu">
+      <div class="compt-rendu">
+        <div class="date">
+          <p>Le : </p> <strong>{{ report.date | date:'dd-MM-yyyy' }}</strong>
+        </div>
+        <p>Action : {{ report.action }}</p>
+        @if(report.contactmail != '' && report.contactmail != 'undefined'){
+        <p>Pour : {{ report.contactmail }}</p>
+        }
+        <p>Écrit par : {{ report.user }}</p>
+        <p *ngIf="report.campagne">Campagne : {{ report.campagne }}</p>
+      </div>
+      <div style="display: flex;">
+        <div [innerText]="report.texte"></div>
+      </div>
+      <div style="display: flex;">
+        @if(report.suppressionok == 'O'){
+        <button [matTooltip]="'Supprimer'" class="text-button cursor-pointer" (click)="openPopUp('suppr',report)">
+          <mat-icon aria-hidden="false" aria-label="Supprimer" style="color: var(--color-warn)">delete</mat-icon>
+        </button>
+        <button [matTooltip]="'Modifier'" class="text-button cursor-pointer" (click)="openPopUp('edit',report)">
+          <mat-icon aria-hidden="false" aria-label="Supprimer">edit</mat-icon>
+        </button>
+        }
+        <button [matTooltip]="'Envoyer'" class="text-button cursor-pointer" (click)="openPopUp('mail', report)">
+          <fa-icon style="margin: 0; color: var(--color-secondary); width: 24px;" [icon]="faPaperPlane"></fa-icon>
+        </button>
+      </div>
+      <div class="action">
+        <div class="hihi action">{{ report.actionlib }}</div>
+        <div class="hihi aappel" *ngIf="report.campagne">{{ report.appellib }}</div>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>
+<br>
+} @empty {
+<p>Pas de compte rendu trouvé</p>
+}
+
+<div class="popup" [ngClass]="{active: supprPopUp}">
+  <div class="popup-background" (click)="supprPopUp = false"></div>
+  <div class="popup-window">
+    <h1>Êtes vous sûr de vouloir supprimer ce compte rendu ?</h1>
+    <div class="popup-buttons">
+      <button class="raised-button button--color-warn"
+        (click)="supprPopUp = false; supprCompteRendu()">Supprimer</button>
+      <button class="raised-button button--color-secondary" (click)="supprPopUp = false">Annuler</button>
+    </div>
+  </div>
+</div>
+
+<div class="popup" [ngClass]="{active: addPopUp}">
+  <div class="popup-background" (click)="addPopUp = false"></div>
+  <div class="popup-window">
+    <h1>Saisir un compte rendu de visite pour le client N° {{ idIdentity }}</h1>
+    <div>
+      <form [formGroup]="visiteForm" class="form-add">
+        <div class="action-date">
+          <mat-form-field appearance="fill">
+            <mat-label>Contact</mat-label>
+            <mat-select [formControlName]="'contact'" multiple>
+              @for (cont of contactsList; track cont; let i = $index) {
+              <mat-option [value]="i">{{ cont.nom }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Action</mat-label>
+            <mat-select [formControlName]="'action'">
+              @for(motif of motifsList; track motif.argument){
+              <mat-option [value]="motif.argument">{{ motif.libelle }}</mat-option>
+              }
+            </mat-select>
+            @if (visiteForm.get('action').value == ''){
+            <mat-error>Sélectionnez une action</mat-error>
+            }
+          </mat-form-field>
+          <mat-form-field class="size-default" appearance="fill">
+            <mat-label>Date de contact</mat-label>
+            <input matInput [max]="this.maxDate" [matDatepicker]="picker" [formControlName]="'date'">
+            <mat-hint>DD/MM/YYYY</mat-hint>
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+            @if (visiteForm.get('date').value == ''){
+            <mat-error>Sélectionner une date</mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="fill" style="width: 100%">
+          <mat-label>Saisie de compte rendu de visite. 2000 char max.</mat-label>
+          <textarea [formControlName]="'commentaire'" style="height: 20vh; width: 100%" matInput></textarea>
+          {{ visiteForm.get('commentaire').value.length + '/2000' }}
+          @if (visiteForm.get('commentaire').invalid){
+          <mat-error></mat-error>
+          }
+        </mat-form-field>
+        <div class="laclassadallas">
+          @if (visiteForm.valid){
+          <button mat-button style="background-color: var(--color-secondary); color: white; order:2"
+            (click)="addCompteRendu()">Enregister</button>
+          }@else{
+          <button mat-button
+            style="background-color: var(--color-secondary); color: white; opacity: 50%; order:2">Enregister</button>
+          }
+          <button mat-button style="background-color: var(--color-warn); color: white; margin-right: 1em ; order:1"
+            (click)="addPopUp = false">Annuler</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!--POPUP MODIF COMPTE RENDU-->
+
+<div class="popup" [ngClass]="{active: editPopUp}">
+  <div class="popup-background" (click)="editPopUp = false"></div>
+  <div class="popup-window" style="width: 40vw;">
+    <h1>Modification du compte rendu du client {{ idIdentity }}</h1>
+    <div style="display: flex; flex-direction: column">
+      <p>Mode de la démarche : {{ visiteForm.value.action }}</p>
+      <p>Date de la démarche : {{ visiteForm.value.date | date:'dd-MM-yyyy' }}</p>
+      <p>Pour : {{ visiteForm.value.contact }}</p>
+      <form [formGroup]="visiteForm" class="form-add">
+        <mat-form-field appearance="fill" style="width: 100%">
+          <mat-label>Saisie de compte rendu de visite. 2000 char max.</mat-label>
+          <textarea [formControlName]="'commentaire'" style="height: 20vh" matInput></textarea>
+          {{ visiteForm.get('commentaire').value.length + '/2000'}}
+          @if (visiteForm.get('commentaire').invalid){
+          <mat-error></mat-error>
+          }
+        </mat-form-field>
+        <div class="laclassadallas">
+          @if (!visiteForm.hasError('commentaire')){
+          <button mat-button style="background-color: var(--color-secondary); color: white ; order:2"
+            (click)="editCompteRendu(); editPopUp = false">Enregister</button>
+          }@else{
+          <button mat-button
+            style="background-color: var(--color-secondary); color: white; opacity: 50% ; order:2">Enregister</button>
+          }
+          <button mat-button style="background-color: var(--color-warn); color: white; margin-right: 1em ; order:1"
+            (click)="editPopUp = false">Annuler</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="popup" [ngClass]="{active: mailPopUp}">
+  <div class="popup-background" (click)="mailPopUp = false"></div>
+  <div class="popup-window" style="width: 40vw;">
+    <h1>Envoi mail</h1>
+    <form [formGroup]="mailForm">
+      <div class="form">
+        <div class="fields">
+          <mat-form-field>
+            <mat-label>Envoyer à</mat-label>
+            <input type="text" matInput [formControlName]="'to'" [matAutocomplete]="email">
+            <mat-autocomplete #email="matAutocomplete">
+              @for (option of filteredEmailOptions | async; track option) {
+              <mat-option [value]="option">{{option}}</mat-option>
+              }
+            </mat-autocomplete>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Copie</mat-label>
+            <input type="text" matInput [formControlName]="'cc'" [matAutocomplete]="copy">
+            <mat-autocomplete #copy="matAutocomplete">
+              @for (option of filteredCopyOptions | async; track option) {
+              <mat-option [value]="option">{{option}}</mat-option>
+              }
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+
+        <mat-checkbox class="mail-region" [formControlName]="'toRegion'">Envoyer sur le mail de la region</mat-checkbox>
+        <div class="buttons">
+          <button mat-raised-button style="background-color: var(--color-warn); color: white"
+            (click)="mailPopUp = false">Annuler</button>
+          <button mat-raised-button style="background-color: var(--color-secondary); color: white"
+            (click)="envoyerMail(); mailPopUp = false">Envoyer</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

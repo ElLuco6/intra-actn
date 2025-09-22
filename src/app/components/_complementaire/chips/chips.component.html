@@ -1,0 +1,28 @@
+@if (values$ | async; as values) {
+  @if (values.length > 1) {
+    @if (title.length > 0) {
+      <p class="titre">{{ title }}</p>
+    }
+    <div class="container" id="container" #container>
+      @for (value of values; track value; let i = $index) {
+        @if (i === lastValue && repli) {
+          <div class="plus radius" style="--l:32px;--t:0px;--s:0px" (click)="onClickPlus()" (tap)="onClickPlus()"><fa-icon [icon]="faChevronDown" ></fa-icon></div>
+        }
+        <div class="basic-chip"
+          [ngClass]="{'selected': selected.includes(value.value), 'hidden': lastValue !== -1 && i >= lastValue && repli, 'disabled': value.count === 0 && !selected.includes(value.value)}"
+          (click)="onClickChips(value)"
+          (tap)="onClickChips(value)"
+          [matTooltip]="value.tooltip"
+          matTooltipPosition="above"
+          [matTooltipShowDelay]="0"
+          [matTooltipHideDelay]="0"
+          >
+          {{ value.libelle }} ({{ value.count }})
+        </div>
+      }
+      @if (!repli) {
+        <div class="minus radius" style="--l:32px;--t:0px;--s:0px" (click)="onClickMoins()" (tap)="onClickMoins()"><fa-icon [icon]="faChevronUp" ></fa-icon></div>
+      }
+    </div>
+  }
+}

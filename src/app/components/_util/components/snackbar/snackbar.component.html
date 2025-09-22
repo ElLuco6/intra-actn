@@ -1,0 +1,11 @@
+@if (snackbarService.show) {
+  <div class="container" [ngClass]="{'container--warning': snackbarService.isWarning}">
+    <div class="snackbar raised-3" [ngClass]="{'snackbar--warning': snackbarService.isWarning, 'snackbar--large': snackbarService.isLarge}">
+      <p style="margin: 0">{{ snackbarService.message }}</p>
+      @if (snackbarService.hasAction) {
+        <button class="raised-button button--color-secondary" (click)="snackbarService.action()" (tap)="snackbarService.action()">{{ snackbarService.actionMessage }}</button>
+      }
+      <fa-icon [icon]="faTimes" class="close" (click)="snackbarService.hideSnackbar()" (tap)="snackbarService.hideSnackbar()"></fa-icon>
+    </div>
+  </div>
+}

@@ -1,0 +1,32 @@
+export class CompteRenduVisite {
+  date: string;
+  action: string;
+  actionlib: string;
+  user: string;
+  appelcode: string;
+  appellib: string;
+  actioncode: string;
+  actionlibl: string;
+  texte: string;
+  suppressionok: string;
+  campagne: string;
+  datemaj: string;
+  contactmail: string;
+  contactnom: string;
+  contacttel: string;
+  nom: string;
+  mail: string;
+  tel: string;
+  telsociete: string;
+  raison: string;
+  adresse: string;
+  ville: string;
+  departement: string;
+  codepostal: string;
+  region: string;
+  dateFormated: Date;
+  client: string;
+  numclient: string;
+  type: string;
+  siret: string;
+}

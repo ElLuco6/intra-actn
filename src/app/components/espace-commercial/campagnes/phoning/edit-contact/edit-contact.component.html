@@ -1,0 +1,70 @@
+<mat-dialog-content>
+    @if (data.mode === 'add') {
+    <h1>Ajout d'un contact</h1>
+    } @else {
+    <h1>Modification d'un contact</h1>
+    }
+    <form [formGroup]="contactForm">
+        <div class="fields">
+            <mat-form-field>
+                <mat-label>Nom / Prénom</mat-label>
+                <input matInput type="text" [formControlName]="'nom'">
+                @if (contactForm.get('nom').invalid) {
+                <mat-error>*Veuillez insérer un nom (40 caractères max)</mat-error>
+                }
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>Mail</mat-label>
+                <input matInput type="text" [formControlName]="'mail'">
+                @if (contactForm.get('mail').invalid) {
+                <mat-error>*Veuillez insérer un mail (70 caractères max)</mat-error>
+                }
+            </mat-form-field>
+
+            <mat-form-field>
+                <mat-label>Téléphone portable</mat-label>
+                <input matInput type="text" [formControlName]="'gsm'">
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>Téléphone fixe</mat-label>
+                <input matInput type="text" [formControlName]="'fixe'">
+            </mat-form-field>
+
+            <mat-form-field>
+                <mat-label>Fonction</mat-label>
+                <mat-select [formControlName]="'fonctioncode'">
+                    @for (fonc of fonction; track fonc) {
+                    <mat-option [value]="fonc.argument">{{ fonc.libelle }}</mat-option>
+                    }
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label>Service</mat-label>
+                <mat-select [formControlName]="'service'">
+                    @for (service of listService; track service) {
+                    <mat-option [value]="service.argument">{{ service.libelle }}</mat-option>
+                    }
+                </mat-select>
+                @if (contactForm.get('service').invalid) {
+                <mat-error>*Veuillez choisir un service</mat-error>
+                }
+            </mat-form-field>
+        </div>
+
+        @if (!data.isProspect) {
+        <div class="util-button">
+            <mat-slide-toggle [formControlName]="'mailing'">Autoriser ACTN à envoyer des offres et actualités
+            </mat-slide-toggle>
+        </div>
+        }
+
+    </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+    <button class="annuler" mat-button mat-dialog-close>Annuler</button>
+    @if (data.mode === 'add') {
+    <button class="valider" mat-button mat-dialog-close (click)="createContact()">Ajouter</button>
+    } @else {
+    <button class="valider" mat-button mat-dialog-close (click)="updateContact()">Modifier</button>
+    }
+</mat-dialog-actions>

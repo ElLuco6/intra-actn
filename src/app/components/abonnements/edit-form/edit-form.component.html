@@ -1,0 +1,8 @@
+<app-title-w-line [title]="'Edition du dossier ' + this.editForm.value.dossier"></app-title-w-line>
+
+<app-form-model [mode]="'edit'">
+</app-form-model>
+
+@if (spin == true) {
+  <app-new-spinner></app-new-spinner>
+}

@@ -1,0 +1,15 @@
+<app-title-w-line [title]="'Suivi d\'objectifs'" size="small"></app-title-w-line>
+
+<mat-tab-group active-label-text-color="blue" mat-stretch-tabs="false" mat-align-tabs="start"
+    (selectedTabChange)="onTabChange($event)">
+    
+    @for (region of displayedRegions; track region) {
+    <mat-tab [label]="region">
+        @if (chiffresRealises[region]) {
+        <app-tableau-objectifs [chiffresRealises]="chiffresRealises[region]"
+            [objectifs]="objectifs[region]">
+        </app-tableau-objectifs>
+        }
+    </mat-tab>
+    }
+</mat-tab-group>

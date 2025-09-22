@@ -1,0 +1,36 @@
+@if (!displayAsXIcon) {
+  <div class="container">
+    @if (inFav) {
+      <app-tooltip text="Retirer de mes favoris" [showDelay]="0" [hideDelay]="0" type="favoris" (click)="toggleThisProductInFavorisService()" (tap)="toggleThisProductInFavorisService()"></app-tooltip>
+    } @else {
+      <app-tooltip text="Ajouter à mes favoris" [showDelay]="0" [hideDelay]="0" type="favoris-empty" (click)="toggleThisProductInFavorisService()" (tap)="toggleThisProductInFavorisService()"></app-tooltip>
+    }
+  </div>
+} @else {
+  <button
+    class="optional-button iconX"
+    (click)="toggleThisProductInFavorisService()"
+    matTooltip="Retirer de mes favoris"
+    matTooltipClass="tooltip-problem"
+    matTooltipPosition="above"
+    matTooltipShowDelay="0"
+    matTooltipHideDelay="0"
+    >
+    <i class="icon-cross"></i>
+  </button>
+}
+
+<ng-template #iconX>
+  <button
+    class="optional-button iconX"
+    (click)="toggleThisProductInFavorisService()"
+
+    matTooltip="Retirer de mes favoris"
+    matTooltipClass="tooltip-problem"
+    matTooltipPosition="above"
+    matTooltipShowDelay="0"
+    matTooltipHideDelay="0"
+    >
+    <i class="icon-cross"></i>
+  </button>
+</ng-template>

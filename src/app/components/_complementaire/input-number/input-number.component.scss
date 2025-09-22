@@ -1,0 +1,60 @@
+@import "variables.scss";
+
+.container {
+  display: flex;
+  border-radius: 6px;
+  border: 2px solid var(--color-primary-second);
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+
+  /* zoom: 50%;
+  transform: scale(0.5);
+  transform-origin: 0 0; */
+
+  > * {
+    border: none;
+    background: none;
+  }
+
+  input {
+    display: block;
+    text-align: center;
+    width: calc(100% - 4px - 2 * 32px);
+    font-size: 1rem;
+  }
+
+  button {
+    display: block;
+    width: 32px;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    font-size: 1.7rem;
+    color: var(--color-primary-second);
+
+    &:not(:disabled) {
+      cursor: pointer;
+    }
+
+    &:disabled {
+      filter: grayscale(100%);
+    }
+  }
+
+  &.small {
+    input {
+      width: calc(100% - 4px - 2 * 24px);
+      font-size: 1rem - $font-scale;
+    }
+
+    button {
+      width: 24px;
+      font-size: 1.4rem;
+    }
+  }
+
+  &.wrongValue {
+    border-color: var(--color-warn);
+  }
+}

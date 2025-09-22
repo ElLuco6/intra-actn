@@ -1,0 +1,74 @@
+/*.card {
+  max-width: 400px;
+  display: grid;
+  margin-bottom: 3em;
+}
+
+.detail {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.prix {
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr;
+}
+
+.date {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+}
+
+.all-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+.btn-voir-plus:hover{
+  background: var(--color-secondary);
+  color: white
+}*/
+
+.card-content {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: 2fr;
+}
+
+.tab-produit-header {
+  display: grid;
+  justify-items: start;
+  grid-auto-flow: column;
+  grid-gap: 10px;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+.tab-produit-info {
+  display: grid;
+  justify-items: start;
+  grid-gap: 10px;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+.produit {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: -moz-available;
+}
+
+.addr-liv {
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+}
+
+.entete {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  border-top: 2px solid grey;
+  border-bottom: 2px solid grey
+}
+
+.info-client {
+  display: grid;
+  grid-template-rows: repeat(5, 1fr);
+}

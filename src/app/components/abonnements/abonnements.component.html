@@ -1,0 +1,110 @@
+<app-title-w-line [title]="'Abonnements Clients'"></app-title-w-line>
+
+<div>
+  <button class="ajouter-client" mat-raised-button [routerLink]="['/abonnements/ajouter-utilisateur/']">
+    Ajouter un client
+  </button>
+  <div class="filtres-et-paginator" [formGroup]="filtresForm">
+    <mat-card class="mat-card">
+      <h2>Filtres</h2>
+      <div class="filtres">
+        @for (colonne of colonnesAffichees; track colonne) {
+        <mat-form-field appearance="fill">
+          <mat-label>{{ colonne.nom }}</mat-label>
+          <input matInput (input)="applyFilters()" [placeholder]="colonne.nom" [formControlName]="colonne.id">
+        </mat-form-field>
+        }
+      </div>
+    </mat-card>
+    <mat-paginator class="paginator" [pageSizeOptions]="[50, 100, 150]"> </mat-paginator>
+  </div>
+
+  <div class="table-container">
+    <table class="mat-elevation-z8" mat-table [dataSource]="dataSource" multiTemplateDataRows matSort
+      (matSortChange)="sortData($event)">
+
+      <!-- Colonne pour l'expansion -->
+      <ng-container matColumnDef="expand">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let abonnement">
+          <button mat-icon-button (click)="toggleRow(abonnement); $event.stopPropagation()">
+            <mat-icon>{{ expandedElement === abonnement ? 'expand_less' : 'expand_more' }}</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="expandedDetail">
+        <td [class]="(expandedElement === abonnement && abonnement.produits ? 'expanded' : 'collapsed')" mat-cell
+          *matCellDef="let abonnement" [attr.colspan]="displayedColumns.length">
+          @if (abonnement === expandedElement) {
+          <div class="detail-produits">
+            @if (sortedProducts) {
+            @if (sortedProducts.length > 0) {
+            <table class="produits" matSort (matSortChange)="sortProducts($event)">
+              <tr>
+                <th mat-sort-header="ligne">Ligne</th>
+                <th mat-sort-header="produit">Produit</th>
+                <th mat-sort-header="quantite">Quantité</th>
+                <th mat-sort-header="nature">Nature</th>
+                <th mat-sort-header="periodefac">Périodicité facturation</th>
+                <th mat-sort-header="datedeb">Date début facturation</th>
+                <th mat-sort-header="datedernierefact">Date dernière facturation</th>
+                <th mat-sort-header="actif">Actif</th>
+              </tr>
+
+              <br />
+
+              @for (produit of sortedProducts; track produit) {
+              <tr>
+                <td>{{produit.ligne}}</td>
+                <td>{{produit.produit}}</td>
+                <td>{{produit.quantite}}</td>
+                <td>{{produit.nature}}</td>
+                <td>{{produit.periodefac}}</td>
+                <td>{{produit.datedeb}}</td>
+                <td>{{produit.datedernierefact}}</td>
+                <td>{{produit.actif}}</td>
+              </tr>
+              }
+            </table>
+            @if (!isAllActive(sortedProducts)) {
+            <p class="non-facture">{{ 'Non facturé' }}</p>
+            }
+            } @else {
+            Il n'y a pas de produit à afficher pour ce client
+            }
+            <button mat-icon-button (click)="editerProduits(abonnement.numero); $event.stopPropagation()">
+              <mat-icon class="icone"> edit </mat-icon>
+            </button>
+            }
+          </div>
+          }
+        </td>
+      </ng-container>
+
+      @for (colonne of colonnesAffichees; track colonne) {
+      <ng-container [matColumnDef]="colonne.id">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> {{ colonne.nom }}
+        </th>
+        <td mat-cell *matCellDef="let abonnement" [routerLink]="['/client-detail/' + abonnement.client ]"> {{
+          abonnement[colonne.id] }} </td>
+      </ng-container>
+      }
+
+      <!-- Colonne pour l'édition -->
+      <ng-container matColumnDef="editer">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td class="edit-button" mat-cell *matCellDef="let abonnement">
+          <button mat-icon-button (click)="editerUtilisateur(abonnement.numero); $event.stopPropagation()">
+            <mat-icon class="icone"> edit </mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr class="pointer" mat-row *matRowDef="let element; columns: displayedColumns;"></tr>
+      <tr class="trou" mat-row *matRowDef="let row; columns: ['expandedDetail']"></tr>
+
+    </table>
+  </div>
+</div>

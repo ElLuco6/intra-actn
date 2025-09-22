@@ -1,0 +1,27 @@
+
+
+.map-cheese{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.map{
+  grid-column: 2/4;
+  margin-right: 10px;
+  background-color: grey;
+}
+
+.cheese{
+  height: 100%;
+}
+
+/*
+.diagram{
+  width: 100%;
+  display: grid;
+  grid-auto-rows: 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
+  justify-content: center;
+  align-items: center;
+}
+*/

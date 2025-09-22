@@ -1,0 +1,83 @@
+.head {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.ajouter-client {
+  border-radius: 6px;
+  background-color: var(--color-primary-second);
+  color: #f1f1f1;
+  margin-bottom: 1rem;
+}
+
+.filtres-et-paginator {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.mat-card {
+  margin-bottom: 1rem;
+  padding: 20px 20px 0 20px;
+}
+
+.filtres {
+  display: grid;
+  grid-template-columns: repeat(4, 2fr);
+  gap: 0 2rem;
+}
+
+.paginator {
+  box-shadow: 8px -5px 8px -5px rgba(0, 0, 0, 0.2);
+}
+
+.tableau {
+  width: 100%;
+}
+
+.edit-button {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.collapsed {
+  border: 0;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.expanded {
+  border-bottom-color: var(--mat-table-row-item-outline-color, rgba(0, 0, 0, 0.12));
+  border-bottom-width: var(--mat-table-row-item-outline-width, 1px);
+  border-bottom-style: solid;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.trou {
+  height: 0px !important;
+}
+
+.produits {
+  width: 60%;
+}
+
+.icone {
+  color: var(--color-primary-second);
+}
+
+.detail-produits {
+  margin: 1rem 0 1rem 5rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.non-facture {
+  color: red;
+}
+
+.pointer {
+  cursor: pointer;
+}

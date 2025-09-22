@@ -1,0 +1,122 @@
+<mat-card appearance="outlined" class="mat-card">
+  <div class="client-content">
+    <div>
+      <div>
+        Client {{ client.numclient + ' ' }}
+        @if (client.blocage) {
+        <app-tooltip [type]="'alert'" [text]="'Le client est bloqué : ' + client.blocage"></app-tooltip>
+        }
+      </div>
+      <br />
+      <p class="strong">{{ client.nom }}</p>
+      @if (client.adresse1 != '') {
+      <p>{{ client.adresse1 }}</p>
+      }
+      @if (client.adresse2 != '') {
+      <p>{{ client.adresse2 }}</p>
+      }
+      <p>{{ client.codepostal }} {{ client.ville }}</p>
+      <a [href]="'tel:' + client.telephone">{{ client.telephone }}</a>
+      <p>{{ client.groupe }}</p>
+    </div>
+    <table>
+      <tr>
+        <th>Limite crédit safe :</th>
+        <td class="strong">{{ client.limiteCredit | currency:'EUR':'symbol':'1.0' }}</td>
+      </tr>
+      <tr>
+        <th>Plafond bloquant :</th>
+        <td>{{ client.plafondbloquant | currency:'EUR':'symbol':'1.0'}}</td>
+      </tr>
+      <tr [class]="isEtudeFinanciereObsolete() ? 'texte-rouge' : ''">
+        <th>Date d'étude financière :</th>
+        <td>{{ client.plafondbloquantDate }}</td>
+      </tr>
+      <tr>
+        <th>Limite crédit excep :</th>
+        @if (client.limiteCreditExceptionnel != 0) {
+        <td>{{ client.limiteCreditExceptionnel | currency:'EUR':'symbol':'1.0' }}
+          @if (client.limiteCreditExceptionnelDate) {
+          jusqu'au {{ client.limiteCreditExceptionnelDate }}
+          }
+        </td>
+        } @else {
+        <td>Pas de crédit excep</td>
+        }
+      </tr>
+      <tr>
+        <th>Encours compta :</th>
+        <td>{{ client.EncoursCompta | currency:'EUR':'symbol':'1.0' }}</td>
+      </tr>
+      <tr>
+        <th>Encours BL :</th>
+        <td>{{ client.EncoursBL | currency:'EUR':'symbol':'1.0'}}</td>
+      </tr>
+      <tr [class]="depassementPlafond() > 0 ? 'texte-rouge' : ''">
+        <th>Risque global :</th>
+        <td >{{ client.risqueGlobal | currency:'EUR':'symbol':'1.0'}}</td>
+      </tr>
+      @if (depassementPlafond() > 0) {
+        <tr [class]="depassementPlafond() > 0 ? 'texte-rouge' : ''">
+          <th>Dépassement :</th>
+          <td >{{ depassementPlafond() | currency:'EUR':'symbol':'1.0'}}</td>
+        </tr>
+      }
+    </table>
+    <div>
+      <p [matTooltip]="client.Bilan">Bilan : {{client.Bilan | truncate:20}}</p>
+      <p>Note : {{client.note}}</p>
+      <p><a [href]="'https://www.societe.com/cgi-bin/search?champs='+client.siren" target="_blank">Siren :
+          {{client.siren}}</a></p>
+      <p [matTooltip]="client.naflibelle.toString()">NAF :
+        {{client.naflibelle.toString() | truncate:20}}</p>
+
+      @if(client?.coface){
+
+      <p>Coface : {{client.coface}}</p>
+      }
+      <p [matTooltip]="client.conditionreg">{{ 'Condition regl. : ' + client.conditionreg | truncate:32 }}</p>
+    </div>
+    <div>
+      <h4>Contacts commerciaux</h4>
+      <div class="contacts-commerciaux">
+        <div>
+          <p>{{client.commercialNom1}}</p>
+          <p>{{client.commercialMail1}}</p>
+          <p>{{client.commercialTel1}}</p>
+        </div>
+        <div>
+          <p>{{client.commercialNom2}}</p>
+          <p>{{client.commercialMail2}}</p>
+          <p>{{client.commercialTel2}}</p>
+        </div>
+      </div>
+      <p>Region : {{client.region}}</p>
+    </div>
+    <div class="boutons">
+      <div>
+        <button mat-button (click)="exportClient()">
+          Exporter en xls
+          <mat-icon>file_copy</mat-icon>
+        </button>
+      </div>
+      <div>
+        @if (!authClient.currentClient) {
+        <button class="login" mat-button (click)="authClient.logClient(client.numclient).subscribe()">
+          <mat-icon>login</mat-icon>
+        </button>
+        } @else {
+        @if (authClient.currentClient.id.toString() != client.numclient) {
+        <button class="login" mat-button (click)="authClient.changeClient(client.numclient)">
+          <mat-icon>login</mat-icon>
+        </button>
+        } @else {
+        <button class="logout" mat-button (click)="authClient.logClientOut().subscribe()">
+          <mat-icon>logout</mat-icon>
+        </button>
+        }
+        }
+      </div>
+    </div>
+  </div>
+</mat-card>

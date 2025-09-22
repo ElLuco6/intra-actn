@@ -1,0 +1,45 @@
+@if (avaiable) {
+  <div class="add-to-cart-form" [ngClass]="{column: direction === 'column', noInput: !showInput}">
+    @if (+produit.qtemini !== 0 && +produit.qtemini < +produit.qtemaxi) {
+      <p class="small-texte">De {{ produit.qtemini }} à {{ produit.qtemaxi }}</p>
+    }
+    @if (+produit.qtemini !== 0 && +produit.qtemini > +produit.qtemaxi) {
+      <p class="small-texte">Au moins {{ produit.qtemini }}</p>
+    }
+    @if (cartService.cart.items[this.produit.reference]?.cotation || cotation; as cotation) {
+      <p class="small-texte">
+        Quantité maximum {{ cotation.qtecdemax - cotation.qtecde }}
+      </p>
+    } @else {
+      @if (+produit.qtemini === 0 && +produit.qtemaxi > +produit.qtemini) {
+        <p class="small-texte">Quantité maximum {{ produit.qtemaxi }}</p>
+      }
+    }
+    @if (showInput) {
+      <app-input-number [isDisabled]="isDisabled" [min]="-cartService.getQteProduit(produit)"
+      [max]="maximum()" (value)="valueChange($event)" [number]="quantite"></app-input-number>
+    }
+    <button class="raised-button button--with-label-and-icon"
+      [disabled]="isDisabled"
+      (click)="ajouterAuPanier()" (tap)="ajouterAuPanier()"
+      [ngClass]="{'error': invalide}">
+      <i class="icon-cart"></i>
+      @if (this.quantite >= 0) {
+        Ajouter au panier
+      } @else {
+        Retirer du panier
+      }
+      <div class="tag" [ngClass]="{'show': cartService.getQteProduit(produit) > 0}">{{cartService.getQteProduit(produit) }}</div>
+    </button>
+    @if (invalide) {
+      <p class="small-texte error">Quantité impossible</p>
+    }
+  </div>
+} @else {
+  <div class="dispo-div">
+    <p class="dispo-text">Produit temporairement indisponible</p>
+    <p class="raised-button dispo-button">Demande de cotation<br>et disponibilité</p>
+  </div>
+}
+
+<!-- Produit indisponible / en rupture de stock -->

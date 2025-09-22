@@ -1,0 +1,28 @@
+.champ-header {
+  display: flex;
+  gap: 1rem;
+}
+
+.comm {
+  width: 100%;
+  height: 20vh;
+}
+
+.btn {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.annuler {
+  color: var(--color-warn);
+  --mat-protected-button-ripple-color: var(--color-warn-ripple) !important;
+  --mat-protected-button-state-layer-color: var(--color-warn) !important;
+}
+
+.action {
+  color: var(--color-secondary);
+  --mat-protected-button-ripple-color: var(--color-secondary-ripple) !important;
+  --mat-protected-button-state-layer-color: var(--color-secondary) !important;
+}
+

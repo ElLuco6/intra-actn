@@ -1,0 +1,171 @@
+<div class="container">
+  <h3>Formulaire de renouvellement</h3>
+  @if (licence) {
+    <div class="bandeau">
+      <div class="raised-1">
+        <ul>
+          <li class="tab-1">Marque</li>
+          <li class="tab-1">Réf. produit</li>
+          <li class="tab-2">Désignation</li>
+          <li class="tab-1_5">SN / EAV</li>
+          <li class="tab-2">Client</li>
+          <li class="tab-1 tab-c">Date d'achat</li>
+          <li class="tab-1 tab-c">Date d'expiration</li>
+          <li class="tab-1 tab-c">Statut</li>
+        </ul>
+        <ul>
+          <li class="tab-1">{{ licence.produit.marque }}</li>
+          <li class="tab-1">{{ licence.produit.reference }}</li>
+          <li class="tab-2">{{ licence.produit.designation }}</li>
+          <li class="tab-1_5">{{ licence.serie }}</li>
+          <li class="tab-2">@if (licence.client) {
+            {{ licence.client.nom }}
+          }</li>
+          <li class="tab-1 tab-c">{{ licence.commandedate | date:'shortDate' }}</li>
+          <li class="tab-1 tab-c">{{ licence.renouvellementdate | date:'shortDate' }}</li>
+          <li class="tab-1 tab-c">{{ licence.statut }}</li>
+        </ul>
+        @if (entries.postes !== '') {
+          <p class="postes">
+            Nombre de postes actuel : @if (licenceOfFiltres[entries.postes].includes('à')) {
+            {{ licence.quantite }}
+          } @else {
+            {{ licenceOfFiltres[entries.postes] }}
+          }
+        </p>
+      }
+    </div>
+  </div>
+}
+@if (licence && ready) {
+  <div class="formulaire">
+    <div>
+      <h3>Renouvellement de licence</h3>
+      <div class="renew-upgrade">
+        <mat-radio-group [(ngModel)]="type">
+          <mat-radio-button value="renew" [disabled]="type === 'new'">Renouvellement</mat-radio-button>
+          <mat-radio-button value="upgrade" [disabled]="type === 'new' || !upgradable">Upgrade</mat-radio-button>
+          <mat-radio-button value="new" [disabled]="type !== 'new'">Nouvelle souscription</mat-radio-button>
+        </mat-radio-group>
+      </div>
+      @switch (type) {
+        @case ('renew') {
+          <!-- DUREE -->
+          <mat-form-field class="duree">
+            <mat-label>Durée</mat-label>
+            <mat-select [ngModel]="selectedDuree" (ngModelChange)="onDureeChange($event)"
+              [ngModelOptions]="{standalone: true}" panelClass="select-panel">
+              <mat-option value="Sans ajout de durée">Sans ajout de durée</mat-option>
+              @for (duree of durees; track duree) {
+                <mat-option [value]="duree">{{ duree }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          <br/>
+          <mat-slide-toggle [(ngModel)]="ajoutPoste" [disabled]="entries.postes === ''">Ajouter des postes&nbsp;<app-tooltip text="Ajouter des postes à une licence existante ne peut être fait via le web. Un commercial vous enverra rapidement un devis." type="help" [showDelay]="0" [hideDelay]="0"></app-tooltip></mat-slide-toggle>
+          <!-- NOMBRE DE POSTES -->
+          @if (ajoutPoste) {
+            <div class="input-number size-smaller">
+              <mat-label>Nombre de postes à ajouter</mat-label>
+              <app-input-number [number]="0" [min]="0" [max]="max"
+              (value)="onNombrePosteChange($event)"></app-input-number>
+            </div>
+          }
+        }
+        @case ('upgrade') {
+          <!-- DUREE -->
+          <mat-form-field class="duree">
+            <mat-label>Durée</mat-label>
+            <mat-select [ngModel]="selectedDuree" (ngModelChange)="onDureeChange($event)"
+              [ngModelOptions]="{standalone: true}" panelClass="select-panel">
+              <!-- <mat-option value="0">Non</mat-option> -->
+              @for (duree of durees; track duree) {
+                <mat-option [value]="duree">{{ duree }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        }
+        @case ('new') {
+          <!-- DUREE -->
+          <mat-form-field class="duree">
+            <mat-label>Durée</mat-label>
+            <mat-select [ngModel]="selectedDuree" (ngModelChange)="onDureeChange($event)"
+              [ngModelOptions]="{standalone: true}" panelClass="select-panel">
+              <!-- <mat-option value="0">Non</mat-option> -->
+              @for (duree of durees; track duree) {
+                <mat-option [value]="duree">{{ duree }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          <br/>
+          <!-- NOMBRE DE POSTES -->
+          @if (entries.postes !== '') {
+            <div class="input-number">
+              <mat-label>Nombre de postes</mat-label>
+              <app-input-number [number]="selectedPosteMul" [min]="0" [max]="max"
+              (value)="onNombrePosteChange($event)"></app-input-number>
+            </div>
+          }
+        }
+      }
+    </div>
+    @if (!ajoutPoste && type != '') {
+      <div>
+        <h3>Résumé</h3>
+        @if (newLicence != null) {
+          <p class="resume">
+            @switch (type) {
+              @case ('renew') {
+                Renouvellement de la licence <span class="weight-bold">{{ licence.produit.reference }} vers {{ newLicence.reference }} </span>
+              }
+              @case ('upgrade') {
+                Upgrade de la licence <span class="weight-bold">{{ licence.produit.reference }} vers {{ newLicence.reference }} </span>
+              }
+              @case ('new') {
+                Acquisition d'une <span class="weight-bold">nouvelle licence {{ newLicence.reference }} </span>
+              }
+            }
+            @if (entries.postes !== '') {
+              pour <span class="weight-bold">{{ selectedPosteMul }} poste@if (selectedPosteMul > 1) {
+              s
+            }</span> et
+          }
+          @if (entries.postes === '') {
+            pour
+            }<span class="weight-bold">{{ selectedDuree }}</span> pour
+            un montant de <span class="weight-bold">{{ montant | currency:'EUR':'symbol':'1.2-2'}}<span class="size-smaller">&nbsp;HT</span></span>
+          </p>
+        } @else {
+          <p>Aucune licence correspondante à vos critères n'a été trouvé.</p>
+        }
+      </div>
+    }
+    @if (continue) {
+      <app-validation-panier [renewLicence]="true" [lockCommande]="lockCommande"></app-validation-panier>
+    }
+    <div class="buttons" [ngClass]="{up: continue}">
+      <button type="button" (click)="backToLicences()" (tap)="backToLicences()"
+      class="raised-button button--color-secondary">Consulter les licences</button>
+      @if (!continue &&!ajoutPoste) {
+        <button class="raised-button" (click)="onContinue()" (tap)="onContinue()" [disabled]="newLicence == null">Poursuivre</button>
+      }
+      @if (!continue &&ajoutPoste) {
+        <button class="raised-button" (click)="demandeDevis()" (tap)="demandeDevis()" [disabled]="selectedPosteMul == 0">Demander un devis</button>
+      }
+    </div>
+  </div>
+}
+</div>
+
+<div class="popup" [ngClass]="{active: showPopupDevis}">
+  <div class="popup-background"></div>
+  <div class="popup-window">
+    <p>
+      Votre demande d'ajout de postes à bien été transmise à notre service commercial.<br/>
+      Celui-ci vous recontactera pour vous transmettre un devis.
+    </p>
+    <div class="popup-buttons">
+      <button class="raised-button" (click)="backToLicences()" (tap)="backToLicences()">OK</button>
+    </div>
+  </div>
+</div>

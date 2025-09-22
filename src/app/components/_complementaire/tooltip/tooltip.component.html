@@ -1,0 +1,204 @@
+
+@switch (type) {
+  @case ('help') {
+    <fa-icon
+      class="icon-tooltip icon-help icon"
+      [icon]="faQuestionCircle"
+      [matTooltip]="text"
+      matTooltipClass="tooltip-help"
+      [matTooltipPosition]="position"
+      [matTooltipShowDelay]="showDelay"
+      [matTooltipHideDelay]="hideDelay">
+    </fa-icon>
+  }
+  @case ('alert') {
+    <fa-icon
+      class="icon-tooltip icon-alert icon"
+      [icon]="faExclamationTriangle"
+      [matTooltip]="text"
+      matTooltipClass="tooltip-alert"
+      [matTooltipPosition]="position"
+      [matTooltipShowDelay]="showDelay"
+      [matTooltipHideDelay]="hideDelay">
+    </fa-icon>
+  }
+  @case ('alertClient') {
+    <fa-icon
+      class="icon-tooltip icon-alert-client icon"
+      [icon]="faExclamationTriangle"
+      [matTooltip]="text"
+      matTooltipClass="tooltip-alert"
+      [matTooltipPosition]="position"
+      [matTooltipShowDelay]="showDelay"
+      [matTooltipHideDelay]="hideDelay">
+    </fa-icon>
+  }
+  @case ('problem') {
+    <fa-icon
+      class="icon-tooltip icon-problem icon"
+      [icon]="faExclamationTriangle"
+      [matTooltip]="text"
+      matTooltipClass="tooltip-problem"
+      [matTooltipPosition]="position"
+      [matTooltipShowDelay]="showDelay"
+      [matTooltipHideDelay]="hideDelay">
+    </fa-icon>
+  }
+  @case ('error') {
+    <fa-icon
+      class="icon-tooltip icon-alert icon"
+      [icon]="faTimesCircle"
+      [matTooltip]="text"
+      matTooltipClass="tooltip-help"
+      [matTooltipPosition]="position"
+      [matTooltipShowDelay]="showDelay"
+      [matTooltipHideDelay]="hideDelay">
+    </fa-icon>
+  }
+  @case ('share') {
+    <fa-icon
+      class="icon-secondary icon-share icon"
+      [icon]="faShareAlt"
+      [matTooltip]="text"
+      matTooltipClass="tooltip-problem"
+      [matTooltipPosition]="position"
+      [matTooltipShowDelay]="showDelay"
+      [matTooltipHideDelay]="hideDelay">
+    </fa-icon>
+  }
+  @case ('favoris') {
+    <fa-icon
+      class="icon-alert icon-share icon"
+      [icon]="faStar"
+      [matTooltip]="text"
+      matTooltipClass="tooltip-problem"
+      [matTooltipPosition]="position"
+      [matTooltipShowDelay]="showDelay"
+      [matTooltipHideDelay]="hideDelay">
+    </fa-icon>
+  }
+  @case ('favoris-empty') {
+    <fa-icon
+      class="icon-secondary icon-share icon"
+      [icon]="faStar"
+      [matTooltip]="text"
+      matTooltipClass="tooltip-problem"
+      [matTooltipPosition]="position"
+      [matTooltipShowDelay]="showDelay"
+      [matTooltipHideDelay]="hideDelay">
+    </fa-icon>
+  }
+  @case ('pdf') {
+    <fa-icon
+      class="icon-problem icon-share icon"
+      [icon]="faFilePdf"
+      [matTooltip]="text"
+      matTooltipClass="tooltip-problem"
+      [matTooltipPosition]="position"
+      [matTooltipShowDelay]="showDelay"
+      [matTooltipHideDelay]="hideDelay">
+    </fa-icon>
+  }
+  @case ('reload') {
+    <fa-icon
+      class="icon-white icon-share icon"
+      [icon]="faRedoAlt"
+      [matTooltip]="text"
+      matTooltipClass="tooltip-problem"
+      [matTooltipPosition]="position"
+      [matTooltipShowDelay]="showDelay"
+      [matTooltipHideDelay]="hideDelay">
+    </fa-icon>
+  }
+  @case ('trash') {
+    <fa-icon
+      class="icon-white icon-share icon"
+      [icon]="faTrash"
+      [matTooltip]="text"
+      matTooltipClass="tooltip-problem"
+      [matTooltipPosition]="position"
+      [matTooltipShowDelay]="showDelay"
+      [matTooltipHideDelay]="hideDelay">
+    </fa-icon>
+  }
+  @case ('edit') {
+    <fa-icon
+      class="icon-white icon-share icon"
+      [icon]="faPaperPlane"
+      [matTooltip]="text"
+      matTooltipClass="tooltip-problem"
+      [matTooltipPosition]="position"
+      [matTooltipShowDelay]="showDelay"
+      [matTooltipHideDelay]="hideDelay">
+    </fa-icon>
+  }
+  @case ('assos') {
+    <svg-icon
+      class="icon"
+      [src]="svgAssosPath"
+      [svgStyle]="{ width: '24px', height: '24px' }"
+      [viewBox]="auto"
+      [matTooltip]="text"
+      matTooltipClass="tooltip-problem"
+      [matTooltipPosition]="position"
+      [matTooltipShowDelay]="showDelay"
+      [matTooltipHideDelay]="hideDelay">
+    </svg-icon>
+  }
+  @case ('location') {
+    <svg-icon
+      class="icon"
+      [src]="svgLocationPath"
+      [svgStyle]="{ width: '22px', height: '22px' }"
+      [viewBox]="auto"
+      [matTooltip]="text"
+      matTooltipClass="tooltip-problem"
+      [matTooltipPosition]="position"
+      [matTooltipShowDelay]="showDelay"
+      [matTooltipHideDelay]="hideDelay">
+    </svg-icon>
+  }
+  @case ('cart') {
+    <i
+      class="icon-share icon-cart"
+      [matTooltip]="text"
+      matTooltipClass="tooltip-problem"
+      [matTooltipPosition]="position"
+      [matTooltipShowDelay]="showDelay"
+      [matTooltipHideDelay]="hideDelay">
+    </i>
+  }
+  @case ('help-me') {
+    <fa-icon
+      class="icon-problem icon-share icon"
+      [icon]="faInfo"
+      [matTooltip]="text"
+      matTooltipClass="tooltip-problem"
+      [matTooltipPosition]="position"
+      [matTooltipShowDelay]="showDelay"
+      [matTooltipHideDelay]="hideDelay">
+    </fa-icon>
+  }
+  @case ('cotation') {
+    <fa-icon
+      class="icon-problem icon-share icon"
+      [icon]="faEuroSign"
+      [matTooltip]="text"
+      matTooltipClass="tooltip-problem"
+      [matTooltipPosition]="position"
+      [matTooltipShowDelay]="showDelay"
+      [matTooltipHideDelay]="hideDelay">
+    </fa-icon>
+  }
+  @case ('cotationWarn') {
+    <fa-icon
+      class="icon-secondary icon-share icon"
+      [icon]="faEuroSign"
+      [matTooltip]="text"
+      matTooltipClass="tooltip-problem"
+      [matTooltipPosition]="position"
+      [matTooltipShowDelay]="showDelay"
+      [matTooltipHideDelay]="hideDelay">
+    </fa-icon>
+  }
+}

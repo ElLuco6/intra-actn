@@ -1,0 +1,27 @@
+.popup {
+  padding: 1rem;
+}
+
+.titre {
+  margin-bottom: 1rem;
+}
+
+.boutons {
+  display: flex;
+  justify-content: space-between;
+}
+
+.boutons-valider {
+  display: flex;
+  gap: 1rem;
+}
+
+.annuler {
+  background-color: var(--color-warn);
+  color: white;
+}
+
+.valider {
+  background-color: var(--color-secondary);
+  color: white;
+}

@@ -1,0 +1,120 @@
+.bar-client {
+  background-color: var(--color-warn);
+  color: white;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  height: 30px;
+  gap: 20px;
+  align-items: center;
+  width: 100vw;
+  padding-left: 10vw;
+}
+
+.div-click {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  cursor: pointer
+}
+
+.div-click:hover {
+  text-decoration: underline;
+}
+
+.deco-client {
+  background-color: var(--color-warn);
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 10vw;
+  height: 30px;
+  color: white;
+  gap: 15px;
+  cursor: pointer;
+}
+
+.pupup {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  z-index: -1;
+  opacity: 0;
+  visibility: hidden;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &.active {
+    visibility: visible;
+    z-index: 21;
+    opacity: 1;
+  }
+  .popup-background {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 20;
+  }
+  .popup-window {
+    background: white;
+    padding: 20px;
+    z-index: 21;
+    max-width: 80%;
+    border-radius: 3px;
+
+    > * {
+      line-height: 2.5em;
+    }
+
+    h3 {
+      margin: 0;
+    }
+
+    .content a {
+      display: grid;
+      grid-template-columns: 32px auto;
+      align-items: center;
+
+      fa-icon {
+        color: var(--color-primary-second);
+        font-size: 1.5rem;
+      }
+    }
+
+    mat-form-field {
+      margin-top: 10px;
+      min-width: 300px;
+    }
+
+    .clipboard {
+      margin-top: 9px !important;
+      font-size: 1.3em;
+      min-width: 16px !important;
+      max-width: 16px !important;
+      display: flex;
+      justify-content: center;
+      color: var(--color-primary-second);
+    }
+    .popup-buttons {
+      display: flex;
+      justify-content: flex-end;
+
+      > *:not(:last-child) {
+        margin-right: 20px;
+      }
+    }
+  }
+}
+
+.button-deco {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 30px;
+}

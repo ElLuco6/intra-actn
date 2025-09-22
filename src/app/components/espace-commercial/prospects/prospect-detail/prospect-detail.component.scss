@@ -1,0 +1,180 @@
+@import "styles/popup";
+
+.prospect-nom {
+  font-size: 24px;
+}
+
+p {
+  margin: 0
+}
+
+.bandeau-prospect {
+  background-color: #f2f2f2;
+  padding: 1em;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  margin-bottom: 3vh;
+}
+
+.info-prospect {
+  display: flex;
+  flex-direction: column;
+
+  @media screen and (max-width: 500px) {
+    width: 100%;
+  }
+
+  .commerciaux {
+    display: flex;
+
+    @media screen and (min-width: 500px) {
+      flex-direction: row;
+      gap: 2em;
+    }
+
+    @media screen and (max-width: 500px) {
+      flex-direction: column;
+    }
+
+  }
+
+  .commentaire {
+    margin-bottom: 3vh;
+  }
+}
+
+h3{
+   font-weight: 401;
+}
+
+.compte-rendu {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 2vh;
+  margin-bottom: 1.5vh;
+  padding: 1.5vh 2vw;
+
+  @media screen and (max-width: 760px){
+    flex-direction: column;
+  }
+
+  .who {
+    width: fit-content;
+
+    @media screen and (max-width: 760px){
+      width: 100%;
+    }
+
+    .date {
+      font-weight: 600;
+    }
+  }
+
+  .comm {
+    width: 30vw;
+
+    @media screen and (max-width: 760px){
+      width: 100%;
+    }
+  }
+
+  .action {
+    display: flex;
+    gap: .5vw;
+    cursor: pointer;
+    align-items: center;
+
+    .delete {
+      color: var(--color-warn);
+    }
+
+    .edit {
+      color: var(--color-secondary);
+    }
+  }
+}
+
+.button-suppr {
+  display: flex;
+  justify-content: space-around;
+
+  .suppr {
+    background-color: var(--color-warn);
+    color: white;
+  }
+
+  .cancel {
+    background-color: var(--color-secondary);
+    color: white;
+  }
+}
+
+.addCptRnd {
+  background-color: var(--color-secondary);
+  color: white;
+  margin-bottom: 1vh;
+}
+
+.gneeeee {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.gneeeee-modif {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.wowowo {
+  min-width: 500px;
+
+  @media screen and (max-width: 620px) {
+    min-width: 0px;
+  }
+}
+
+.brrrrt {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.brrrrt-colonne {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.zazizou {
+  width: fit-content;
+}
+
+.button-enregistrer {
+  color: white;
+  background-color: var(--color-secondary);
+}
+
+.button-annuler {
+  color: white;
+  background-color: var(--color-warn);
+}
+
+.prout {
+  display: flex;
+  justify-content: end;
+  gap: 20px
+}
+
+.bimbamboum {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}

@@ -1,0 +1,126 @@
+<div class="container-filtres raised-1">
+  <div class="flex">
+    <div class="conteneur action-row">
+      <button id="filtresToggle" class="text-button" type="button" (click)="onFiltresTogglePressed($event)"
+              (tap)="onFiltresTogglePressed($event)" [ngClass]="{ active: showFiltres }" appKeyboardFocus>
+        Filtres
+        <i class="icon-caret-down" [ngClass]="{ focused: showFiltres }"></i>
+      </button>
+    </div>
+    <div class="conteneur">
+      @if (nbSuiviTemp > 1) {
+        <span class="historique"><b>{{ nbSuiviTemp }} retours </b>produits
+      </span>
+      } @else {
+        <span class="historique"><b>{{ nbSuiviTemp }} retour </b>produits </span>
+      }
+      <mat-form-field class="field">
+        <mat-label>Période</mat-label>
+        <mat-select [(value)]="selectedHisto">
+          @for (histo of historiqueList; track histo) {
+            <mat-option [value]="histo" (click)="filter(histo)">{{ histo }}
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+
+  @if (showFiltres) {
+    @if (filtres$ | async; as filtres) {
+      <div [formGroup]="filtresForm">
+        <div class="fields">
+          @for (filtre of filtres; track filtre; let i = $index) {
+            <mat-form-field class="field">
+              <mat-label>{{ filtre.label }}</mat-label>
+              <mat-select [formControlName]="filtre.target" multiple disableOptionCentering
+                          panelClass="select-panel">
+                @for (option of filtre.options; track option; let j = $index) {
+                  <mat-option [value]="option" [disabled]="">
+                    {{ option }}
+                  </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          }
+          <mat-form-field class="field">
+            <mat-label>Réf. Produit</mat-label>
+            <input matInput [ngModel]="filtreRef" (ngModelChange)="rechercheRef($event)"
+                   [ngModelOptions]="{standalone: true}"/>
+          </mat-form-field>
+          <app-tooltip class="iconComp" position="right" type="help" [text]="chargerAideProduitRef()">
+          </app-tooltip>
+        </div>
+        @if (filtreMarque) {
+          <div class="marque-filtres">
+            @for (option of filtreMarque.options; track option; let j = $index) {
+              <div class="marque-options" [ngClass]="{'selected': filtresForm.get('marque').value.includes(option)}"
+                   (click)="filtreMarqueToggle(option)"
+                   (tap)="filtreMarqueToggle(option)">
+                <img class="marque-img" [src]="environment.logoMarquesCouleurs200x80 + option + '.gif'">
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+  }
+</div>
+
+<div class="bandeau">
+  <span class="labelsSuivi">
+    <label class="grow2">Marque</label>
+    <label class="grow2">Réf. produit</label>
+    <label class="grow3">Désignation</label>
+    <label class="grow2">Votre demande</label>
+    <label class="grow2">N° de RMA</label>
+    <label class="grow1C">Qte retour</label>
+    <label class="grow1C">Qte rec.</label>
+    <label class="grow2">Statut</label>
+  </span>
+</div>
+
+
+@for (suivi of suiviListAffich; track suivi; let i = $index) {
+  <div class="margin">
+    <div class="cadreSuivi">
+      <span class="ligneRMA">
+        <label class="grow2">{{ suivi.marque }}</label>
+        <label class="grow2">{{ suivi.produit }}</label>
+        <label class="grow3">{{ suivi.designation }}</label>
+        @if (suivi.datedemande !== '00/00/00') {
+          <label class="grow2">{{ suivi.numerodmd }} du
+            {{ suivi.datedemande }}</label>
+        } @else {
+          <label class="grow2">{{ suivi.numerodmd }}</label>
+        }
+        @if (!suivi.pdfrma) {
+          <label class="grow2">{{ suivi.numerorma }} du {{ suivi.daterma }}</label>
+        } @else {
+          <label class="grow2">
+            <a class="rmapdflink" target="_blank"
+               [href]="environment.apiUrlActn + '/document/generate_intra.php?document=RMA/' + authClient.currentClient.id + '/' + suivi.numerorma">{{ suivi.numerorma }}
+              <fa-icon [icon]="faFilePdf"></fa-icon></a> du {{ suivi.daterma }}
+          </label>
+        }
+        <label class="grow1C">{{ suivi.qtedemande }}</label>
+        <label class="grow1C">{{ suivi.quantiteretourne }}</label>
+        <label class="grow2">{{ suivi.status }}</label>
+      </span>
+      <div class="details" [ngClass]="{'show': cadreDetails[i]}">
+        <label class="labelDetB">Commentaires du SAV : </label>
+        <label class="labelDet">{{ suivi.commentaires }}</label>
+      </div>
+    </div>
+    @if (suivi.commentaires) {
+      <div class="popDetails" (click)="montrerDetails(i)">
+        @if (!cadreDetails[i]) {
+          <i class="unroll-button icon-plus flat-button"></i>
+        } @else {
+          <i class="unroll-button icon-minus flat-button"></i>
+        }
+        de détails
+      </div>
+    }
+  </div>
+}

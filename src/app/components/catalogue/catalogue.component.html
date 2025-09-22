@@ -1,0 +1,229 @@
+<!--<app-banniere emplacement="top" [marques]="codeMarqueList"></app-banniere>-->
+<div class="options raised-1">
+  <div class="action-row">
+    @if (filtres$ | async; as filtres) {
+      @if (filtres.length) {
+        <button
+          id="filtresToggle"
+          class="menu__item text-button font"
+          (click)="onFiltresTogglePressed($event)"
+          [ngClass]="{ active: showFiltres }"
+          >
+          FILTRES
+          <i
+            class="icon-caret-down"
+            [ngClass]="{ focused: showFiltres }"
+          ></i>
+        </button>
+      }
+    }
+
+    <i
+      title="Reinitialiser les filtres"
+      class="text-button reset-filter main-reset-filter icon-cross"
+      [ngClass]="{ active: showFiltres }"
+      (click)="resetFilters()">
+    </i>
+
+    <app-share title="Partager" [textToClipboard]="linkOfSelection()" id="shareSelectionButton"></app-share>
+
+    <button
+      id="listFormatButton"
+      class="format-button text-button"
+      [ngClass]="{ active: format === 'list', disabled: error }"
+      (click)="listFormat()"
+      >
+      <fa-icon [icon]="faThList"></fa-icon>
+    </button>
+    <button
+      id="gridFormatButton"
+      class=" text-button"
+      [ngClass]="{ active: format === 'grid', disabled: error }"
+      (click)="gridFormat()"
+      ><!--class=format-button-->
+      <fa-icon [icon]="faThLarge"></fa-icon>
+
+    </button>
+
+    <form id="sortForm">
+      <mat-form-field id="sortingSelector">
+        <mat-label>Trier par</mat-label>
+        <mat-select [formControl]="optionDeTriSelector">
+          <!-- <mat-option [value]="'default'">
+          -- Défaut --
+        </mat-option> -->
+        <mat-option [value]="'pertinence'">
+          Pertinence
+        </mat-option>
+        <mat-option [value]="'az'">
+          Référence A-Z
+        </mat-option>
+        <mat-option [value]="'za'">
+          Référence Z-A
+        </mat-option>
+        <mat-option [value]="'prixAsc'">
+          Prix Croissant
+        </mat-option>
+        <mat-option [value]="'prixDesc'">
+          Prix Décroissant
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </form>
+
+</div>
+
+@if(nbrResultats$ | async; as n){
+  @if(n > 0) {
+    @if (filtres$ | async; as filtres) {
+      @if (filtres.length) {
+        <form
+          id="filtres"
+          [@expandVertical]="showFiltres ? 'open' : 'closed'"
+          [formGroup]="filtresForm"
+          [ngClass]="{ show: showFiltres }"
+          >
+          <ng-container formArrayName="filtresSelectors">
+            @if(!tet.includes('Clients') || (tet.includes('Produits') || tet.length == 0)){
+              @for (filtre of filtres; track i; let i = $index) {
+                @if (filtre.type !== 'hidden') {
+                  <div class="filtre filtre-{{ filtres[i].label }}">
+                    <mat-form-field appearance="fill" class="select-filter">
+                      <mat-select
+                        placeholder="{{ filtres[i].label }}"
+                        [formControlName]="i"
+                        multiple
+                        disableOptionCentering
+                        panelClass="select-panel"
+                        >
+                        @for (option of filtres[i].options; track j; let j = $index) {
+                          <mat-option
+                            [value]="option"
+                            [disabled]="nbrResultatsParFiltre[i][j] === 0"
+                            >{{ option}} ({{ nbrResultatsParFiltre[i][j] }})
+                          </mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
+                    @if (filtresSelectors.value[i].length) {
+                      <i
+                        title="vider le filtre"
+                        class="reset-filter"
+                        (click)="resetFilters(i)"
+                        >
+                        <mat-icon>clear</mat-icon>
+                      </i>
+                    }
+                  </div>
+                }
+              }
+            }
+            <!-- FILTRES -->
+            <br style="clear: both;">
+            <app-chips-list
+              [chips]="chipsTypesResult"
+              title="Type de resultats"
+              (selectedValues)="tet = $event"
+              >
+            </app-chips-list>
+            <!-- CATEGORIES -->
+            @if(!tet.includes('Clients') || (tet.includes('Produits') || tet.length == 0)){
+              <app-chips-list
+                [chips]="chipsFamille"
+                title="Familles de produits"
+                [selected]="filtresSelectors.controls[filtresSelectors.controls.length - 2].value"
+                (selectedValues)="filtresSelectors.controls[filtresSelectors.controls.length - 2].setValue($event)">
+              </app-chips-list>
+              <app-chips-list
+                [chips]="chipsSSFamille"
+                title="Sous-familles de produits"
+                [selected]="filtresSelectors.controls[filtresSelectors.controls.length - 1].value"
+                (selectedValues)="filtresSelectors.controls[filtresSelectors.controls.length - 1].setValue($event)">
+              </app-chips-list>
+              @if (filtres[0].label == 'Marque') {
+                <div class="marque-filtres">
+                  @for (option of filtres[0].options; track j; let j = $index) {
+                    <div class="marque-options"
+                      [ngClass]="{'selected': filtresSelectors.value[0].includes(option)}"
+                      (click)="filtreMarqueToggle(option)"
+                      >
+                      <img
+                        class="marque-img"
+                        [src]="environment.logoMarquesCouleurs200x80+option+'.gif'">
+                        <!-- <br>
+                        {{ option }} ({{ nbrResultatsParFiltre[0][j] }}) -->
+                      </div>
+                    }
+                  </div>
+                }
+              }
+              <!-- MARQUES IMG -->
+              <!-- OPTIONS DE TRI -->
+              <!-- <div>
+            </div> -->
+          </ng-container>
+        </form>
+      }
+    }
+  }
+
+}
+
+</div>
+
+@if (nbrResultats$ | async; as n) {
+  <div
+    id="nbr-resultats"
+    [appAddClassOnChange]="'flash'"
+    [listenTo]="n"
+    >
+    {{ recalculNbResultats() }} Résultat@if (n > 1) {
+    s
+  }
+</div>
+}
+
+@if(tet.includes('Produits') || tet.length == 0){
+  @if (processedProduits$ | async; as processedProduits) {
+    <app-produits
+      [produits]="processedProduits"
+      [format]="format"
+      [toDisplay]="productPerPage"
+      [listMarque]="codeMarqueList"
+    ></app-produits>
+  }
+}
+
+
+@if(!isProdFiltered || (tet.includes('Clients') || tet.length == 0)){
+  @if (processedClients$ | async; as clients) {
+    @for(client of clients; track client.siren){
+      <div class="clients">
+        <app-client-preview [clients]="client"></app-client-preview>
+      </div>
+    }
+  }
+
+}
+
+@if (processedProspects$ | async; as prospects) {
+  @for(prospect of prospects; track prospect.siren){
+    <app-client-preview [prospects]="prospect"></app-client-preview>
+  }
+}
+
+
+@if (comparatorService.produits.length) {
+  <button
+    mat-raised-button
+    id="comparer"
+    routerLink="/comparateur"
+    routerLinkActive="active"
+    color="accent"
+    >
+    Comparer ({{ comparatorService.produits.length }})
+  </button>
+}
+<!--
+<app-banniere emplacement="bottom" [marques]="codeMarqueList"></app-banniere>
+-->

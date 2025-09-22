@@ -1,0 +1,29 @@
+
+<div class="favoris-options">
+  <button class="raised-button favoris-button" (click)="clearF()">
+    Vider les favoris
+  </button>
+  <button
+    id="listFormatButton"
+    class="format-button text-button"
+    [ngClass]="{ active: format === 'list', disabled: formatError }"
+    (click)="setFavorisFormat('list')"
+    >
+    <fa-icon [icon]="faThList"></fa-icon>
+  </button>
+  <button
+    id="gridFormatButton"
+    class=" text-button"
+    [ngClass]="{ active: format === 'grid', disabled: formatError }"
+    (click)="setFavorisFormat('grid')"
+    >
+    <fa-icon [icon]="faThLarge"></fa-icon>
+  </button>
+</div>
+
+<h3 class="clear">Mes favoris</h3>
+@if (!isEmpty) {
+  <app-produits [format]="format" [produits]="produitsFavoris" [simple]="simple" [isFavorisList]="true"></app-produits>
+} @else {
+  <p>Vous n'avez pas de produits favoris</p>
+}

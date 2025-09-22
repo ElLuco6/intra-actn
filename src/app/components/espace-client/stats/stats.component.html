@@ -1,0 +1,274 @@
+<!-- Suivi d'activité par catégories -->
+<div class="activityTitleOneContainer" id="suivi-activite-cat">
+  <app-title-w-line title="Suivi d'activité par catégories" annotation="en €" size="small" class="activityTitleOne"></app-title-w-line>
+  <div class="formatButtonsContainer">
+    <button
+      class="listFormatButton text-button"
+      [ngClass]="{ active: suiviCategorieFormat.includes('array') }"
+      title="Affichage du tableau des données"
+      (click)="toggleCategorieSuiviFormat('array')"
+      appKeyboardFocus
+
+      [matTooltip]="tooltipTableauLogo"
+      [matTooltipPosition]="tooltipPosition"
+      [matTooltipShowDelay]="tooltipShowDelay"
+      [matTooltipHideDelay]="tooltipHideDelay"
+      >
+      <fa-icon [icon]="faTable"></fa-icon>
+    </button>
+    <button
+      class="gridFormatButton text-button"
+      [ngClass]="{ active: suiviCategorieFormat.includes('pizzas') }"
+      title="Affichage des diagrammes circulaires"
+      (click)="toggleCategorieSuiviFormat('pizzas')"
+      appKeyboardFocus
+
+      [matTooltip]="tooltipDiagrameCirculaireLogo"
+      [matTooltipPosition]="tooltipPosition"
+      [matTooltipShowDelay]="tooltipShowDelay"
+      [matTooltipHideDelay]="tooltipHideDelay"
+      >
+      <fa-icon [icon]="faChartPie"></fa-icon>
+    </button>
+  </div>
+</div>
+@if (clientCAcategorie) {
+  <!-- ARRAY DISPLAY -->
+  @if (clientCAcategorie && suiviCategorieFormat.includes('array')) {
+    <div class="ca-array-container">
+      <div class="marque-row">
+        <!-- TOP RIGHT BLANK -->
+        <div class="blank-col annee-column"></div>
+        <!-- YEARS LABELS -->
+        @for (anneeLabel of caCategorieYearArray; track anneeLabel) {
+          <div class="annee-column ca-labels columnLabel">{{ anneeLabel }}</div>
+        }
+      </div>
+      <!-- ROWS -->
+      @for (categorie of caCategorieCategorieArray; track categorie) {
+        <div class="marque-row ca-even-odd lightrow">
+          <div class="annee-column ca-labels rowLabel">{{ categorie }}</div>
+          @for (annee of caCategorieYearArray; track annee) {
+            <div class="annee-column">
+              {{ clientCAcategorie[categorie][annee] | number:'0.0-0' }}
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+  <!-- CIRCULAR DIAGRAM DISPLAY -->
+  @if (clientCAcategorie && suiviCategorieFormat.includes('pizzas') && categoriesSuiviPizzaCharts?.length) {
+    <div class="pizzaPlate categoriesPizzaPlate">
+      @for (annee of caCategorieYearArray.slice().reverse(); track annee; let index = $index) {
+        <div class="pizza">
+          <p class="pizzaTitle pizzaTitleCategories">{{ annee }}</p>
+          <apx-chart
+            [series]="categoriesSuiviPizzaCharts[categoriesSuiviPizzaCharts.length - (1 + index)].values"
+            [chart]="categoriesSuiviPizzaCharts[categoriesSuiviPizzaCharts.length - (1 + index)].params"
+            [labels]="categoriesSuiviPizzaCharts[categoriesSuiviPizzaCharts.length - (1 + index)].labels"
+            [responsive]="categoriesSuiviPizzaCharts[categoriesSuiviPizzaCharts.length - (1 + index)].responsive"
+            [colors]="categoriesSuiviPizzaCharts[categoriesSuiviPizzaCharts.length - (1 + index)].colors"
+          ></apx-chart>
+        </div>
+      }
+    </div>
+  }
+} @else {
+  <span>&nbsp;&nbsp;&nbsp;&nbsp;Aucune activité enregistrée</span>
+}
+<br><br>
+
+<!-- Graphique mensuel par catégories -->
+<div class="del-for-phone" id="graph-mensuel">
+  <app-title-w-line title="Graphique mensuel par catégories"  size="small" [collapsible]="true" [collapsed]="true"
+  (click)="toggleCollapseDivById($event, 'graph-mensuel')"></app-title-w-line>
+  <div class="collapsible" style="padding: 0 1px;"
+    [@expandVertical]="collapsedIdsArray.includes('graph-mensuel') ? 'closed' : 'open'"
+    [ngClass]="{ hide: collapsedIdsArray.includes('graph-mensuel') }">
+    <!-- <svg style="width: 1200px; height: 400px;" class="marge" (mousemove)="mouvOnGraph($event)">
+
+    <g class="grid x-grid">
+      <line x1="50" x2="50" y1="0" y2="335" stroke="black"></line>
+    </g>
+    <g class="grid y-grid">
+      <line x1="50" x2="1040" y1="335" y2="335" stroke="black"></line>
+    </g>
+    <g class="graph" #graph></g>
+    <g class="graph-x" #graphX></g>
+    <g  class="graph-y" #graphY></g>
+    <g class="legende" #legende></g>
+  </svg> -->
+  @if (chartOptions) {
+    <div id="chart">
+      <apx-chart
+        [series]="chartOptions.series"
+        [chart]="chartOptions.chart"
+        [xaxis]="chartOptions.xaxis"
+        [dataLabels]="chartOptions.dataLabels"
+        [grid]="chartOptions.grid"
+        [stroke]="chartOptions.stroke"
+        [title]="chartOptions.title"
+      ></apx-chart>
+    </div>
+
+  }
+
+</div>
+</div>
+<br>
+
+  <!-- Suivi d'activité par marques -->
+  <div class="activityTitleOneContainer" id="suivi-activite-marque">
+    <app-title-w-line title="Suivi d'activité par marques" annotation="en €" size="small" class="activityTitleOne"></app-title-w-line>
+    <div class="formatButtonsContainer">
+      <button
+        class="listFormatButton text-button"
+        [ngClass]="{ active: suiviMarqueFormat.includes('array') }"
+        title="Affichage du tableau des données"
+        (click)="toggleMarqueSuiviFormat('array')"
+        appKeyboardFocus
+
+        [matTooltip]="tooltipTableauLogo"
+        [matTooltipPosition]="tooltipPosition"
+        [matTooltipShowDelay]="tooltipShowDelay"
+        [matTooltipHideDelay]="tooltipHideDelay"
+        >
+        <fa-icon [icon]="faTable"></fa-icon>
+      </button>
+      <button
+        class="gridFormatButton text-button"
+        [ngClass]="{ active: suiviMarqueFormat.includes('pizzas') }"
+        title="Affichage des diagrammes circulaires"
+        (click)="toggleMarqueSuiviFormat('pizzas')"
+        appKeyboardFocus
+
+        [matTooltip]="tooltipDiagrameCirculaireLogo"
+        [matTooltipPosition]="tooltipPosition"
+        [matTooltipShowDelay]="tooltipShowDelay"
+        [matTooltipHideDelay]="tooltipHideDelay"
+        >
+        <fa-icon [icon]="faChartPie"></fa-icon>
+      </button>
+    </div>
+  </div>
+  @if (clientCA) {
+    <!-- ARRAY DISPLAY -->
+    @if (clientCA && suiviMarqueFormat.includes('array')) {
+      <div class="ca-array-container">
+        <div class="marque-row">
+          <!-- TOP RIGHT BLANK -->
+          <div class="blank-col annee-column"></div>
+          <!-- YEARS LABELS -->
+          @for (anneeLabel of caYearArray; track anneeLabel) {
+            <div class="annee-column ca-labels columnLabel">{{ anneeLabel }}</div>
+          }
+        </div>
+        <!-- ROWS -->
+        @for (marque of caBrandArray; track marque) {
+          <div class="marque-row ca-even-odd lightrow">
+            <div class="annee-column marque-link ca-labels rowLabel" [routerLink]="['/', 'catalogue', 'search']" [queryParams]="{ marque: marque }">{{ marque }}</div>
+            @for (annee of caYearArray; track annee) {
+              <div class="annee-column">
+                {{ clientCA[marque][annee] | number:'0.0-0' }}
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+    <!-- CIRCULAR DIAGRAM DISPLAY -->
+    @if (clientCA && suiviMarqueFormat.includes('pizzas') && marquesSuiviPizzaCharts?.length) {
+      <div class="pizzaPlate marquesPizzaPlate">
+        @for (annee of caYearArray.slice().reverse(); track annee; let index = $index) {
+          <div class="pizza">
+            <p class="pizzaTitle pizzaTitleMarques">{{ annee }}</p>
+            <apx-chart
+              [series]="marquesSuiviPizzaCharts[marquesSuiviPizzaCharts.length - (1 + index)].values"
+              [chart]="marquesSuiviPizzaCharts[marquesSuiviPizzaCharts.length - (1 + index)].params"
+              [labels]="marquesSuiviPizzaCharts[marquesSuiviPizzaCharts.length - (1 + index)].labels"
+              [responsive]="marquesSuiviPizzaCharts[marquesSuiviPizzaCharts.length - (1 + index)].responsive"
+              [colors]="marqueColors"
+            ></apx-chart>
+          </div>
+        }
+      </div>
+    }
+  } @else {
+    <span>&nbsp;&nbsp;&nbsp;&nbsp;Aucune activité enregistrée</span>
+  }
+  <br><br>
+
+  <!-- Hit parade produits -->
+  <app-title-w-line title="Hit parade produits" annotation="au cours des 2 dernières années par Nbre de commandes / C.A. en €" size="small" id="hit-parade"></app-title-w-line>
+  <div class="ca-array-container">
+    <div class="child marque-row label">
+      <div class="marge-col centrageVertical">Référence </div>
+      <div class="gauche centrageVertical">Marque </div>
+      <div class="gauche centrageVertical">Désignation </div>
+      <div
+        class="centre classement centrageVertical"
+        matTooltip="Top 20 par nombre"
+        matTooltipClass="tooltip-suivi"
+        [matTooltipPosition]="matToolTipPosition"
+        [matTooltipShowDelay]="showDelay"
+        [matTooltipHideDelay]="hideDelay"
+        (click)="this.affichageNombre()"
+      [ngClass]="{
+        on: fondBleu === true,
+        off: !fondBleu
+      }"
+        >
+        Nombre de commandes
+      </div>
+
+      <div
+        class="centre classement centrageVertical"
+        matTooltip="Top 20 par C.A."
+        matTooltipClass="tooltip-suivi"
+        [matTooltipPosition]="matToolTipPosition"
+        [matTooltipShowDelay]="showDelay"
+        [matTooltipHideDelay]="hideDelay"
+        (click)="this.affichageCa()"
+      [ngClass]="{
+        on: fondBleu2 === true,
+        off: !fondBleu2
+      }"
+        >
+        C.A.<br />en €
+      </div>
+
+      <div
+        class="centre classement centrageVertical"
+        matTooltip="Top 20 par quantite"
+        matTooltipClass="tooltip-suivi"
+        [matTooltipPosition]="matToolTipPosition"
+        [matTooltipShowDelay]="showDelay"
+        [matTooltipHideDelay]="hideDelay"
+        (click)="this.affichageQuantite()"
+      [ngClass]="{
+        on: fondBleu3 === true,
+        off: !fondBleu3
+      }"
+        >
+        Quantité
+      </div>
+    </div>
+    @for (element of elements; track element) {
+      <div
+        class="child marque-row ca-even-odd lightrow"
+        >
+        <div
+          class="marge-col label"
+          (click)="this.produitService.goToProduitById(element.produit)"
+          >
+          {{ element.produit }}
+        </div>
+        <div class="gauche">{{ element.marque }}</div>
+        <div class="gauche">{{ element.designation }}</div>
+        <div class="centreNombre">{{ element.nombre }}</div>
+        <div class="centreCA">{{ element.ca }}</div>
+        <div class="centreCA">{{ element.quantite }}</div>
+      </div>
+    }
+  </div>

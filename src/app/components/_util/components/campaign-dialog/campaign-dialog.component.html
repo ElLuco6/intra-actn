@@ -1,0 +1,49 @@
+<h1 mat-dialog-title>Affecter à une campagne</h1>
+<h2 class="subtitle">Les clients sans contacts ne peuvent être ajoutés à une campagne</h2>
+<div mat-dialog-content>
+  <mat-form-field class="select-campaign">
+    <mat-label>Campagne</mat-label>
+    <mat-select [(value)]="selectedCampaign">
+      @for (campaign of campaigns; track campaign) {
+      @if (!isOver(campaign)) {
+      <mat-option [value]="campaign">
+        {{campaign.libelle}}
+      </mat-option>
+      }
+      }
+    </mat-select>
+  </mat-form-field>
+  @if (selectedCampaign) {
+  <div class="campaign-details">
+    <div class="label">
+      Code campagne :
+    </div>
+    <div class="value">
+      {{selectedCampaign.campagne}}
+    </div>
+    <div class="label">
+      Libellé :
+    </div>
+    <div class="value">
+      {{selectedCampaign.libelle}}
+    </div>
+    <div class="label">
+      Date de début :
+    </div>
+    <div class="value">
+      {{selectedCampaign.datedeb}}
+    </div>
+    <div class="label">
+      Date de fin :
+    </div>
+    <div class="value">
+      {{selectedCampaign.datefin}}
+    </div>
+  </div>
+  }
+</div>
+<div mat-dialog-actions class="btn-dialog">
+  <button mat-raised-button (click)="onNoClick()" class="btn-campaign non">Annuler</button>
+  <button mat-raised-button [mat-dialog-close]="selectedCampaign?.campagne" cdkFocusInitial
+    class="btn-campaign oui">Affecter</button>
+</div>

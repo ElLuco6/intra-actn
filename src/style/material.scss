@@ -1,0 +1,117 @@
+@import "variables.scss";
+
+.search-bar .mat-form-field-infix {
+  width: 100%;
+}
+
+.select-panel.mat-mdc-select-panel {
+  max-height: 311px;
+}
+
+.mat-autocomplete-panel .mat-option {
+  line-height: 22px;
+  height: fit-content;
+  padding: 10px 16px;
+}
+
+.cdk-overlay-container {
+  // z-index: 19;
+}
+
+.mat-mdc-form-field {
+  font-size: 1rem * (1 - 1 * $font-scale);
+}
+
+.mat-form-field-flex {
+  align-items: center !important;
+}
+
+.mat-form-field-infix {
+  //padding: 1em 0 !important;
+  width: auto !important;
+}
+
+.mat-checkbox-layout {
+  white-space: inherit !important;
+}
+
+.mat-checkbox-inner-container {
+  margin-top: 3px !important;
+}
+
+.mat-mdc-tooltip {
+  font-size: 13px;
+}
+
+.mat-form-field-required-marker {
+  color: red;
+}
+
+.mat-mdc-mini-fab {
+  width: 30px !important;
+  height: 30px !important;
+  line-height: 0px !important;
+}
+
+.mat-mdc-paginator-range-label {
+  min-width: 120px !important;
+}
+
+.mat-mdc-simple-snack-bar span {
+  white-space: pre-wrap;
+}
+
+.mat-mdc-snack-bar-container {
+  color: white !important;
+  background-color: var(--color-primary-darker) !important;
+  max-width: 100vw !important;
+}
+
+.mat-mdc-snack-bar-action button {
+  margin-left: 20px;
+  background-color: var(--color-secondary) !important;
+  color: white !important;
+}
+
+textarea.mat-mdc-input-element {
+  min-height: 100px !important;
+}
+
+.mat-mdc-input-element {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.mat-mdc-icon-button {
+  flex-shrink: 1 !important;
+}
+
+.mat-tab-label.mat-tab-label-active {
+  opacity: 1 !important;
+}
+
+.mat-tab-label {
+  background-color: var(--color-secondary);
+  color: white;
+  opacity: 0.7 !important;
+  font-size: 1.1rem;
+}
+
+.mat-tab-label-active {
+  background-color: var(--color-primary-second);
+}
+
+.mat-mdc-paginator-range-label {
+  margin: 0 !important;
+}
+
+.mat-mdc-form-field.readonly {
+  input {
+    color: rgba(0, 0, 0, 0.54);
+  }
+  .mat-form-field-underline {
+    height: 0px !important;
+    border-bottom: 1px dashed rgba(0, 0, 0, 0.54);
+    background-color: transparent !important;
+  }
+}

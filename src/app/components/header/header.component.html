@@ -1,0 +1,623 @@
+<header
+  class="raised-2"
+  >
+  <div class="top-infos">
+    <div class="label" >
+      Distributeur Multi-spécialiste de solutions IT
+    </div>
+    <div class="contacts">
+      <div class="label">
+        <a href="https://rickrolled.fr/">Des experts à votre écoute</a>
+      </div>
+      <div class="contact">
+        <div class="contact__label">Contact</div>
+        @if (userService.contacts$ | async; as contacts) {
+          @for (contact of contacts; track contact) {
+            <a class="contact__value" [href]="'tel:' + contact.telLink">{{ contact.tel }}</a>
+          }
+        }
+      </div>
+      <div class="contact">
+        <div class="contact__label">Hotline Technique</div>
+        <a class="contact__value" href="tel:+33892700131">0 892 700 131</a>
+      </div>
+    </div>
+    <div class="contacts" (click)="openSideNav('toggleEspaceCommercial')">
+      <strong [matTooltip]="'Espace Commercial'">id: {{ this.authService.currentUser.id }}</strong>
+      <mat-icon [matTooltip]="'Espace Commercial'" style="margin-left: 0.5em;" [ngClass]="{ focused: selectedSideNavMenu === 'espaceCommercial' }">person</mat-icon>
+    </div>
+  </div>
+
+  <nav role="navigation">
+    <div class="top-nav menu menu--orientation-horizontal">
+      <button
+        hidden
+        class="hamburger hamburger--spin"
+        type="button"
+        [ngClass]="{ 'is-active': showSubnav }"
+        (click)="showSubnav = !showSubnav"
+        >
+        <span class="hamburger-box">
+          <span class="hamburger-inner"></span>
+        </span>
+      </button>
+      <a class="top-nav__brand" routerLink="/" routerLinkActive="active">
+        <img src="assets/logo_actn.png" />
+      </a>
+
+      @if (!subNavSmall) {
+        <app-recherche-tout
+          class="search-bar"
+        ></app-recherche-tout>
+      }
+
+      <div class="icon-buttons">
+
+
+      @if (subNavSmall) {
+        <button
+          tabindex="0"
+          class="icon-button text-button"
+          [matTooltip]="'Client'"
+          [matTooltipPosition]="matToolTipPositionValue"
+          [matTooltipShowDelay]="matToolTipShowDelayValue"
+          [matTooltipHideDelay]="matToolTipHideDelayValue"
+          matTooltipClass="tooltipClass"
+          type="button"
+          [ngClass]="{ focused: selectedSideNavMenu === 'espaceCommercial' }"
+          (click)="openSideNav('toggleEspaceCommercial')"
+          (tap)="openSideNav('toggleEspaceCommercial')"
+          >
+          <mat-icon style="margin-left: 0.5em; cursor: pointer">person</mat-icon>
+        </button>
+      }
+
+      <!-- COMPARATEUR -->
+      <a
+        tabindex="0"
+        class="icon-button text-button"
+        type="button"
+        routerLink="/comparateur"
+        routerLinkActive="active"
+        [matTooltip]="'Comparateur'"
+        [matTooltipPosition]="matToolTipPositionValue"
+        [matTooltipShowDelay]="matToolTipShowDelayValue"
+        [matTooltipHideDelay]="matToolTipHideDelayValue"
+        >
+        <i class="icon-compare" [matBadgeHidden]="this.comparateurReferences.length == 0" [matBadge]="this.comparateurReferences.length"></i>
+      </a>
+
+      <!-- FAVORIS -->
+      <a
+        tabindex="0"
+        class="icon-button text-button"
+        type="button"
+        routerLink="/favoris"
+        routerLinkActive="active"
+        [matTooltip]="'Favoris'"
+        [matTooltipPosition]="matToolTipPositionValue"
+        [matTooltipShowDelay]="matToolTipShowDelayValue"
+        [matTooltipHideDelay]="matToolTipHideDelayValue"
+        >
+        <span [matBadgeHidden]="!this.favorisReferences.length" [matBadge]="this.favorisReferences.length" style="margin: 0">
+          <fa-icon
+            class="icon-favoris"
+            [icon]="faStar">
+          </fa-icon>
+        </span>
+      </a>
+
+      <!-- CART WHEN NOT CONNECTED -->
+      @if (!this.logClientService.currentClient) {
+        <a
+          tabindex="0"
+          class="icon-button text-button"
+          [matTooltip]="'Panier'"
+          [ngClass]="{ focused: selectedSideNavMenu === 'espaceClient' }"
+          type="button"
+          (click)="openSideNav('toggleEspaceClient')"
+          (tap)="openSideNav('toggleEspaceClient')"
+          >
+          <i class="icon-cart"></i>
+        </a>
+      }
+
+      <!-- CART WHEN CONNECTED -->
+      @if (this.logClientService.currentClient) {
+        <a
+          tabindex="0"
+          class="icon-button text-button"
+          [matTooltip]="'Panier'"
+          type="button"
+          routerLink="/panier"
+          routerLinkActive="active"
+          ><!-- (click)="openSideNav('togglePanierPreview')" -->
+          <i class="icon-cart" [matBadgeHidden]="cartService.qteProduits == 0" [matBadge]="cartService.qteProduits"></i>
+        </a>
+      }
+
+      <!-- switched "focused" with "clic"
+      (mouseenter)="openSideNav('espaceClient')"
+      (focusin)="openSideNav('espaceClient')"
+      -->
+      <button
+        tabindex="0"
+        class="icon-button text-button"
+        [matTooltip]="'Client'"
+        [matTooltipPosition]="matToolTipPositionValue"
+        [matTooltipShowDelay]="matToolTipShowDelayValue"
+        [matTooltipHideDelay]="matToolTipHideDelayValue"
+        [ngClass]="{ focused: selectedSideNavMenu === 'espaceClient' }"
+        type="button"
+        (click)="openSideNav('toggleEspaceClient')"
+        (tap)="openSideNav('toggleEspaceClient')"
+        >
+        @if (!logClientService.currentClient) {
+          <mat-icon>contacts</mat-icon>
+        } @else {
+          <mat-icon style="color: var(--color-warn)">contacts</mat-icon>
+          @if (licenceService.prioritaire + cotationService.nbrOfCriticalCotations > 0) {
+            <div class="tag-custom" [ngClass]="{ show: (licenceService.prioritaire + cotationService.nbrOfCriticalCotations > 0) }">{{ +licenceService.prioritaire +cotationService.nbrOfCriticalCotations }}</div>
+          }
+        }
+        <ng-template #noClient>
+          <mat-icon style="color: var(--color-warn)">contacts</mat-icon>
+          @if (licenceService.prioritaire + cotationService.nbrOfCriticalCotations > 0) {
+            <div class="tag-custom" [ngClass]="{ show: (licenceService.prioritaire + cotationService.nbrOfCriticalCotations > 0) }">{{ +licenceService.prioritaire +cotationService.nbrOfCriticalCotations }}</div>
+          }
+        </ng-template>
+      </button>
+    </div>
+    <!-- position modified to correct z-index -->
+    <!-- <app-side-nav [(currentMenu)]="selectedSideNavMenu"></app-side-nav> -->
+  </div>
+
+
+  @if (subNavSmall) {
+    <app-recherche-tout
+      class="search-bar"
+    ></app-recherche-tout>
+  }
+  <ul  class="sub-nav menu collapsible"
+         [ngClass]="{
+				'menu--orientation-horizontal': !subNavSmall,
+				'menu--orientation-vertical drop__content drop__content--side-bottom': subNavSmall,
+				show: showSubnav
+			}">
+    <li class="label-nav drop menu__item drop"
+      [ngClass]="{ focus: showCatalogue }"
+      (mouseenter)="onMouseEnterMenu()"
+      (mouseleave)="onMouseLeaveMenu()"
+      (click)="toggleShowCatalogue()"
+      tabindex="0">
+      CATALOGUE
+      <i
+        class="icon-caret-down suffix"
+        [ngClass]="{ focused: showCatalogue }"
+      ></i>
+      <fa-icon
+        [icon]="faChevronRight"
+        class="chevron suffix"
+      ></fa-icon>
+    </li>
+    <div #megamenu class="megamenu" style="border-radius: 0px 0px 10px 10px"
+           [ngClass]="{
+					'drop__content drop__content--size-large drop__content--side-bottom': !subNavSmall,
+					'overlay animate--slide-in-left': subNavSmall,
+					show: showCatalogue
+				}"
+      (mouseenter)="showCatalogue = true"
+      (mouseleave)="showCatalogue = false"
+      appExposeHeightSetter
+      >
+
+      @if (subNavSmall) {
+        <div class="position">
+          <button
+            class="text-button"
+            (click)="showCatalogue = false"
+            (tap)="showCatalogue = false"
+            >
+            <fa-icon
+              class="button__icon"
+              [icon]="faArrowLeft">
+            </fa-icon>
+            Catalogue
+          </button>
+        </div>
+      }
+
+      <ul class="menu menu--orientation-vertical">
+        @if (structureCatalogue | async; as structure) {
+          @for (categorie of structure.nodes; track categorie; let i = $index) {
+            <li class="drop menu__item menu__item--disable-hovered-state"
+              [ngClass]="{ focus: currentActiveCategorieIndex.value === i }"
+              [routerLink]="['/catalogue/' + '/' + categorie.value.label]"
+              routerLinkActive="router-link-active"
+              tabindex="0"
+              (click)="showSubnav = false; showCatalogue = false;"
+                  (tap)="
+									onCatalogueCategorieHoveredIndex.next(i);
+									currentSubCategoriesContainer.next(sub_categories_container)
+								  "
+                  (mouseenter)="onCatalogueCategorieHoveredIndex.next(i);
+									              currentSubCategoriesContainer.next(sub_categories_container)"
+                  (mouseleave)="onCatalogueCategorieHoveredIndex.next(null);
+                                currentSubCategoriesContainer.next(sub_categories_container)">
+              <span class="label">{{ categorie.value.label }}</span>
+              <fa-icon [icon]="faChevronRight" class="chevron suffix"></fa-icon>
+            </li>
+            <div
+              #sub_categories_container
+              class="sub-categories-container"
+                [ngClass]="{
+									show: currentActiveCategorieIndex.value === i,
+									'drop__content drop__content--side-right': !subNavSmall,
+									'overlay animate--slide-in-left': subNavSmall
+								}"
+              (mouseenter)="onCatalogueSousCategoriesContainerHoveredIndex.next(i)"
+              (mouseleave)="onCatalogueSousCategoriesContainerHoveredIndex.next(null)"
+              >
+              <div class="position">
+                <button
+                  class="text-button"
+                  (click)="onBackButton()"
+                  (tap)="onBackButton()"
+                  >
+                  {{ categorie.value.label }}
+                </button>
+              </div>
+              <!-- ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+              <div class="scrollable">
+                <ul class="sub_categories">
+                  @for (sub_categorie of categorie.nodes; track sub_categorie; let i = $index) {
+                    <li class="sub_categorie weight-bold">
+                      <a tabindex="0"
+                         (click)="
+													onCatalogueNiveauSelected(
+														'catalogue',
+														categorie.value.label,
+														sub_categorie.value.label
+													)"
+                        routerLinkActive="active"
+                      >{{ sub_categorie.value.label }}</a>
+                      @if (sub_categorie.nodes) {
+                        <ul class="">
+                          @for (sub_sub_categorie of sub_categorie.nodes; track sub_sub_categorie; let i = $index) {
+                            <li class="sub_sub_categorie size-smaller weight-default"
+                              >
+                              <a tabindex="0"
+                             (click)="
+															onCatalogueNiveauSelected(
+																'catalogue',
+																categorie.value.label,
+																sub_categorie.value.label,
+																sub_sub_categorie.value.label
+															)"
+                                routerLinkActive="active"
+                              >{{ sub_sub_categorie.value.label }}</a>
+                            </li>
+                          }
+                        </ul>
+                      }
+                    </li>
+                  }
+                </ul>
+              </div>
+            </div>
+          }
+          <a (click)="onSearch()"
+            (tap)="onSearch()"
+            (keydown.enter)="onCatalogueCategorieHoveredIndex.next(nosMarquesHoveredInt);"
+            (mouseenter)="onCatalogueCategorieHoveredIndex.next(nosMarquesHoveredInt)"
+            (mouseleave)="onCatalogueCategorieHoveredIndex.next(null);"
+            class="drop menu__item" routerLink="/catalogue/nos-marques" routerLinkActive="active">
+            Nos marques
+          </a>
+          <div
+            #sub_categories_container
+            class="sub-categories-container"
+              [ngClass]="{
+								show: currentActiveCategorieIndex.value === nosMarquesHoveredInt,
+								'drop__content drop__content--side-right': !subNavSmall,
+								'overlay animate--slide-in-left': subNavSmall
+							}"
+            (mouseenter)="onCatalogueSousCategoriesContainerHoveredIndex.next(nosMarquesHoveredInt)"
+            (mouseleave)="onCatalogueSousCategoriesContainerHoveredIndex.next(null)"
+            >
+            <div class="scrollable">
+              <ul class="">
+                <li class="sub_categorie weight-bold">
+                  <a
+                    tabindex="0"
+                    (keydown.enter)="navigateCataloguePath('nos-marques');"
+                    (click)="navigateCataloguePath('nos-marques');"
+                    (tap)="navigateCataloguePath('nos-marques');"
+                    routerLinkActive="active">
+                    Voir toutes nos marques
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <!-- METIERS -->
+          <a (click)="onSearch()"
+            (tap)="onSearch()"
+            (keydown.enter)="onCatalogueCategorieHoveredIndex.next(nosMetiersHoveredInt);"
+            (mouseenter)="onCatalogueCategorieHoveredIndex.next(nosMetiersHoveredInt)"
+            (mouseleave)="onCatalogueCategorieHoveredIndex.next(null);"
+            class="drop menu__item" routerLink="/catalogue/metiers" routerLinkActive="active">
+            Nos Métiers
+          </a>
+          <div
+            #sub_categories_container
+            class="sub-categories-container"
+              [ngClass]="{
+								show: currentActiveCategorieIndex.value === nosMetiersHoveredInt,
+								'drop__content drop__content--side-right': !subNavSmall,
+								'overlay animate--slide-in-left': subNavSmall
+							}"
+            (mouseenter)="onCatalogueSousCategoriesContainerHoveredIndex.next(nosMetiersHoveredInt)"
+            (mouseleave)="onCatalogueSousCategoriesContainerHoveredIndex.next(null)"
+            >
+            <div class="scrollable">
+              <ul class="">
+                <li class="sub_categorie weight-bold">
+                  <a
+                    tabindex="0"
+                    (keydown.enter)="navigateCataloguePath('metiers');"
+                    (click)="navigateCataloguePath('metiers');"
+                    (tap)="navigateCataloguePath('metiers');"
+                    routerLinkActive="active">
+                    Voir tous nos métiers
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <!-- PROMOTIONS -->
+          <li
+            class="drop menu__item menu__item--disable-hovered-state"
+            [ngClass]="{ focus: currentActiveCategorieIndex.value === promotionHoveredInt }"
+            tabindex="0"
+            routerLinkActive="router-link-active"
+            (tap)="onCatalogueCategorieHoveredIndex.next(promotionHoveredInt); showPromotions = !showPromotions;"
+            (click)="showPromotions = !showPromotions;"
+            (keydown.enter)="onCatalogueCategorieHoveredIndex.next(promotionHoveredInt);"
+            (mouseenter)="onCatalogueCategorieHoveredIndex.next(promotionHoveredInt);"
+            (mouseleave)="onCatalogueCategorieHoveredIndex.next(null);"
+            >
+            <span class="label">Promotions</span>
+          </li>
+          <div class="drop__content"
+            #megamenuPromotions
+            class="megamenu"
+                 [ngClass]="{
+								'drop__content drop__actual--size-large drop__actual--side-bottom': !subNavSmall,
+								'overlay animate--slide-in-left': subNavSmall,
+								logged: this.authService.currentUser,
+								show: showPromotions
+							}"
+            (mouseenter)="showPromotions = true"
+            (mouseleave)="showPromotions = false"
+            appExposeHeightSetter>
+            <!-- Retour -->
+            @if (subNavSmall) {
+              <div class="position">
+                <button
+                  class="text-button"
+                  (click)="showPromotions = false"
+                  (tap)="showPromotions = false"
+                  >
+                  <fa-icon
+                    class="button__icon"
+                    [icon]="faArrowLeft"
+                    ></fa-icon
+                    >Promotions
+                  </button>
+                </div>
+              }
+              @if (1) {
+                <ul class="ressources" style="border-bottom: 1px solid rgba(0, 0, 0, 0.2);">
+                  <li class="drop menu__item">
+                    <a class="ressource weight-default"
+                      (keydown.enter)="navigateCataloguePath('nouveautes');"
+                      (click)="navigateCataloguePath('nouveautes');"
+                      (tap)="navigateCataloguePath('nouveautes');">
+                      Nouveautés
+                    </a>
+                  </li>
+                  <li class="drop menu__item">
+                    <a class="ressource weight-default"
+                      (keydown.enter)="navigateCataloguePath('promotions');"
+                      (click)="navigateCataloguePath('promotions');"
+                      (tap)="navigateCataloguePath('promotions');">
+                      Promotions
+                    </a>
+                  </li>
+                  <li class="drop menu__item">
+                    <a class="ressource weight-default"
+                      (keydown.enter)="navigateCataloguePath('packs');"
+                      (click)="navigateCataloguePath('packs');"
+                      (tap)="navigateCataloguePath('packs');">
+                      Packs
+                    </a>
+                  </li>
+                  <li class="drop menu__item">
+                    <a class="ressource weight-default"
+                       (keydown.enter)="navigateCataloguePath('seconde-vie');"
+                       (click)="navigateCataloguePath('seconde-vie');"
+                       (tap)="navigateCataloguePath('seconde-vie');">
+                      Seconde vie
+                    </a>
+                  </li>
+                  <li class="drop menu__item">
+                    <a class="ressource weight-default"
+                      (keydown.enter)="navigateCataloguePath('destockage');"
+                      (click)="navigateCataloguePath('destockage');"
+                      (tap)="navigateCataloguePath('destockage');">
+                      Destockage
+                    </a>
+                  </li>
+                </ul>
+              }
+            </div>
+            <!-- ------------------------------------------------------------------------------------------------------------------------------------------------------------ -->
+            <div
+              #sub_categories_container
+              class="sub-categories-container"
+              [ngClass]="{
+								show: currentActiveCategorieIndex.value === (promotionHoveredInt || showPromotions),
+								'drop__content drop__content--side-right': !subNavSmall,
+								'overlay animate--slide-in-left': subNavSmall
+							}"
+              (mouseenter)="
+								onCatalogueSousCategoriesContainerHoveredIndex.next(promotionHoveredInt)
+							"
+              (mouseleave)="
+								onCatalogueSousCategoriesContainerHoveredIndex.next(null)
+							"
+              >
+              <div class="scrollable">
+                <ul class="">
+                  <li class="sub_categorie weight-bold menu__item">
+                    <a
+                      tabindex="0"
+                      (keydown.enter)="navigateCataloguePath('nouveautes');"
+                      (click)="navigateCataloguePath('nouveautes');"
+                      (tap)="navigateCataloguePath('nouveautes');"
+                      routerLinkActive="active">
+                      Nouveautés
+                    </a>
+                  </li>
+                  <li class="sub_categorie weight-bold menu__item">
+                    <a
+                      tabindex="0"
+                      (keydown.enter)="navigateCataloguePath('promotions');"
+                      (click)="navigateCataloguePath('promotions');"
+                      (tap)="navigateCataloguePath('promotions');"
+                      routerLinkActive="active">
+                      Promotions
+                    </a>
+                  </li>
+                  <li class="sub_categorie weight-bold menu__item">
+                    <a
+                      tabindex="0"
+                      (keydown.enter)="navigateCataloguePath('packs');"
+                      (click)="navigateCataloguePath('packs');"
+                      (tap)="navigateCataloguePath('packs');"
+                      routerLinkActive="active">
+                      Packs
+                    </a>
+                  </li>
+                  <li class="sub_categorie weight-bold menu__item">
+                    <a
+                      tabindex="0"
+                      (keydown.enter)="navigateCataloguePath('seconde-vie');"
+                      (click)="navigateCataloguePath('seconde-vie');"
+                      (tap)="navigateCataloguePath('seconde-vie');"
+                      routerLinkActive="active">
+                      Seconde vie
+                    </a>
+                  </li>
+                  <li class="sub_categorie weight-bold menu__item">
+                    <a
+                      tabindex="0"
+                      (keydown.enter)="navigateCataloguePath('destockage');"
+                      (click)="navigateCataloguePath('destockage');"
+                      (tap)="navigateCataloguePath('destockage');"
+                      routerLinkActive="active">
+                      Destockage
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          }
+        </ul>
+      </div>
+      <li class="label-nav drop menu__item drop" [routerLink]="['/map']">géolocalisation</li>
+      <!--<li class="label-nav drop menu__item drop" tabindex="0" routerLink="/outils" >outils</li>-->
+      <li class="label-nav menu__item" tabindex="0" routerLink="/clients" >clients & prospects</li>
+      <li class="drop menu__item"
+        [ngClass]="{ focus: showActual }"
+        tabindex="0"
+        (mouseenter)="showActual = !subNavSmall"
+        (mouseleave)="showActual = false"
+        (click)="showActual = !showActual"
+        (tap)="showActual = !showActual"
+        (keydown.enter)="showActual = !showActual">
+        Actualités
+        <i
+          class="icon-caret-down suffix"
+          [ngClass]="{ focused: showActual }"
+        ></i>
+        <fa-icon
+          class="suffix"
+          [icon]="faChevronRight"
+          class="chevron suffix"
+        ></fa-icon>
+      </li>
+
+      <div class="drop__content megamenu" style="border-radius: 0px 0px 10px 10px"
+           [ngClass]="{
+					'drop__content drop__actual--size-large drop__actual--side-bottom': !subNavSmall,
+					'overlay animate--slide-in-left': subNavSmall,
+					logged: this.authService.currentUser,
+					show: showActual
+				}"
+        (mouseenter)="showActual = true"
+        (mouseleave)="showActual = false"
+        appExposeHeightSetter
+        >
+
+        <!-- Retour -->
+        @if (subNavSmall) {
+          <div class="position">
+            <button
+              class="text-button"
+              (click)="showActual = false"
+              (tap)="showActual = false"
+              >
+              <fa-icon
+                class="button__icon"
+                [icon]="faArrowLeft"
+                ></fa-icon
+                >Actualités
+              </button>
+            </div>
+          }
+          @if (1) {
+            <ul class="ressources">
+              <!-- Prestations -->
+              <!-- <li class="drop menu__item">
+              <a class="ressource" routerLink="/prestations">
+                Prestations
+              </a>
+            </li> -->
+            <!-- Ressources -->
+            <li class="drop menu__item">
+              <a class="ressource weight-default" target="_blank" href="https://blog.actn.fr/">
+                Toute l’actu des marques
+              </a>
+            </li>
+            <li class="drop menu__item">
+              <a class="ressource weight-default" target="_blank" href="https://blog.actn.fr/?post_type=tribe_events">
+                Vos prochains événements
+              </a>
+            </li>
+            <li class="drop menu__item">
+              <a class="ressource weight-default" target="_blank"
+                href="https://www.gotostage.com/channel/7fe714b31eb644c2904b7fd6b410f531">
+                Plateforme VOD ACTN
+              </a>
+            </li>
+          </ul>
+        }
+      </div>
+    </ul>
+    @if (authClient.currentClient && subNavSmall) {
+      <app-bar-client></app-bar-client>
+    }
+  </nav>
+</header>

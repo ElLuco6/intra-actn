@@ -1,0 +1,75 @@
+@if (!isLoading) {
+  <app-bandeau-client [client]="client"></app-bandeau-client>
+  <div class="button-nav-tab">
+    <p class="nav-tab" style="border-top-left-radius: 5px;" [ngClass]="{'tabSelected': whatToDisplay == 'fiche'}" (click)="onTabClick('fiche')">Fiche</p>
+    <p class="nav-tab" [ngClass]="{'tabSelected': whatToDisplay == 'commande'}" (click)="onTabClick('commande')">Commande</p>
+    <p class="nav-tab" [ngClass]="{'tabSelected': whatToDisplay == 'reliquats'}" (click)="onTabClick('reliquats')">Reliquats</p>
+    <p class="nav-tab" [ngClass]="{'tabSelected': whatToDisplay == 'devis'}" (click)="onTabClick('devis')">Devis</p>
+    <p class="nav-tab" [ngClass]="{'tabSelected': whatToDisplay == 'cotation'}" (click)="onTabClick('cotation')">Cotation</p>
+    <p class="nav-tab" [ngClass]="{'tabSelected': whatToDisplay == 'port'}" (click)="onTabClick('port')">Port</p>
+    <p class="nav-tab" [ngClass]="{'tabSelected': whatToDisplay == 'remise'}" (click)="onTabClick('remise')">Remise</p>
+    <p class="nav-tab" [ngClass]="{'tabSelected': whatToDisplay == 'documents'}" (click)="onTabClick('documents')">Documents</p>
+    <p class="nav-tab" [ngClass]="{'tabSelected': whatToDisplay == 'finance'}" (click)="onTabClick('finance')">Finance</p>
+    <p class="nav-tab" [ngClass]="{'tabSelected': whatToDisplay == 'web'}" (click)="onTabClick('web')">Suivi web</p>
+    <p class="nav-tab" style="border-top-right-radius: 5px;" [ngClass]="{'tabSelected': whatToDisplay == 'suivi'}" (click)="onTabClick('suivi')">Suivi RMA</p>
+  </div>
+  @switch (whatToDisplay) {
+    @case ('fiche') {
+      <div class="mainmenu" [ngClass]="clientConnected ? 'top-connected' : 'top'">
+        <div class="basic-chip" (click)="jumpToAnchor('utilisateur')">Contacts</div>
+        <div class="basic-chip" (click)="jumpToAnchor('compte-rendu')">Compte rendu</div>
+        <div class="basic-chip" (click)="jumpToAnchor('suivi-activite-cat')">Suivi d'activité / catégories</div>
+        <div class="basic-chip" (click)="jumpToAnchor('graph-mensuel')">Graph mensuel / catégories</div>
+        <div class="basic-chip" (click)="jumpToAnchor('suivi-activite-marque')">Suivi d'activité / marques</div>
+        <div class="basic-chip" (click)="jumpToAnchor('hit-parade')">Hit parade produits</div>
+      </div>
+      <div id="utilisateur" style="margin-top: 1em">
+        <app-title-w-line [title]="'Contacts'"></app-title-w-line>
+        @if (contactLoaded) {
+          <app-list-users-contacts [idClient]="numClient" [contactList]="listContacts"></app-list-users-contacts>
+        }
+        <!--<app-utilisateurs [clientDetail]="true" [idClient]="client.numclient"></app-utilisateurs>-->
+      </div>
+      <div id="compte-rendu">
+        <app-title-w-line [title]="'Comptes rendus de visites'" collapsible="true"
+        (click)="toggleCollapseDivById($event, 'compte-rendu')"></app-title-w-line>
+        <div class="collapsible" style="padding: 0 1px;"
+          [@expandVertical]="collapsedIdsArray.includes('compte-rendu') ? 'closed' : 'open'"
+          [ngClass]="{ hide: collapsedIdsArray.includes('compte-rendu') }">
+          <app-compte-rendu [isClient]="true" [idIdentity]="numClient" [client]="client"></app-compte-rendu>
+        </div>
+      </div>
+      <app-stats [client]="this.numClient"></app-stats>
+    }
+    @case ('commande') {
+      <app-commandes [numClient]="numClient"></app-commandes>
+    }
+    @case ('devis') {
+      <app-devis [numClient]="numClient"></app-devis>
+    }
+    @case ('reliquats') {
+      <app-reliquats [numClient]="numClient"></app-reliquats>
+    }
+    @case ('cotation') {
+      <app-cotation [numClient]="numClient"></app-cotation>
+    }
+    @case ('port') {
+      <app-grille-transport [numClient]="numClient"></app-grille-transport>
+    }
+    @case ('remise') {
+      <app-conditions-tarifaires [numClient]="numClient"></app-conditions-tarifaires>
+    }
+    @case ('documents') {
+      <app-documents [idClient]="numClient" [groupement]="client.groupe"></app-documents>
+    }
+    @case ('finance') {
+      <app-finance></app-finance>
+    }
+    @case ('web') {
+      <app-pistage [nclient]="numClient"></app-pistage>
+    }
+    @case ('suivi') {
+      <app-suivi-retour [numClient]="numClient"></app-suivi-retour>
+    }
+  }
+}

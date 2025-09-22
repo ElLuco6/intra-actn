@@ -1,0 +1,56 @@
+@if (this.ncmd) {
+  <div>
+    <h3 class="title">Confirmation de transaction</h3>
+    <p></p>
+    <!-- <div class="param-box">
+    <h3 class="inline">Numéro de commande :</h3>
+    <p class="inline">&nbsp;{{ this.ncmd }}</p>
+    <br>
+      <h3 class="inline">Ticket de transaction :</h3>
+      <p class="inline">&nbsp;{{ this.ticket }}</p>
+      <br>
+        <br>
+          <p class="inline">{{ this.message }}</p>
+        </div> -->
+        <div class="param-box">
+          <p>
+            Votre @if (!(this.transaction == 'DEV')) {
+            <span>commande</span>
+            }@if (this.transaction == 'DEV') {
+            <span>devis</span>
+            } a bien été pris@if (!(this.transaction == 'DEV')) {
+            <span>e</span>
+            } en compte sous le <b>n° {{ this.ncmd }}</b>
+            Vous allez recevoir en parallèle un mail de confirmation.
+          </p>
+          <!-- DEVIS -->
+          @if (this.transaction == 'DEV') {
+            <p>
+              Pour validez votre devis retournez nous simplement par mail votre devis avec la mention bon pour accords
+            </p>
+          }
+          <!-- COMMANDE -->
+          @if (!(this.transaction == 'DEV')) {
+            <p>
+              Son état de traitement et d’avancement est  accessible par l’option du menu <a routerLink="/espace-client/commandes"> commandes</a>
+            </p>
+          }
+          <!-- TICKET -->
+          @if (this.ticket !== 0) {
+            <p>Ticket bancaire de règlement n° {{ this.ticket }} </p>
+          }
+        </div>
+        <div class="margin">
+          <button
+            mat-raised-button
+            class="raised-button"
+            routerLink="/"
+            >
+            CONTINUER
+          </button>
+        </div>
+      </div>
+    } @else {
+      Pas de commande à confirmer
+    }
+

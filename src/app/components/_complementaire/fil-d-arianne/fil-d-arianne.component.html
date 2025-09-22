@@ -1,0 +1,41 @@
+@if (catalogueService.isFilArianne) {
+  <ul class="breadcrumb size-small">
+    @for (fil of filDArianne; track fil; let i = $index) {
+      @if (i === 0 && fil.label != 'Accueil') {
+        <li class="fil-item">
+          <a tabindex="0" [routerLink]="['/']">
+            <fa-icon [icon]="faHome"></fa-icon>
+          </a>
+          <fa-icon [icon]="faChevronRight" class="chevron show inactive"></fa-icon>
+        </li>
+      }
+      @if (fil.label != 'Accueil' && fil.label !== '' && fil.label !== ' ' && fil.label !== '_' && fil.label !== '.') {
+        <li class="fil-item" (mouseenter)="enterItem(fil.url)">
+          @if (fil.url) {
+            @if (!unique(fil.url)) {
+              <a tabindex="0" [routerLink]="fil.url.slice(1).split('/')">
+                {{ fil.label }}
+              </a>
+            } @else {
+              <a tabindex="0" [routerLink]="fil.url.slice(1).split('/').concat(['unique'])">
+                {{ fil.label }}
+              </a>
+            }
+          } @else {
+            <span class="disabled">{{ fil.label }}</span>
+          }
+          <fa-icon [icon]="faChevronRight" class="chevron" [ngClass]="{ show: i < filDArianne.length - 1, inactive: listCatDyn.length <= 0 }"></fa-icon>
+          <div class="list" [ngClass]="{ inactive: listCatDyn.length <= 0 || !fil.url }">
+            @for (cat of listCatDyn; track cat) {
+              @if (unique(chemin.concat([cat[1]]).join('/'))) {
+                <a [routerLink]="chemin.concat([cat[1], 'unique'])">{{ cat[1] }}</a>
+              } @else {
+                <a [routerLink]="chemin.concat([cat[1]])">{{ cat[1] }}</a>
+              }
+            }
+          </div>
+        </li>
+      }
+    }
+  </ul>
+}

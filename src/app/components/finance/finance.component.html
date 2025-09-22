@@ -1,0 +1,343 @@
+<app-title-w-line [title]="'Relevé de compte'"></app-title-w-line>
+
+<div class="content">
+  <div class="filters raised-1">
+    <h2>Filtres</h2>
+    <div class="filter">
+      <mat-form-field class="example-full-width">
+        <mat-label>N° Facture</mat-label>
+        <input matInput [formControl]="nFactureFiltre" (keyup)="filtrer($event.target.value, 'string', 'nfacture')">
+      </mat-form-field>
+
+      <mat-form-field class="example-full-width">
+        <mat-label>Ref. Client</mat-label>
+        <input matInput [formControl]="refClientFiltre" (keyup)="filtrer($event.target.value, 'string', 'refclient')">
+      </mat-form-field>
+
+      <mat-form-field class="example-form-field">
+        <mat-label>Date piece</mat-label>
+        <mat-date-range-input
+          [formGroup]="campaignOne"
+          [rangePicker]="campaignOnePicker">
+          <input matStartDate placeholder="Début" formControlName="start">
+          <input matEndDate placeholder="Fin" formControlName="end"
+                 (dateChange)="filtrer(campaignOne.value.start + ',' + campaignOne.value.end, 'date', 'DatePiece');">
+        </mat-date-range-input>
+        @if (campaignOne.value.end) {
+          <button matSuffix mat-icon-button aria-label="Clear"
+                  (click)="campaignOne.reset();filtrer(campaignOne.value.end, 'date', 'DatePiece');">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+        <mat-datepicker-toggle matIconSuffix [for]="campaignOnePicker"></mat-datepicker-toggle>
+        <mat-date-range-picker #campaignOnePicker></mat-date-range-picker>
+      </mat-form-field>
+      <mat-form-field class="example-form-field">
+        <mat-label>Date échéance</mat-label>
+        <mat-date-range-input
+          [formGroup]="campaignTwo"
+          [rangePicker]="campaignTwoPicker">
+          <input matStartDate placeholder="Début" formControlName="start">
+          <input matEndDate placeholder="Fin" formControlName="end"
+                 (dateChange)="filtrer(campaignTwo.value.start + ',' + campaignTwo.value.end, 'date', 'dateecheancenumero')">
+        </mat-date-range-input>
+        @if (campaignTwo.value.end) {
+          <button matSuffix mat-icon-button aria-label="Clear"
+                  (click)="campaignTwo.reset();filtrer(campaignTwo.value.end, 'date', 'dateecheancenumero')">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+        <mat-datepicker-toggle matIconSuffix [for]="campaignTwoPicker"></mat-datepicker-toggle>
+        <mat-date-range-picker #campaignTwoPicker></mat-date-range-picker>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <div id="echus">
+    <app-title-w-line [title]="'Facture non réglée'" collapsible="true"
+                      (click)="toggleCollapseDivById($event, 'echus')"></app-title-w-line>
+    <h3 style="margin-left: 1em">{{ _financeService.getNbResultEchus() + ' résultats' }}</h3>
+    <button mat-raised-button
+            class="relance"
+            [ngClass]="{ nope: selection.isEmpty() }"
+            [disabled]="selection.isEmpty()"
+            (click)="openConfirmationPopup()">
+      <fa-icon style="margin-right: 1rem; color: white; width: 24px;" [icon]="faPaperPlane"></fa-icon>
+      Envoyer un mail de relance
+    </button>
+    <div class="collapsible" style="padding: 0 1px;"
+         [@expandVertical]="collapsedIdsArray.includes('echus') ? 'closed' : 'open'"
+         [ngClass]="{ hide: collapsedIdsArray.includes('echus') }">
+      <table mat-table [dataSource]="_financeService.filteredAlertItems" class="mat-elevation-z3 tables-finances">
+
+        <ng-container matColumnDef="select">
+          <th mat-header-cell *matHeaderCellDef>
+            <mat-checkbox (change)="$event ? toggleAllRows() : null"
+                          [checked]="selection.hasValue() && isAllSelected()"
+                          [indeterminate]="selection.hasValue() && !isAllSelected()" [aria-label]="checkboxLabel()">
+            </mat-checkbox>
+          </th>
+          <td mat-cell *matCellDef="let row">
+            <mat-checkbox (click)="$event.stopPropagation()"
+                          (change)="$event ? selection.toggle(row) : null" [checked]="selection.isSelected(row)"
+                          [aria-label]="checkboxLabel(row)">
+            </mat-checkbox>
+          </td>
+          <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+
+        <ng-container matColumnDef="nfacture">
+          <th mat-header-cell *matHeaderCellDef> N° Facture</th>
+          <td mat-cell *matCellDef="let finance">
+            <a
+              [href]="environment.apiUrlActn + '/document/generate_intra.php?document=FACTURE/' + _activatedRoute.snapshot.params['client'] + '/' + finance.nfacture"
+              target="_blank"
+            >
+              {{ finance.nfacture }}
+              <fa-icon [icon]="faFilePdf"></fa-icon>
+            </a>
+          </td>
+          <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+
+        <ng-container matColumnDef="refclient">
+          <th mat-header-cell *matHeaderCellDef> Ref. Client</th>
+          <td mat-cell *matCellDef="let finance"> {{ finance.refclient }}</td>
+          <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef> Date piece</th>
+          <td mat-cell *matCellDef="let finance"> {{ finance.DatePiece | date:'dd/MM/yyyy' }}</td>
+          <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+
+        <ng-container matColumnDef="echeance">
+          <th mat-header-cell *matHeaderCellDef> Échéance</th>
+          <td mat-cell *matCellDef="let finance"> {{ finance.dateecheancenumero | date:'dd/MM/yyyy' }}</td>
+          <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+
+        <ng-container matColumnDef="libelle">
+          <th mat-header-cell *matHeaderCellDef> Libellé</th>
+          <td mat-cell *matCellDef="let finance"> {{ finance.libelle }}</td>
+          <td mat-footer-cell *matFooterCellDef><strong>Total</strong></td>
+        </ng-container>
+
+        <ng-container matColumnDef="montant">
+          <th mat-header-cell *matHeaderCellDef> Montant TTC</th>
+          <td mat-cell *matCellDef="let finance">
+            <div class="ouiee">
+              <span>{{ finance.debit + finance.credit | currency:'EUR':'symbol':'1.2-2' }}</span>
+            </div>
+          </td>
+          <td mat-footer-cell *matFooterCellDef>
+            <strong>{{ _financeService.getTotalCostEchus() | currency:'EUR':'symbol':'1.2-2' }}</strong>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columnsFactureNonReglee"></tr>
+        <tr mat-row *matRowDef="let row; columns: columnsFactureNonReglee;"></tr>
+        <tr mat-footer-row *matFooterRowDef="columnsFactureNonReglee"></tr>
+      </table>
+    </div>
+  </div>
+
+  <div id="avoir">
+    <app-title-w-line [title]="'Avoir & acompte'" collapsible="true"
+                      (click)="toggleCollapseDivById($event, 'avoir')"></app-title-w-line>
+    <h3 style="margin-left: 1em">{{ _financeService.getNbResultAvoir() + ' résultats' }}</h3>
+    <div class="collapsible" style="padding: 0 1px;"
+         [@expandVertical]="collapsedIdsArray.includes('avoir') ? 'closed' : 'open'"
+         [ngClass]="{ hide: collapsedIdsArray.includes('avoir') }">
+      <table mat-table [dataSource]="_financeService.filteredAvoirItems" class="mat-elevation-z3 tables-finances">
+        <ng-container matColumnDef="nfacture">
+          <th mat-header-cell *matHeaderCellDef> N° Facture</th>
+          <td mat-cell *matCellDef="let finance">
+            <a
+              [href]="environment.apiUrlActn + '/document/generate_intra.php?document=FACTURE/' + _activatedRoute.snapshot.params['client'] + '/' + finance.nfacture"
+              target="_blank"
+            >
+              {{ finance.nfacture }}
+              <fa-icon [icon]="faFilePdf"></fa-icon>
+            </a>
+          </td>
+          <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+
+        <ng-container matColumnDef="refclient">
+          <th mat-header-cell *matHeaderCellDef> Ref. Client</th>
+          <td mat-cell *matCellDef="let finance"> {{ finance.refclient }}</td>
+          <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef> Date piece</th>
+          <td mat-cell *matCellDef="let finance"> {{ finance.DatePiece | date:'dd/MM/yyyy' }}</td>
+          <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+
+        <ng-container matColumnDef="echeance">
+          <th mat-header-cell *matHeaderCellDef> Échéance</th>
+          <td mat-cell *matCellDef="let finance"> {{ finance.dateecheancenumero | date:'dd/MM/yyyy' }}</td>
+          <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+
+        <ng-container matColumnDef="libelle">
+          <th mat-header-cell *matHeaderCellDef> Libellé</th>
+          <td mat-cell *matCellDef="let finance"> {{ finance.libelle }}</td>
+          <td mat-footer-cell *matFooterCellDef><strong>Total</strong></td>
+        </ng-container>
+
+        <ng-container matColumnDef="montant">
+          <th mat-header-cell *matHeaderCellDef> Montant TTC</th>
+          <td mat-cell *matCellDef="let finance">
+            <div class="ouiee">
+              <span>{{ finance.debit + finance.credit | currency:'EUR':'symbol':'1.2-2' }}</span>
+            </div>
+          </td>
+          <td mat-footer-cell *matFooterCellDef>
+            <strong>{{ _financeService.getTotalCostAvoir() | currency:'EUR':'symbol':'1.2-2' }}</strong>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columnsEchus"></tr>
+        <tr mat-row *matRowDef="let row; columns: columnsEchus;"></tr>
+        <tr mat-footer-row *matFooterRowDef="columnsEchus"></tr>
+      </table>
+    </div>
+  </div>
+
+  <div id="nonEchus">
+    <app-title-w-line [title]="'Facture non arrivée à échéance'" collapsible="true"
+                      (click)="toggleCollapseDivById($event, 'nonEchus')"></app-title-w-line>
+    <h3 style="margin-left: 1em">{{ _financeService.getNbResultNonEchus() + ' résultats' }}</h3>
+    <div class="collapsible" style="padding: 0 1px;"
+         [@expandVertical]="collapsedIdsArray.includes('nonEchus') ? 'closed' : 'open'"
+         [ngClass]="{ hide: collapsedIdsArray.includes('nonEchus') }">
+      <table mat-table [dataSource]="_financeService.filteredCurrentItems" class="mat-elevation-z3">
+
+        <ng-container matColumnDef="nfacture">
+          <th mat-header-cell *matHeaderCellDef> N° Facture</th>
+          <td mat-cell *matCellDef="let finance">
+            <a
+              [href]="environment.apiUrlActn + '/document/generate_intra.php?document=FACTURE/' + _activatedRoute.snapshot.params['client'] + '/' + finance.nfacture"
+              target="_blank"
+            >
+              {{ finance.nfacture }}
+              <fa-icon [icon]="faFilePdf"></fa-icon>
+            </a>
+          </td>
+          <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+
+        <ng-container matColumnDef="refclient">
+          <th mat-header-cell *matHeaderCellDef> Ref. Client</th>
+          <td mat-cell *matCellDef="let finance"> {{ finance.refclient }}</td>
+          <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef> Date piece</th>
+          <td mat-cell *matCellDef="let finance"> {{ finance.DatePiece | date:'dd/MM/yyyy' }}</td>
+          <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+
+        <ng-container matColumnDef="echeance">
+          <th mat-header-cell *matHeaderCellDef> Échéance</th>
+          <td mat-cell *matCellDef="let finance"> {{ finance.dateecheancenumero | date:'dd/MM/yyyy' }}</td>
+          <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+
+        <ng-container matColumnDef="libelle">
+          <th mat-header-cell *matHeaderCellDef> Libellé</th>
+          <td mat-cell *matCellDef="let finance"> {{ finance.libelle }}</td>
+          <td mat-footer-cell *matFooterCellDef><strong>Total</strong></td>
+        </ng-container>
+
+        <ng-container matColumnDef="montant">
+          <th mat-header-cell *matHeaderCellDef> Montant TTC</th>
+          <td mat-cell *matCellDef="let finance">
+            <div class="ouiee">
+              <span>{{ finance.debit + finance.credit | currency:'EUR':'symbol':'1.2-2' }}</span>
+            </div>
+          </td>
+          <td mat-footer-cell *matFooterCellDef>
+            <strong>{{ _financeService.getTotalCostNonEchus() | currency:'EUR':'symbol':'1.2-2' }}</strong></td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columnsEchus"></tr>
+        <tr mat-row *matRowDef="let row; columns: columnsEchus;"></tr>
+        <tr mat-footer-row *matFooterRowDef="columnsEchus"></tr>
+      </table>
+    </div>
+  </div>
+
+  <div id="historique">
+    <app-title-w-line [title]="'Historique'" collapsible="true"
+                      (click)="toggleCollapseDivById($event, 'historique')"></app-title-w-line>
+    <h3 style="margin-left: 1em">{{ _financeService.getNbResultHisto() + ' résultats' }}</h3>
+    <div class="collapsible" style="padding: 0 1px;"
+         [@expandVertical]="collapsedIdsArray.includes('historique') ? 'closed' : 'open'"
+         [ngClass]="{ hide: collapsedIdsArray.includes('historique') }">
+
+      <table mat-table [dataSource]="_financeService.filteredPastItems" class="mat-elevation-z3">
+        <ng-container matColumnDef="nfacture">
+          <th mat-header-cell *matHeaderCellDef> N° Facture</th>
+          <td mat-cell *matCellDef="let finance"> <!--  class="damnation"  -->
+            <a
+              [href]="environment.apiUrlActn + '/document/generate_intra.php?document=FACTURE/' + _activatedRoute.snapshot.params['client'] + '/' + finance.nfacture"
+              target="_blank"
+            >
+              {{ finance.nfacture }}
+              <fa-icon [icon]="faFilePdf"></fa-icon>
+            </a>
+            <!--<app-share [refClient]="'finance.refClient'" [nFacture]="'finance.nFacture'" [reseaux]="true" [title]="'Partager'" [textToClipboard]="environment.apiUrlActn + '/document/generate_intra.php?document=FACTURE/' + _activatedRoute.snapshot.params['client'] + '/' + finance.nfacture"></app-share>-->
+          </td>
+          <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+
+        <ng-container matColumnDef="refclient">
+          <th mat-header-cell *matHeaderCellDef> Ref. Client</th>
+          <td mat-cell *matCellDef="let finance"> {{ finance.refclient }}</td>
+          <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef> Date piece</th>
+          <td mat-cell *matCellDef="let finance"> {{ finance.DatePiece | date:'dd/MM/yyyy' }}</td>
+          <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+
+        <ng-container matColumnDef="echeance">
+          <th mat-header-cell *matHeaderCellDef> Échéance</th>
+          <td mat-cell *matCellDef="let finance"> {{ finance.dateecheancenumero | date:'dd/MM/yyyy' }}</td>
+          <td mat-footer-cell *matFooterCellDef></td>
+        </ng-container>
+
+        <ng-container matColumnDef="libelle">
+          <th mat-header-cell *matHeaderCellDef> Libellé</th>
+          <td mat-cell *matCellDef="let finance"> {{ finance.libelle }}</td>
+          <td mat-footer-cell *matFooterCellDef><strong>Total</strong></td>
+        </ng-container>
+
+        <ng-container matColumnDef="montant">
+          <th mat-header-cell *matHeaderCellDef> Montant TTC</th>
+          <td mat-cell *matCellDef="let finance">
+            <div class="ouiee">
+              <span>{{ finance.debit | currency:'EUR':'symbol':'1.2-2' }}</span>
+            </div>
+          </td>
+          <td mat-footer-cell *matFooterCellDef>
+            <strong>{{ _financeService.getTotalCostHisto() | currency:'EUR':'symbol':'1.2-2' }}</strong></td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columnsEchus"></tr>
+        <tr mat-row *matRowDef="let row; columns: columnsEchus;"></tr>
+        <tr mat-footer-row *matFooterRowDef="columnsEchus"></tr>
+      </table>
+    </div>
+  </div>
+
+
+</div>

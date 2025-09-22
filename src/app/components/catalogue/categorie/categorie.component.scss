@@ -1,0 +1,125 @@
+@import "variables.scss";
+
+$margin: 10px;
+
+#container {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 10px -10px;
+
+    .raised-button{
+        font-size: 0.8em;
+        background: var(--color-secondary);
+        color: white;
+    }
+
+    .cat {
+        display: block;
+        position: relative;
+        height: 120px;
+        width: calc(100% / 3 - #{$margin} * 2);
+        background: white;
+        box-shadow: 0 2px 3px 1px rgba(0, 0, 0, 0.2);
+        padding: $margin;
+        margin: $margin;
+        text-align: left;
+        font-weight: bold;
+        text-decoration: none;
+        font-size: large;
+
+        @media screen and (min-width: 1650px) {
+            width: calc(100% / 4 - #{$margin} * 2);
+        }
+
+        @media screen and (max-width: 1300px) {
+            width: calc(100% / 2 - #{$margin} * 2);
+        }
+
+        @media screen and (max-width: 767.98px) {
+            width: calc(100% / 1 - #{$margin} * 2);
+        }
+
+        .overlay {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            z-index: 4;
+        }
+
+        img {
+            transition: all 0.15s ease-in-out;
+            filter: grayscale(100%);
+            position: absolute;
+            right: $margin;
+            bottom: $margin;
+            max-height: 60%;
+            max-width: 60%;
+            margin: 0;
+            z-index: 1;
+        }
+        fa-icon {
+            transition: all 0.15s ease-in-out;
+            position: absolute;
+            right: $margin;
+            bottom: $margin;
+            max-height: 60%;
+            max-width: 60%;
+            margin: 0;
+            z-index: 1;
+            font-size: 3rem;
+        }
+
+        &.swap {
+            background-color: var(--color-primary-second);
+            color: var(--color-primary-contrast);
+            img {
+                filter: invert(1) grayscale(1);
+            }
+        }
+
+        &.blueshadow {
+            box-shadow: 0 0 3px 1px var(--color-primary-second);
+        }
+
+        &:hover .affichage {
+            color: var(--color-primary-second);
+        }
+
+        &:hover {
+            color: var(--color-secondary);
+            img {
+                filter: grayscale(0%);
+            }
+        }
+    }
+
+    .affichage {
+        z-index: 5;
+        position: absolute;
+        color: black;
+        bottom: $margin;
+        left: $margin;
+        background: white;
+        padding: 2px;
+        font-size: small;
+        font-weight: normal;
+    }
+
+    .page {
+        display: flex;
+        width: 100%;
+        margin: $margin;
+        justify-content: flex-start;
+    }
+
+    .toutVoir {
+        color: var(--color-primary-second);
+        text-decoration: none;
+
+        &:hover {
+            color: var(--color-secondary);
+        }
+    }
+}

@@ -1,0 +1,583 @@
+@if (this.authService.currentUser != null) {
+  <div #form>
+    <div [innerHTML]="refInputs"></div>
+    <div [innerHTML]="marqueInputs"></div>
+    <div [innerHTML]="qteInputs"></div>
+    <div [innerHTML]="gabInputs"></div>
+    @if (dejaCharge) {
+      <app-title-w-line [title]="'Votre devis'"></app-title-w-line>
+      <form [formGroup]="panierForm" style="margin: 0 10em">
+        <!-- LISTE PRODUITS -->
+        <!-- <h3 *ngIf="!renewLicence && title !== ''" (click)="log()">{{ title }}</h3>-->
+        @if (!renewLicence) {
+          <div class="bar-prodression raised-1">
+            <app-stepper [step]="2"></app-stepper>
+          </div>
+        }
+        <div class="liste-produits raised-1">
+          <app-label-panier modeAffichage=1></app-label-panier>
+          @if (!renewLicence) {
+            @for (cartItem of itemsArray | keyvalue; track cartItem; let i = $index) {
+              <div class="produit" style="display: flex; flex-direction: column;">
+                <app-panier-row [cartItem]="cartItem.value" [showInputNumber]="false" [cotationNotEditable]="true">
+                </app-panier-row>
+              </div>
+            }
+          } @else {
+            @for (cartItem of itemsArray | keyvalue; track cartItem; let i = $index) {
+              <div class="produit">
+                <app-panier-row [cartItem]="cartItem.value" [showInputNumber]="false" [cotationNotEditable]="true">
+                </app-panier-row>
+              </div>
+            }
+          }
+        </div>
+        @if (showClientFinal()) {
+          <div class="liste-produits raised-1">
+            @if (!renewLicence) {
+              <app-enduser-form title="Informations du client final" [produits]="cartService.cart.items"
+              (clientChange)="enduser = $event" [client]="newEnduser"></app-enduser-form>
+            } @else {
+              <app-enduser-form title="Informations du client final" [produits]="cartService.cart.items"
+              (clientChange)="enduser = $event" [client]="newEnduser"></app-enduser-form>
+            }
+            @if (submitted && !enduserForm.valid) {
+              <mat-error>Le formulaire client final comporte des erreurs.</mat-error>
+            }
+          </div>
+        }
+        <div class="liste-produits raised-1">
+          <h3>Commentaire général en pieds de page</h3>
+          <form [formGroup]="commentaireGeneral" class="form-add">
+            <mat-form-field appearance="fill" style="width: 100%">
+              <mat-label>Écrire un commentaire ...</mat-label>
+              <textarea matInput [formControlName]="'commentaire'"></textarea>
+              {{ commentaireGeneral.get('commentaire').value.length }} / 260
+              @if (commentaireGeneral.get('commentaire').invalid) {
+                <mat-error>Le commentaire de faire entre 1 et 260 caractères</mat-error>
+              }
+            </mat-form-field>
+          </form>
+        </div>
+        <div class="liste-produits raised-1">
+          @if ([page]!='devis';) {
+            <h3>Informations de commande</h3>
+          }
+          @if ([page]=='devis';) {
+            @if (this.cartService.getNumDevis() !== "") {
+              <h3>Informations du devis n° {{ this.cartService.getNumDevis() }} </h3>
+            } @else {
+              <h3>Informations du devis </h3>
+            }
+          }
+          <!-- REFERENCE -->
+          <div style="display: flex; flex-direction: row; gap: 10px">
+            <mat-form-field class="full-width size-default">
+              @if ([page]!='devis';) {
+                <mat-label>Votre référence de commande</mat-label>
+              }
+              @if ([page]=='devis';) {
+                <mat-label>Votre référence du devis</mat-label>
+              }
+              <input matInput required formControlName="ref" name="sauveref" maxlength="25" id="ref" type="text" />
+              @if (panierForm.get('ref').errors?.required) {
+                <mat-error>Champ obligatoire</mat-error>
+              }
+              @if (panierForm.get('ref').errors?.pattern) {
+                <mat-error>Caractères autorisés : majuscules, minuscules,
+                chiffres, espaces </mat-error>
+              }
+              @if (panierForm.get('ref').errors?.maxlength) {
+                <mat-error>25 Caractères maximum </mat-error>
+              }
+            </mat-form-field>
+            <mat-form-field style="max-height: 78px; min-width: 25vw;">
+              <mat-label>Date de relance</mat-label>
+              <input matInput formControlName="dateRelance" [matDatepicker]="picker" readonly='true'>
+              <mat-hint>DD/MM/YYYY</mat-hint>
+              <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+          </div>
+          <mat-radio-group [formControlName]="'envoieDeMail'">
+            <mat-radio-button [value]="true" checked>Envoyer un mail à</mat-radio-button>
+            <mat-radio-button [value]="false">Ne pas envoyer de mail</mat-radio-button>
+          </mat-radio-group>
+          <!-- EMAIL -->
+          @if (panierForm.value.envoieDeMail) {
+            <div style="display: flex; flex-direction: row; gap: 10px">
+              <mat-form-field class="full-width size-default">
+                <mat-label>Adresse mail</mat-label>
+                <input matInput [formControlName]="'email'" name="mail" id="mail" type="email"/>
+                @if (panierForm.get('email').errors?.email) {
+                  <mat-error>La saisie ne correspond pas à un email</mat-error>
+                }
+                @if (panierForm.get('email').errors?.maxlength) {
+                  <mat-error>70 Caractères maximum</mat-error>
+                }
+              </mat-form-field>
+              <mat-form-field style="max-height: 78px; min-width: 25vw;">
+                <mat-select [formControlName]="'emails'" multiple placeholder="Selection de contacts">
+                  @for (contact of listContacts; track contact) {
+                    <mat-option [value]="contact.mail">
+                      <div style="display: flex; flex-direction: row; gap: 10px">
+                        <p style="margin: 0; font-weight: bold">{{ contact.nom }} </p>
+                        <p style="margin: 0; font-size: small">{{ contact.mail }}</p>
+                      </div>
+                    </mat-option>
+                  }
+                </mat-select>
+                @if (panierForm.get('emails').hasError('maxSelectionExceeded')) {
+                  <mat-error>Vous ne pouvez pas sélectionner plus de 3 options</mat-error>
+                }
+              </mat-form-field>
+            </div>
+            <button mat-raised-button  class="adresses-bouton"><a [routerLink]="['/espace-client/utilisateurs']" target="_blank" style="text-decoration: none">Modifier / Créer les utilisateurs</a></button>
+          }
+        </div>
+        <!-- MODE DE LIVRAISON -->
+        <div class="liste-produits raised-1">
+          <h3>Mode de livraison</h3>
+          @if (submitted && panierForm.get('transporteur').errors?.required) {
+            <mat-error class="margin">
+              Vous devez sélectionner un mode de livraison
+            </mat-error>
+          }
+          <mat-radio-group aria-label="Transporteur" formControlName="transporteur">
+            @if ((!lockFormulaire && livraisonChronopost) || (lockFormulaire && panierForm.value.transporteur === 'CHR')) {
+              <mat-radio-button value="CHR"
+                [checked]="transporteur === 'CHR'">
+                Chronopost
+              </mat-radio-button>
+            }
+            <!-- <mat-radio-button value="COL" *ngIf="(!lockFormulaire && livraisonChronopost) || (lockFormulaire && transporteur === 'COL')" [checked]="transporteur === 'COL'">
+            Colissimo
+          </mat-radio-button> -->
+          @if ((!lockFormulaire && livraisonSchenker) || (lockFormulaire && panierForm.value.transporteur === 'SCH')) {
+            <mat-radio-button value="SCH"
+              [checked]="panierForm.value.transporteur === 'SCH'">
+              Schenker 48/72h
+            </mat-radio-button>
+          }
+          @if ((!lockFormulaire && livraisonDirecte) || (lockFormulaire && panierForm.value.transporteur === 'LDF')) {
+            <mat-radio-button value="LDF"
+              [checked]="panierForm.value.transporteur === 'LDF'">
+              Stock externe 8/10 jours <span class="smallfont">GRATUIT</span>
+            </mat-radio-button>
+          }
+          @if ((!lockFormulaire && livraisonEmail) || (lockFormulaire && panierForm.value.transporteur === 'MAI')) {
+            <mat-radio-button value="MAI"
+              [checked]="panierForm.value.transporteur === 'MAI'" (click)="updateTVA('MAIL')">
+              Email
+            </mat-radio-button>
+          }
+          @if ((!lockFormulaire && livraisonRetrait && !isVirtualOnly()) || (lockFormulaire && panierForm.value.transporteur === 'ENL')) {
+            <mat-radio-button value="ENL"
+              [checked]="panierForm.value.transporteur === 'ENL'" (click)="updateTVA('FR')">
+              Retrait en nos locaux / EXW
+            </mat-radio-button>
+          }
+          <!-- pas d'adresse gratuit -->
+          @if ((!lockFormulaire && client.TIERSETRANGER && !isVirtualOnly()) || (lockFormulaire && panierForm.value.transporteur === 'VTP')) {
+            <mat-radio-button value="VTP"
+              [checked]="panierForm.value.transporteur === 'VTP'" (click)="updateTVA(user.TIERSETRANGER)">
+              Transport par vos soins
+            </mat-radio-button>
+          }
+          @if ((!lockFormulaire && client.TIERSETRANGER && !isVirtualOnly()) || (lockFormulaire && panierForm.value.transporteur === 'TRA')) {
+            <mat-radio-button value="TRA"
+              [checked]="panierForm.value.transporteur === 'TRA'">
+              Transitaire
+            </mat-radio-button>
+          }
+        </mat-radio-group>
+        <br /><br /><a class="text-link" target="_blank" routerLink="/frais-de-livraison">Frais de livraison</a>
+      </div>
+      <!-- ADRESSES -->
+      @if ((this.panierForm.value.transporteur != 'MAI') && (this.panierForm.value.transporteur != 'ENL') && (this.panierForm.value.transporteur != 'VTP') && this.panierForm.value.transporteur) {
+        <div class="liste-produits raised-1"
+          >
+          <h3>Adresse de livraison</h3>
+          @if (submitted && formErrors.errNoAddress) {
+            <mat-error>
+              Vous n'avez pas sélectionné d'adresse de livraison
+            </mat-error>
+          }
+          <mat-radio-group class="adresses" aria-label="Adresse" formControlName="adresse">
+            @for (adresse of adresses; track adresse; let i = $index) {
+              @if (!lockFormulaire || adresse.adresse1 === selectedAdress.adresse1) {
+                <mat-radio-button
+                  class="adresse box raised-2" [value]="adresse" (click)="updateTVA(adresse.paysiso)">
+                  <span class="weight-bold">{{ adresse.nom }}</span><br />
+                  <span>{{ adresse.adresse1 }}&nbsp;&nbsp;</span><br>
+                  @if (adresse.adresse2) {
+                    <span>{{ adresse.adresse2 }}&nbsp;&nbsp;<br></span>
+                  }
+                  <span>{{ adresse.codepostal }}&nbsp;&nbsp;</span>
+                  <span>{{ adresse.ville }}</span><br />
+                  <span>{{ adresse.phone }}&nbsp;&nbsp;</span><br />
+                  <span>{{ (adresse.paysiso ? adresse.paysiso : "??") }}&nbsp;&nbsp;</span>
+                  <span>{{ (adresse.pays ? adresse.pays : "???") }}</span>
+                </mat-radio-button>
+              }
+            }
+          </mat-radio-group>
+          <!-- <button *ngIf="!displayAllAddresses" mat-raised-button type="button" class="adresses-bouton" (click)="displayAllAddresses = true">
+          Afficher toutes les adresses
+        </button>
+        <span>&#160;&#160;&#160;&#160;&#160;</span> -->
+        <button mat-raised-button type="button" class="adresses-bouton" routerLink="/espace-client/adresses"
+          [disabled]="lockFormulaire">
+          Ajouter / Modifier les adresses
+        </button>
+      </div>
+    }
+    <!-- BON DE LIVRAISON -->
+    <div class="col-3">
+      <div class="liste-produits raised-1">
+        <h3>Bon de livraison</h3>
+        <mat-radio-group aria-label="Bon de livraison" formControlName="livraison">
+          <mat-radio-button value="STD" checked>
+            Standard
+          </mat-radio-button>
+          <mat-radio-button value="LID">
+            Personnalisé / Neutre / Drop shipping
+          </mat-radio-button>
+        </mat-radio-group>
+        <!-- DATE DE LIVRAISON -->
+        <h3>Date d'expédition souhaitée</h3>
+        <mat-form-field class="size-default">
+          <mat-label>Date d'expédition</mat-label>
+          <input matInput type="date" formControlName="dateexpedition" [min]="mindate" required>
+        </mat-form-field>
+        @if (submitted && formErrors.errDateWeekEnd) {
+          <mat-error>
+            La date d'expédition souhaitée ne peut pas être un week end
+          </mat-error>
+        }
+        <!-- CONDITIONS -->
+        <!--<div class="lawful-checkbox">
+        <mat-checkbox name="lawful" formControlName="lawful">
+          J'ai lu et j'accepte les&nbsp;
+        </mat-checkbox>
+        <a class="text-link" routerLink="/conditions-generales-de-vente">conditions générales de vente
+        d'ACTN</a>
+      </div>-->
+      <!--<mat-error *ngIf="submitted && panierForm.get('lawful').errors?.required" class="margin">
+      Vous devez accepter les conditions générales de vente
+    </mat-error>-->
+  </div>
+  <!-- DIV alignement devis -->
+  @if ([page]=='devis') {
+    <div></div>
+  }
+  @if ([page]!='devis'&& ( (needCotationTransport) && (panierForm.value.transporteur == 'CHR' || panierForm.value.transporteur == 'COL' || panierForm.value.transporteur === 'SCH'|| panierForm.value.transporteur == 'VTP' || panierForm.value.transporteur === 'TRA') )) {
+    <div
+      >
+    </div>
+  }
+  <ng-template #totaux_loading class="paiement_container"></ng-template>
+  <div class="paiement_container  raised-1">
+    <!-- totaux liste-produits *ngIf="panierPort; else totaux_loading"  *ngIf="!( (needCotationTransport) && (panierForm.value.transporteur == 'CHR' || panierForm.value.transporteur == 'COL' || panierForm.value.transporteur === 'SCH') ); else isCommandeBesoinDeRecalcul" -->
+    <div class="total">
+      <div>Total marchandise HT</div>
+      <div>{{ panierPort.totalMarchandiseht | currency:'EUR':'symbol':'1.2-2' }}</div>
+    </div>
+    @if (panierPort.Totald3e) {
+      <div class="total">
+        <div>Total Éco-participation HT</div>
+        <div>{{ panierPort.Totald3e | currency:'EUR':'symbol':'1.3-3' }}</div>
+      </div>
+    }
+    <div class="total">
+      <div>Frais de port HT</div>
+      @if (panierPort.port != 0) {
+        <div>
+          {{ panierPort.port | currency: 'EUR':'':'1.2-2' }}<span>
+        €</span></div>
+      }
+      @if (panierPort.port == 0) {
+        <div>gratuit</div>
+      }
+    </div>
+    @if (panierPort.port != 0 && panierPort.portfranco && (panierPort.portfranco < 99000)) {
+      <div class="total">
+        <div style="font-weight: 400;">
+          (Franco à {{ panierPort.portfranco | currency: 'EUR':'symbol':'1.2-2' }})
+        </div>
+      </div>
+    }
+    @if (panierPort.totalpoids) {
+      @if (panierPort.totalpoids == panierPort.allpoids) {
+        <div class="">
+          <div style="font-weight: 400;">Poids total {{ panierPort.totalpoids | number: '1.3-3' }} kg</div>
+        </div>
+      } @else {
+        <div>
+          <div style="font-weight: 400;">Poids retenu {{ panierPort.totalpoids | number: '1.3-3' }} kg</div>
+          <div style="font-weight: 400; font-size: 0.8em;">Poids total {{ panierPort.allpoids | number: '1.3-3' }}
+          kg</div>
+        </div>
+      }
+    }
+    @if ((this.panierForm.value.paiement !== 'CCB')) {
+      <div class="total">
+        <div>Total HT</div>
+        <div>{{ panierPort.totalht | currency:'EUR':'symbol':'1.2-2' }}</div>
+        <input type="hidden" value="{{ panierPort.totalht  }}" readonly />
+      </div>
+    } @else {
+      <div class="total">
+        <div>Frais de traitement HT </div>
+        <div>{{ fraisCcb | currency:'EUR':'symbol':'1.2-2' }}</div>
+        <!--  <input type="hidden" value="{{ panierPort.fraisBancaire }}" readonly /> -->
+      </div>
+      <div class="total">
+        <div>Total HT</div>
+        <div>{{ panierPort.totalht + fraisCcb | currency:'EUR':'symbol':'1.2-2' }}</div>
+        <input type="hidden" value="{{ panierPort.totalht  + fraisCcb}}" readonly />
+      </div>
+    }
+    @if ([page]=='devis';) {
+      <div class="total TVA">
+        <div>TVA</div>
+        <div> {{ panierPort.tva | currency:'EUR':'symbol':'1.2-2' }}</div>
+      </div>
+    }
+    @if ([page]=='devis';) {
+      <div class="total TTC">
+        <div>Total TTC </div>
+        <div>{{ panierPort.ttc  | currency:'EUR':'symbol':'1.2-2' }}</div>
+      </div>
+    }
+    <!-- Fake btn il sert de placeholder  -->
+    @if (!(this.panierForm.value.paiement) && [page] !='devis') {
+      <div>
+        <div class="total TVA">
+          <div>TVA </div>
+          <div> {{ panierPort.tva | currency:'EUR':'symbol':'1.2-2' }}</div>
+        </div>
+        <div class="total TTC">
+          <div>Total TTC</div>
+          <div>{{ panierPort.ttc | currency:'EUR':'symbol':'1.2-2' }}</div>
+        </div>
+        @if (!( (needCotationTransport) && (panierForm.value.transporteur == 'CHR' || panierForm.value.transporteur == 'COL' || panierForm.value.transporteur === 'SCH') )) {
+          <div class="text_left"
+            >
+            <button name="typval" value="VIR" type="submit" class="raised-button valider_panier"
+              [disabled]="awaitingCommandResponse || lockCommande"
+              (click)="submit()">
+              Valider le réglement
+            </button>
+            <!-- *ngIf="!renewLicence && !cartHasCotation" -->
+          </div>
+        }
+      </div>
+    }
+    <!-- Virement -->
+    @if ((this.panierForm.value.paiement === 'VIR')) {
+      <div class="">
+        <div class="total TVA">
+          <div>TVA </div>
+          <div> {{ panierPort.tva | currency:'EUR':'symbol':'1.2-2' }}</div>
+        </div>
+        <div class="total TTC">
+          <div>Total TTC</div>
+          <div>{{ panierPort.ttc | currency:'EUR':'symbol':'1.2-2' }}</div>
+        </div>
+        @if (!( (needCotationTransport) && (panierForm.value.transporteur == 'CHR' || panierForm.value.transporteur == 'COL' || panierForm.value.transporteur === 'SCH'|| panierForm.value.transporteur =='MAI') )) {
+          <div class="text_left"
+            >
+            <button name="typval" value="VIR" type="submit" class="raised-button valider_panier"
+              [disabled]="awaitingCommandResponse || lockCommande"
+              (click)="submit(vir)"> <!-- *ngIf="!renewLicence && !cartHasCotation" -->
+              Valider le réglement
+            </button>
+          </div>
+        }
+      </div>
+    }
+    <!-- ENCOUR -->
+    @if ((this.panierForm.value.paiement === 'ENC')) {
+      <div class=" ">
+        <!-- paiement_price totaux -->
+        <div class="total TVA">
+          <div>TVA</div>
+          <div> {{ panierPort.tva | currency:'EUR':'symbol':'1.2-2' }}</div>
+        </div>
+        <div class="total TTC ">
+          <div>Total TTC </div>
+          <div> {{ panierPort.ttc | currency:'EUR':'symbol':'1.2-2' }}</div>
+        </div>
+        @if (!( (needCotationTransport) && (panierForm.value.transporteur == 'CHR' || panierForm.value.transporteur == 'COL' || panierForm.value.transporteur === 'SCH' || panierForm.value.transporteur =='MAI') )) {
+          <div class="text_left"
+            >
+            @if ((client.AutoCDE == 'O')) {
+              <button name="typval" value="CDW" type="submit"
+                class="raised-button valider_panier" [disabled]="awaitingCommandResponse || lockCommande  "
+                (click)="submit(cdw)">
+                Valider le réglement
+              </button>
+            }
+          </div>
+        }
+      </div>
+    }
+    @if (panierPort) {
+      <div>
+      </div>
+    }
+    @if (userHasEscompte) {
+      <hr class="price-hr" />
+      <div class="total">
+        <div style="font-weight: 400;">
+          Règlement par carte bancaire :
+        </div>
+      </div>
+      <div class="total">
+        <div>Escompte</div>
+        <div>{{ +authClient.currentClient.Pescompte }} %</div>
+        <div>-{{ panierPort.amountOfEscompte | currency:'EUR':'symbol' }}</div>
+      </div>
+      <div class="total">
+        <div>Montant règlement TTC</div>
+        <div>{{ panierPort.totalEscompte | currency:'EUR':'symbol':'1.2-2' }}</div>
+      </div>
+    }
+  </div>
+</div>
+<!-- Moyen de Paiement  labelPosition ='before'-->
+@if (submitted) {
+  <div class="errors">
+    <!-- ENDUSER -->
+    @if (showClientFinal() && !enduserForm.valid) {
+      <mat-error>
+        Le formulaire client final comporte des erreurs.
+      </mat-error>
+    }
+    <!-- PHP ERROR -->
+    @if (formErrors.errFormNotSent) {
+      <mat-error>
+        Echec de la requête d'envoi du formulaire
+      </mat-error>
+    }
+    <!-- NO REFERENCE -->
+    @if (panierForm.get('ref').errors?.required) {
+      <mat-error>
+        <label for="ref">Vous n'avez pas saisi votre référence @if ([page]!='devis';) {
+          <span>de
+          commande</span>
+          }@if ([page]=='devis';) {
+          <span>du devis</span>
+        }</label>
+      </mat-error>
+    }
+    <!-- NO EMAIL -->
+    @if (panierForm.get('emails').hasError('maxSelectionExceeded')) {
+      <mat-error>
+        <label for="mail">Vous ne pouvez choisir que 3 adresses mail</label>
+      </mat-error>
+    }
+    <!-- INVALID MAIL -->
+    @if (panierForm.get('email').errors?.email) {
+      <mat-error>
+        <label for="mail">L'adresse mail saisie n'est pas valide</label>
+      </mat-error>
+    }
+    <!-- TRANSPORTEUR -->
+    @if (panierForm.get('transporteur').errors?.required) {
+      <mat-error>
+        Vous devez sélectionner un mode de livraison
+      </mat-error>
+    }
+    <!-- NO ADDRESS -->
+    @if (formErrors.errNoAddress) {
+      <mat-error>
+        Vous n'avez pas sélectionné d'adresse de livraison
+      </mat-error>
+    }
+    <!-- DATE WEEKEND -->
+    @if (formErrors.errDateWeekEnd) {
+      <mat-error>
+        La date d'expédition souhaitée ne peut pas être un week end
+      </mat-error>
+    }
+    <!-- UNLAWFUL --><!--
+    <mat-error *ngIf="panierForm.get('lawful').errors?.required">
+      Vous devez accepter les conditions générales de vente
+    </mat-error>-->
+    <!-- Paiement -->
+    @if (submitted && panierForm.get('paiement').errors?.required) {
+      <mat-error class="margin">
+        Vous devez choisir un mode de paiement
+      </mat-error>
+    }
+  </div>
+}
+@if (page != 'devis' && ( (needCotationTransport) && (panierForm.value.transporteur == 'CHR' || panierForm.value.transporteur == 'COL' || panierForm.value.transporteur === 'SCH') )) {
+  <div
+    class="action-row">
+    <!-- IF CHRONOPOST & COLIS + ETRANGER == recalcul devis -->
+    <span class="calculPort">Cette commande va faire l'objet d'un recalcul de frais de port</span>
+    <div>
+      <button name="typval" value="WWW" type="submit" class="raised-button"
+        [disabled]="awaitingCommandResponse || lockCommande "
+        (click)="this.panierForm.controls['paiement'].setValue('WWW'); this.formErrors.errPaiment = false && this.panierForm.value.paiement ='' ; submit(www)">
+        Demande de COTATION transport
+      </button>
+    </div>
+  </div>
+}
+<!-- ETRANGER -->
+@if (page == 'devis') {
+  <div id="devisBtn">
+    @if (!lockFormulaire) {
+      <button name="typval" value="DEV" type="submit" class="raised-button"
+        [disabled]="awaitingCommandResponse || lockCommande"
+        (click)="this.panierForm.controls['paiement'].setValue('DEV');submit(dev)">
+        Enregistrer DEVIS
+      </button>
+    }
+  </div>
+}
+</form>
+}
+</div>
+}
+
+<!-- AJOUT COMMENTAIRE PRODUIT -->
+<!--<div class="pupup-compterendu" [ngClass]="{active: openDialogAdd}">
+<div class="popup-background" (click)="openDialogAdd = false" (tap)="openDialogAdd = false"></div>
+<div class="popup-window">
+  <div mat-dialog-content style="display: flex; flex-direction: column">
+    <h2 [matTooltip]="produitComm.designation">Ajout d'un commentaire sur le produit {{ produitComm.designation}}</h2>
+    <form [formGroup]="commentaireForm" class="form-add">
+      <mat-form-field appearance="fill" style="width: 30vw">
+        <mat-label>Écrire un commentaire ...</mat-label>
+        <textarea matInput [formControlName]="'commentaire'"></textarea>
+        {{ commentaireForm.get('commentaire').value.length }} / 260
+        <mat-error *ngIf="commentaireForm.get('commentaire').invalid">Le commentaire de faire entre 1 et 260 caractères</mat-error>
+      </mat-form-field>
+    </form>
+    <button mat-raised-button (click)="ajoutComm(produitComm, commentaireForm.get('commentaire').value)">Ajouter</button>
+  </div>
+</div>
+</div>-->
+
+<!-- MODIF COMMENTAIRE PRODUIT -->
+<!--<div class="pupup-compterendu" [ngClass]="{active: openDialogEdit}">
+<div class="popup-background" (click)="openDialogEdit = false" (tap)="openDialogEdit = false"></div>
+<div class="popup-window">
+  <div mat-dialog-content style="display: flex; flex-direction: column">
+    <h2>Modification d'un commentaire</h2>
+    <form [formGroup]="commentaireFormEdit" class="form-add">
+      <mat-form-field>
+        <textarea matInput [formControlName]="'commentaire'"></textarea>
+        {{ commentaireFormEdit.get('commentaire').value.length }} / 260
+        <mat-error *ngIf="commentaireFormEdit.get('commentaire').invalid">Le commentaire de faire entre 1 et 260 caractères</mat-error>
+      </mat-form-field>
+      <button mat-raised-button (click)="modifComm(produitComm, commentaireFormEdit.get('commentaire').value)">Modifier</button>
+    </form>
+  </div>
+</div>
+</div>-->

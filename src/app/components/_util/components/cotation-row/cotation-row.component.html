@@ -1,0 +1,92 @@
+
+@if (cotations && !uneditable) {
+  <div class="justify cotation-grid-box">
+    <section id="cotation">
+      <div class="cotation-grid cotation-grid-label">
+        <label class="cotation-reference">Réf. Cotation</label>
+        <label class="cotation-numero">N° - Ligne</label>
+        <!-- <label class="cotation-qte">Qté restante</label> -->
+        <label class="cotation-qte">Qté commandable</label>
+        <label class="cotation-date">Dates</label>
+        <label class="cotation-price">Prix standard</label>
+        <label class="cotation-price">Prix de cotation</label>
+        <label class="cotation-button"></label>
+      </div>
+      @for (cotation of cotations; track cotation; let i = $index) {
+        <label class="cotation-grid cotation-grid-line yeet">
+          <div class="cotation-reference">{{ cotation.refcot }}</div>
+          <div class="cotation-numero">{{ cotation.numcotation }} - {{ cotation.numcotationLigne }}</div>
+          <!-- <div class="cotation-qte">{{ cotation.qtemax - cotation.nbfoisutilise }} / {{ cotation.qtemax }}</div> -->
+          <div class="cotation-qte anotation" [ngClass]="{'qtemaxreached' : warningOnQte}">
+            {{ cotation.qtecdemax - cotation.qtecde }} produit{{(cotation.qtecdemax - cotation.qtecde > 1) ? "s" : ""}} en {{ cotation.nbrcdemax - cotation.nbrcde }} commande{{(cotation.nbrcdemax - cotation.nbrcde > 1) ? "s" : ""}}
+          </div>
+          <div class="cotation-date">du {{ cotation.datedeb | date:'shortDate' }}<br>au {{ cotation.datefin | date:'shortDate' }}</div>
+          <div class="cotation-price">{{ cotation.prixstd | currency:'EUR':'symbol':'1.2-2' }} <span class="size-smaller">HT</span></div>
+          <div class="cotation-price">{{ cotation.prixvente | currency:'EUR':'symbol':'1.2-2' }} <span class="size-smaller">HT</span></div>
+          <div class="cotation-button">
+            <mat-checkbox
+              (change)="changeRadioCot(i)"
+              [checked]="defCot === i"
+              [disabled]="defCot !== undefined"
+              >
+            </mat-checkbox>
+          </div>
+        </label>
+      }
+    </section>
+  </div>
+} @else {
+  @if (indexOfCot != -1) {
+    <div class="justify cotation-grid-box fixed-box">
+      <div class="cotation-grid cotation-grid-label">
+        <label class="cotation-reference">Réf. Cotation</label>
+        <label class="cotation-numero">N° - Ligne</label>
+        <!-- <label class="cotation-qte">Qté restante</label> -->
+        <label class="cotation-qte">Qté déjà commandée</label>
+        <label class="cotation-date">Dates</label>
+        <label class="cotation-price">Prix standard</label>
+        <label class="cotation-price">Prix de cotation</label>
+        <label class="cotation-button"></label>
+      </div>
+      <ng-container>
+        <label class="cotation-grid">
+          <div class="cotation-reference">{{ cotations[indexOfCot].refcot }}</div>
+          <div class="cotation-numero">{{ cotations[indexOfCot].numcotation }} - {{ cotations[indexOfCot].numcotationLigne }}</div>
+          <div class="cotation-qte">{{ cotations[indexOfCot].qtecde }} / {{ cotations[indexOfCot].qtecdemax }}</div>
+          <div class="cotation-date">du {{ cotations[indexOfCot].datedeb | date:'shortDate' }}<br>au {{ cotations[indexOfCot].datefin | date:'shortDate' }}</div>
+          <div class="cotation-price">{{ cotations[indexOfCot].prixstd | currency:'EUR':'symbol':'1.2-2' }} <span class="size-smaller">HT</span></div>
+          <div class="cotation-price">{{ cotations[indexOfCot].prixvente | currency:'EUR':'symbol':'1.2-2' }} <span class="size-smaller">HT</span></div>
+          <div class="cotation-button"></div>
+        </label>
+      </ng-container>
+    </div>
+  }
+}
+
+<ng-template #fixed>
+  @if (indexOfCot != -1) {
+    <div class="justify cotation-grid-box fixed-box">
+      <div class="cotation-grid cotation-grid-label">
+        <label class="cotation-reference">Réf. Cotation</label>
+        <label class="cotation-numero">N° - Ligne</label>
+        <!-- <label class="cotation-qte">Qté restante</label> -->
+        <label class="cotation-qte">Qté déjà commandée</label>
+        <label class="cotation-date">Dates</label>
+        <label class="cotation-price">Prix standard</label>
+        <label class="cotation-price">Prix de cotation</label>
+        <label class="cotation-button"></label>
+      </div>
+      <ng-container>
+        <label class="cotation-grid">
+          <div class="cotation-reference">{{ cotations[indexOfCot].refcot }}</div>
+          <div class="cotation-numero">{{ cotations[indexOfCot].numcotation }} - {{ cotations[indexOfCot].numcotationLigne }}</div>
+          <div class="cotation-qte">{{ cotations[indexOfCot].qtecde }} / {{ cotations[indexOfCot].qtecdemax }}</div>
+          <div class="cotation-date">du {{ cotations[indexOfCot].datedeb | date:'shortDate' }}<br>au {{ cotations[indexOfCot].datefin | date:'shortDate' }}</div>
+          <div class="cotation-price">{{ cotations[indexOfCot].prixstd | currency:'EUR':'symbol':'1.2-2' }} <span class="size-smaller">HT</span></div>
+          <div class="cotation-price">{{ cotations[indexOfCot].prixvente | currency:'EUR':'symbol':'1.2-2' }} <span class="size-smaller">HT</span></div>
+          <div class="cotation-button"></div>
+        </label>
+      </ng-container>
+    </div>
+  }
+</ng-template>

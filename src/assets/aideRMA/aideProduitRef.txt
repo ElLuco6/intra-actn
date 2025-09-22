@@ -1,0 +1,1 @@
+Référence produit ACTN, disponible sur le bon de commande, bon de livraison et facture. C'est l'identifiant unique du type de produit.

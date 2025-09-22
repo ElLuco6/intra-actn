@@ -1,0 +1,13 @@
+<mat-card class="popup">
+  <mat-card-title class="titre"> Modification du devis n° {{ data.numDevis }}</mat-card-title>
+  <p>Vous êtes sur le point de modifier le devis n°{{ data.numDevis }}</p>
+  <p>Vous pouvez aussi créer un nouveau devis</p>
+  <mat-card-actions class="boutons">
+    <button mat-button class="annuler" (click)="dialogRef.close('annuler')">Annuler</button>
+    <div class="boutons-valider">
+      <button mat-button class="valider" (click)="dialogRef.close('nouveau')">Créer un nouveau devis</button>
+      <button mat-button class="valider" (click)="dialogRef.close('modifier')">Modifier le devis</button>
+    </div>
+  </mat-card-actions>
+
+</mat-card>

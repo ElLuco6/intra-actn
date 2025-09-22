@@ -1,0 +1,58 @@
+<!-- {{ addrData | json }} -->
+
+<button class="raised-button" [routerLink]="['/espace-client/adresses/ajout-adresse']">Ajouter une Adresse</button>
+
+<h3>Adresses de Livraison :</h3>
+<div class="adresseFlex">
+  @if (addrData | async; as addrData) {
+    @for (addr of addrData; track addr) {
+      <div class="adresseList">
+        <div class="adresseBox">
+          <span><strong>{{ addr.nom }}</strong></span>
+          <br>
+          <span>{{ addr.adresse1 }}</span><br>
+          @if (addr.adresse2) {
+            <span>{{ addr.adresse2 }}<br></span>
+          }
+          <span>{{ addr.codepostal }} </span>
+          <span>{{ addr.ville }}</span>
+          <br>
+          <span>{{ addr.phone }}</span>
+          <br>
+          <span>{{ (addr.paysiso ? addr.paysiso : "??") }}</span>
+          <span>{{ (addr.pays ? addr.pays : "???") }}</span>
+          <br>
+        </div>
+        <div class="icon-action">
+          <i (click)="deleteAddr(addr)" class="adresseIcon raised-button icon-delete"
+             title="Supprimer cette adresse">
+          </i>
+          @if (addr.defaut) {
+            <i class="adresseIcon icon-checkbox-checked raised-button" title="Adresse par defaut"
+               (click)="removeDefaultAddr(addr)"></i>
+          }
+          @if (!addr.defaut) {
+            <i (click)="defaultAddr(addr)"
+               class="adresseIcon icon-checkbox-unchecked raised-button"
+               title="Faire de cette adresse mon adresse par defaut"></i>
+          }
+          <i [routerLink]="['/espace-client/adresses/modifier-adresse/'+ addr.codeadresse]"
+             class="adresseIcon icon-pen raised-button" title="Modifier cette adresse"></i>
+          <br>
+        </div>
+      </div>
+    }
+  }
+
+  <ng-template #defaultDialog let-data="someData">
+    Voulez vous faire de l'adresse {{ data.nom }} votre adresse par défaut ?
+  </ng-template>
+
+  <ng-template #removeDefaultDialog let-data="someData">
+    L'adresse {{ data.nom }} ne sera plus celle par défaut. Confirmer ?
+  </ng-template>
+
+  <ng-template #deleteDialog let-data="someData">
+    Confirmer la suppression de l'adresse {{ data.nom }} ?
+  </ng-template>
+</div>

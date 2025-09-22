@@ -1,0 +1,85 @@
+<div style="margin: 0 2vw">
+  <ng-template #buttons>
+    @if (produits.length > nbItems || news.length > nbItems || (type === 'galerie' && nbProduits > nbItems)) {
+      <div class="buttons"  [ngClass]="{comparateur: type === 'comparateur', galerie: type === 'galerie'}">
+        <button id="previous" class="button previous left-arrow" [ngClass]="{actu: type === 'actu', comparateur: type === 'comparateur', galerie: type === 'galerie'}" (click)="onPrevious()"
+        [disabled]="scrollState === SCROLL.LEFT"></button>
+        <button id="next" class="button next" (click)="onNext()" [ngClass]="{actu: type === 'actu', comparateur: type === 'comparateur', galerie: type === 'galerie'}" [disabled]="scrollState === SCROLL.RIGHT"></button>
+      </div>
+    }
+  </ng-template>
+
+  <ng-template [ngTemplateOutlet]="buttons"></ng-template>
+  @if (type === 'comparateur') {
+    <ng-template [ngTemplateOutlet]="buttons"></ng-template>
+  }
+  <div id="slider" #slider>
+    <div id="slider-container" [ngClass]="{comparateur: type === 'comparateur'}" #sliderContainer>
+      @switch (type) {
+        @case ('produit') {
+          @for (produit of produits$ | async; track produit) {
+            <div #item
+              class="item" style="min-width: 0">
+              @if (simplePreviewProduct) {
+                <app-produit-preview style="width: 100%" [produit]="produit" [format]="'grid'" [simple]="true"></app-produit-preview>
+              } @else {
+                <app-produit-preview style="width: 100%" [produit]="produit" [format]="'grid'" [simple]="false"></app-produit-preview>
+              }
+            </div>
+          }
+        }
+        @case ('actu') {
+          @for (actu of news; track actu) {
+            <div #item class="item actu raised-1" style="min-width: 0">
+              <a style="width: 100%" [href]="actu.link" target="_blank"><img [src]="actu.description" [alt]="actu.title" /></a>
+              <div class="description">
+                <h3><a [href]="actu.link" target="_blank">{{ actu.title }}</a></h3>
+                <p class="size-smaller date">{{ actu.date }}</p>
+              </div>
+              <div class="bottom">
+                <a class="raised-button ghost-button" [href]="actu.link" target="_blank" rel="noopener">Lire la suite</a>
+              </div>
+            </div>
+          }
+        }
+        @case ('comparateur') {
+          @for (produitCompare of produits; track produitCompare) {
+            <div #item class="item comparateur">
+              <app-produit-preview
+                [produit]="produitCompare"
+                [displayRemoveProductFromComparateurButton]="true"
+                format="grid"
+              ></app-produit-preview>
+              @for (critere of produitCompare.crits; track critere; let i = $index) {
+                @if (critere.name != '') {
+                  <div class="compare-critere">
+                    <!-- <hr class="critere-hr"> -->
+                    <span class="critereName">&nbsp;&nbsp;&nbsp;&nbsp;{{ critere.name }}</span>
+                    @if (critere.value != '') {
+                      <span class="critereValue">{{ critere.value }}&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    } @else {
+                      <span class="critereValue">-&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    }
+                  </div>
+                }
+              }
+            </div>
+          }
+        }
+        @case ('galerie') {
+          @if (nbProduits > 0) {
+            <div #item class="item galerie" (click)="onSelect(0)" (tap)="onSelect(0)">
+              <img [ngClass]="{'selected': selected === 0}" [src]="environment.vignette + produit + '.jpg'" (click)="onSelect(0)" (tap)="onSelect(0)" />
+            </div>
+            @for (photo of arrGalerie; track photo; let i = $index) {
+              <div #item class="item galerie" (click)="onSelect(i + 1)" (tap)="onSelect(i + 1)">
+                <img default="assets/img/favicon.png" [ngClass]="{'selected': selected === (+i + 1)}" [src]="environment.vignette + produit + '_' + (+i + 1) + '.jpg'"/>
+              </div>
+            }
+          }
+        }
+      }
+    </div>
+  </div>
+
+</div>

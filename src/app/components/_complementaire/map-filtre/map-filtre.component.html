@@ -1,0 +1,189 @@
+<mat-card appearance="outlined" id="filtre_compoenent">
+
+  <mat-panel-title class="menu__item text-button font active"> Filtres <mat-icon>close</mat-icon>
+</mat-panel-title>
+
+<div class="map_header">
+
+  <div class="filtreHeader">
+
+    <div [formGroup]="depForm">
+
+      <mat-form-field id="selectDep">
+        <mat-label>Selectionner un département</mat-label>
+
+        <mat-select formControlName="departement" [(value)]="selectedDep" multiple>
+          @for (departement of dep; track departement) {
+            <mat-option [value]="departement.departement">
+            {{departement.departement.arguliblibelle}}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      @if (this.depForm.value.departement) {
+        <button  matSuffix mat-icon-button aria-label="Clear">
+          <mat-icon (click)="resetOneFilters('departement',this.depForm)">close</mat-icon>
+        </button>
+      }
+
+    </div>
+
+    <!--   (selectionChange)="test(this.dep,selectedRegion)"  [(value)]="selectedRegion"  -->
+
+    <div [formGroup]="regionsForm">
+      <mat-form-field id="selectRegion">
+        <mat-label>Selectionner une région</mat-label>
+        <mat-select formControlName="region"
+          [(ngModel)]="selectedRegion" (ngModelChange)="onSearch('region', 'array', 'includes', $event, 'selectedRegion')" multiple>
+          @for (region of regionArr; track region) {
+            <mat-option [value]="region">{{region.SecteurLibelle}}</mat-option>
+          }
+          <!-- [regionArr]="regionArr" -->
+        </mat-select>
+      </mat-form-field>
+      @if (this.regionsForm.value.region) {
+        <button  matSuffix mat-icon-button aria-label="Clear">
+          <mat-icon (click)="resetOneFilters('region',this.regionsForm)">close</mat-icon>
+        </button>
+      }
+
+      <div class="resultat">
+      </div>
+
+
+    </div>
+    <div [formGroup]="regle" class="regle_container">
+      <mat-label>Notation client {{value}}</mat-label>
+      <mat-select formControlName="note" multiple [(value)]="selectedNote" disableRipple multiple
+        >
+        @for (note of notes; track note) {
+          <mat-option [value]="note">
+            {{note}}
+          </mat-option>
+        }
+      </mat-select>
+      @if (this.regle.value.note) {
+        <button  matSuffix mat-icon-button aria-label="Clear" (click)="resetOneFilters('note',this.regle)">
+          <mat-icon >close</mat-icon>
+        </button>
+      }
+
+      <!-- <mat-slider thumbLabel class="regle" min="0" max="5" formControlName="start" [displayWith]="formatLabel"   >
+      <input  type="range" min="0" max="5" value="3"  matSliderThumb >
+
+    </mat-slider> -->
+
+  </div>
+
+
+
+  <!-- <mat-spinner></mat-spinner> -->
+
+</div>
+<!-- <div class="resultat">
+<p>{{numResult}} Résultats</p>
+<p class="gras">Clients zone survolée : <span class="numberResult"></span></p>
+</div> -->
+
+<div>
+</div>
+</div>
+
+@if (filtres$ | async; as filtres) {
+  <!--  -->
+  <!--  [@expandVertical]="showFiltres ? 'open' : 'closed'" -->
+  @if (filtres.length) {
+    <form id="filtres" [formGroup]="filtresForm" [ngClass]="{ show: showFiltres }">
+      <ng-container formArrayName="filtresSelectors">
+        <!-- FILTRES -->
+        @for (filtre of filtres; track filtre; let i = $index) {
+          @if (filtre.type !== 'hidden' && filtres[i].label !== 'Note' && filtres[i].label !=='DEPARTEMENT' && filtres[i].label !=='REGION'  ) {
+            <div class="filtre filtre-{{ filtres[i].label }}"
+              >
+              @if (filtre.forme !=='range') {
+                <mat-form-field class="select-filter">
+                  <!--  -->
+                  <mat-select placeholder="{{ filtres[i].label }}" [formControlName]="i" multiple disableOptionCentering
+                    panelClass="select-panel">
+                    @for (option of filtres[i].options; track option; let j = $index) {
+                      <mat-option
+                        (onSelectionChange)="pushFiltre(option,filtres[i].label)" [value]="option">{{ option}}
+                        <!--  " [disabled]="nbrResultatsParFiltre[i][j] === 0"  ({{ nbrResultatsParFiltre[i][j] }}) -->
+                      </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              } @else {
+                <mat-form-field class="select-filter">
+                  <mat-label>{{filtres[i].label}}</mat-label>
+                  <!-- <mat-slider
+                  [formControlName]="i" thumbLabel class="regle" min="0" max="option.last" formControlName="start" [displayWith]="formatLabel"   >
+                  <input  type="range" min max value="3"  matSliderThumb >
+                </mat-slider> -->
+                <mat-select placeholder="{{ filtres[i].label }}" [formControlName]="i" multiple disableOptionCentering
+                  panelClass="select-panel">
+                  @for (option of filtres[i].options; track option; let j = $index) {
+                    <mat-option [value]="option">{{ option | number}}
+                      <!--  " [disabled]="nbrResultatsParFiltre[i][j] === 0"  ({{ nbrResultatsParFiltre[i][j] }}) -->
+                    </mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <mat-icon>close</mat-icon>
+            }
+            <mat-icon>close</mat-icon>
+            <ng-template #regle>
+              <mat-form-field class="select-filter">
+                <mat-label>{{filtres[i].label}}</mat-label>
+                <!-- <mat-slider
+                [formControlName]="i" thumbLabel class="regle" min="0" max="option.last" formControlName="start" [displayWith]="formatLabel"   >
+                <input  type="range" min max value="3"  matSliderThumb >
+              </mat-slider> -->
+              <mat-select placeholder="{{ filtres[i].label }}" [formControlName]="i" multiple disableOptionCentering
+                panelClass="select-panel">
+                @for (option of filtres[i].options; track option; let j = $index) {
+                  <mat-option
+                    (click)="logos(option,filtres[i].label)" [value]="option">{{ option | number}}
+                    <!--  " [disabled]="nbrResultatsParFiltre[i][j] === 0"  ({{ nbrResultatsParFiltre[i][j] }}) -->
+                  </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-icon>close</mat-icon>
+          </ng-template>
+          <!-- <app-range-slider class="select-filter slider" *ngIf="filtre.label === 'Nbre d utilisateurs'" [min]="0" [max]="9999" [title]="filtre.label"></app-range-slider> -->
+          <!--    <i
+          title="vider le filtre"
+          class="reset-filter"
+          (click)="resetFilters(i)"
+          *ngIf="filtresSelectors.value[i].length">
+          <mat-icon>clear</mat-icon>
+        </i> -->
+      </div>
+    }
+  }
+  <br style="clear: both;">
+  <!-- OPTIONS DE TRI -->
+  <!-- <div>
+</div> -->
+</ng-container>
+</form>
+}
+}
+
+</mat-card>
+<div>
+  <form [formGroup]="reactiveForm">
+    <mat-form-field class="example-form-field" id="searchBar">
+      <mat-label>
+        <mat-icon class="toto">search</mat-icon> Recherche par adresse
+      </mat-label>
+      <input formControlName="recherche" name="recherche" matInput type="text" [value]="value"><!-- [(value)] -->
+      @if (value) {
+        <button matSuffix mat-icon-button aria-label="Clear" (click)="value=''">
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </mat-form-field>
+
+  </form>
+</div>

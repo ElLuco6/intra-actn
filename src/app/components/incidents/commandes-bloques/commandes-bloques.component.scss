@@ -1,0 +1,76 @@
+p {
+  margin: 0;
+}
+
+table {
+  width: 100%;
+}
+
+tr.example-detail-row {
+  height: 0!important;
+}
+
+tr.example-element-row:not(.example-expanded-row):hover {
+  background: whitesmoke;
+}
+
+tr.example-element-row:not(.example-expanded-row):active {
+  background: #efefef;
+}
+
+.example-element-row td {
+  border-bottom-width: 0;
+}
+
+.example-element-detail {
+  overflow: hidden;
+  display: flex;
+}
+
+.example-element-diagram {
+  min-width: 80px;
+  border: 2px solid black;
+  padding: 8px;
+  font-weight: lighter;
+  margin: 8px 0;
+  height: 104px;
+}
+
+.example-element-symbol {
+  font-weight: bold;
+  font-size: 40px;
+  line-height: normal;
+}
+
+.example-element-description-attribution {
+  opacity: 0.5;
+}
+
+.je-suis-bg {
+  align-items: center;
+  display: grid;
+  grid-template-columns: 24.8em 1fr 1fr 1fr 1fr;
+  //border-top: 1px lightgrey solid;
+  padding-top: 1em;
+}
+
+.client-commande {
+  display: grid;
+  grid-template-columns: 1fr;
+  padding: 0 2.6em 1em 2.6em;
+}
+
+.voir-cde:hover {
+  background: var(--color-secondary);
+  color: white;
+}
+
+.filtreee {
+  display: flex;
+  flex-direction: row;
+  gap: 20px
+}
+
+.pointer {
+  cursor: pointer;
+}

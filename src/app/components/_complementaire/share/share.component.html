@@ -1,0 +1,46 @@
+<div class="container">
+  <app-tooltip [text]="title" [showDelay]="0" [hideDelay]="0" type="share" (click)="showPopup = true" (tap)="showPopup = true"></app-tooltip>
+</div>
+ 
+<div class="popup" [ngClass]="{active: showPopup}">
+  <div class="popup-background" (click)="showPopup = false" (tap)="showPopup = false"></div>
+  <div class="popup-window size-default raised-3">
+    <h3>{{ title }}</h3>
+   
+    <div class="content">
+      @if(reseaux !== true){ 
+      <a target="_blank" rel="noopener" [href]="'https://www.facebook.com/sharer/sharer.php?u=' + encodedTextToClipboard">
+        <fa-icon [icon]="faFacebookSquare" (click)="showPopup = true" (tap)="showPopup = true"></fa-icon>
+        <p class="weight-default">Facebook</p>
+      </a>
+      <a  target="_blank" rel="noopener" [href]="'https://twitter.com/intent/tweet?&url=' + twitterURI(encodedTextToClipboard)">
+        <fa-icon [icon]="faTwitterSquare" (click)="showPopup = true" (tap)="showPopup = true"></fa-icon>
+        <p class="weight-default">Twitter</p>
+      </a>
+      <a [href]="'mailto:?body=' + encodedTextToClipboard  ">
+        <fa-icon [icon]="faEnvelope" (click)="showPopup = true" (tap)="showPopup = true"></fa-icon>
+        <p class="weight-default">Email</p>
+      </a>
+    }<!-- @else{
+      <p></p>
+      {{refClient}} {{nFacture}}
+      <div (click)="openMailbox()"> 
+        <fa-icon [icon]="faEnvelope"  (tap)="showPopup = true"></fa-icon>
+        <p class="weight-default">Email</p>
+      </div>
+    } -->
+      
+    </div>
+    <mat-form-field>
+      <mat-label>Partager le lien</mat-label>
+      <input matInput [value]="encodedTextToClipboard"/>
+      <button mat-button matSuffix aria-label="Copier dans le presse-papier" (click)="copyToClipboard()" class="clipboard size-bigger">
+        <fa-icon [icon]="faClipboard"></fa-icon>
+      </button>
+    </mat-form-field>
+    <div class="popup-buttons">
+      <button class="raised-button button--color-secondary m10" (click)="showPopup = false" 
+              (tap)="showPopup = false">Fermer</button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,37 @@
+@if(people) {
+  <h1 mat-dialog-title>Compte rendu de visite du contact : {{ people.nom }}</h1>
+} @else {
+  <h1 mat-dialog-title>Compte rendu de visite groupé</h1>
+}
+<mat-dialog-content>
+  <form [formGroup]="compteRenduForm">
+    <div class="champ-header">
+      <mat-form-field>
+        <mat-label>Date</mat-label>
+        <input matInput [max]="this.maxDate" [matDatepicker]="dp" [formControlName]="'date'">
+        <mat-hint>JJ/MM/AAAA</mat-hint>
+        <mat-datepicker-toggle matIconSuffix [for]="dp"></mat-datepicker-toggle>
+        <mat-datepicker #dp [disabled]="false"></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field>
+        <mat-label>Réponse</mat-label>
+        <mat-select [formControlName]="'action'">
+          @for(action of actions; track action.argument) {
+          <mat-option [value]="action.argument">{{ action.libelle }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="comm">
+      <mat-form-field style="width: 100%">
+        <mat-label>Commentaire</mat-label>
+        <textarea [formControlName]="'commentaire'" matInput></textarea>
+        {{ compteRenduForm.get('commentaire').value.length + '/2000' }}
+      </mat-form-field>
+    </div>
+    <div class="btn">
+      <button mat-raised-button class="annuler" (click)="onNoClick()">Annuler</button>
+      <button mat-raised-button (click)="onSubmit()">Enregistrer</button>
+    </div>
+  </form>
+</mat-dialog-content>

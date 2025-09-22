@@ -1,0 +1,45 @@
+@if (!phoneFormat) {
+  <div style="display: flex; flex-direction: row">
+    <div class="bar-client">
+      @if (logClient.blocage) {
+        <div style="padding-top: 4px;">
+          <app-tooltip [type]="'alertClient'" [text]="'Le client est bloqué : ' + logClient.blocage"></app-tooltip>
+        </div>
+      }
+      <div class="div-click" [routerLink]="['/client-detail/' + logClient.currentClient.id]" queryparamshandling='merge'>
+        <div>{{ logClient.currentClient.id }}</div>
+        <div>{{ logClient.currentClient.name }}</div>
+      </div>
+      <div style="border-right: 1px solid white; height: 70%;"></div>
+      <div>{{ logClient.currentClient.TIERSCPO }}</div>
+      <div>{{ logClient.currentClient.TIERSVIL }}</div>
+      <div>{{ logClient.currentClient.TIERSAD1 }}</div>
+      <div style="border-right: 1px solid white; height: 70%;"></div>
+      <div><a href="tel:{{ logClient.currentClient.TIERSTEL }}">{{ logClient.currentClient.TIERSTEL }}</a></div>
+      <div><a href="mailto:{{ logClient.currentClient.TIERSMEL }}">{{ logClient.currentClient.TIERSMEL }}</a></div>
+    </div>
+    <div class="deco-client" (click)="openConfirmDeco = true">
+      <div>Déconnexion</div>
+      <mat-icon>logout</mat-icon>
+    </div>
+  </div>
+} @else {
+  <div class="bar-client">
+    <div class="div-click" [routerLink]="['/client-detail/' + logClient.currentClient.id]">
+      <div>{{ logClient.currentClient.id }}</div>
+      <div>{{ logClient.currentClient.name }}</div>
+    </div>
+  </div>
+}
+
+
+<div class="pupup" [ngClass]="{active: openConfirmDeco}">
+  <div class="popup-background" (click)="openConfirmDeco = false" (tap)="openConfirmDeco = false"></div>
+  <div class="popup-window" style="width: 40vw;">
+    <h1 style="text-align: center">Voulez vous vraiment vous déconnecter du client ?</h1>
+    <div class="button-deco">
+      <button mat-raised-button style="background-color: var(--color-secondary); color: white" (click)="openConfirmDeco = false">Annuler</button>
+      <button mat-raised-button style="background-color: var(--color-warn); color: white" (click)="logOut(); openConfirmDeco = false">Déconnecter</button>
+    </div>
+  </div>
+</div>

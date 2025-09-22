@@ -1,0 +1,118 @@
+.bandeau {
+  $padding: 10px;
+  position: sticky !important;
+  width: calc(100% + 2 * #{$padding});
+  padding: $padding;
+  margin-left: -#{$padding};
+  background-color: white;
+  z-index: 19;
+
+  @media screen and (max-width: $sub-nav-small-breakpoint) {
+    align-items: center;
+    top: 85px;
+  }
+
+  ul {
+    background-color: #fafafa;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 15px 15px;
+
+    @media screen and (max-width: 720px) {
+      align-items: stretch;
+    }
+
+    li {
+      position: relative;
+      font-weight: bold;
+      display: inline-block;
+
+      &.phone {
+        @media screen and (max-width: 425px) {
+          padding-left: 0px;
+        }
+      }
+
+      &.sort {
+        cursor: pointer;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: center;
+
+        @media screen and (max-width: 425px) {
+          flex-direction: column;
+          align-items: stretch;
+          justify-content: center;
+        }
+
+        app-tab-sort {
+          width: fit-content !important;
+          margin-left: 8px;
+        }
+      }
+      &.del-for-phone {
+        @media screen and (max-width: 600px) {
+          display: none;
+        }
+      }
+    }
+  }
+  &.del-for-phone {
+    @media screen and (max-width: 768px) {
+      display: none;
+    }
+  }
+}
+
+::ng-deep #tabs .mat-mdc-tab-body-wrapper .mat-tab-body.mat-tab-body-active {
+  overflow: visible !important;
+}
+
+::ng-deep #tabs .mat-tab-body-wrapper {
+  overflow: visible !important;
+}
+
+::ng-deep #tabs .mat-tab-body-wrapper .mat-tab-body-content {
+  overflow: visible !important;
+}
+
+::ng-deep .sticky-tab {
+  .mat-mdc-tab-header {
+    top: 58px;
+    z-index: 19;
+    position: sticky;
+
+    @media screen and (max-width: 767.9px) {
+      top: 120px;
+    }
+  }
+  .mat-mdc-tab-body-wrapper .mat-mdc-tab-body.mat-tab-body-active {
+    overflow: visible !important;
+  }
+  .mat-tab-body-wrapper {
+    overflow: visible !important;
+  }
+  .mat-tab-body-wrapper .mat-tab-body-content {
+    overflow: visible !important;
+  }
+
+  .bandeau {
+    top: 105px;
+
+    @media screen and (max-width: 767.9px) {
+      top: 168px;
+    }
+  }
+}
+
+.top-zbi {
+  top: 78px;
+}
+
+.top-pas-zbi {
+  top:50px
+}

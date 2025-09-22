@@ -1,0 +1,104 @@
+<!--<div class="log">
+<div style="width: 95%">
+  <div>
+    <h1>Connecter un client</h1>
+  </div>
+  <form class="form" [formGroup]="loginClientForm" (ngSubmit)="loginClient()">
+    <mat-form-field appearance="standard">
+      <mat-label style="padding-top: 13px">Identifiant</mat-label>
+      <input matInput type="text" formControlName="login" class="form-content"
+        (focusin)="inputFocused()"
+        (focusout)="inputFocused()"
+        [matAutocomplete]="autoGroup"
+        (click)="autocomplete.openPanel()">
+        <mat-error *ngIf="loginClientForm.get('login').invalid">Champ obligatoire</mat-error>
+      </mat-form-field>
+      <div *ngIf="connectionFailure"><span>Échec de la connexion, l'identifiant et/ou le mot de passe ne correspondent pas.</span></div>
+      <button mat-raised-button class="btn-conn" [disabled]="loginClientForm.invalid">Se connecter</button>
+      <mat-autocomplete #autoGroup="matAutocomplete" (optionSelected)="loginClient()">
+        <ng-container *ngIf="autoCompleteOptions$ | async as options">
+          <ng-container *ngFor="let client of options.clients">
+            <mat-option [value]="client.code">
+              {{ start(client.code) }}<span *ngIf="client.code.includes(searching)" style="font-weight: bold;">{{ searching }}</span>{{ end(client.code) }}
+              <br>
+                {{ start(client.designation) }}<span *ngIf="client.designation.includes(searching)" style="font-weight: bold;">{{ searching }}</span>{{ end(client.designation) }}
+              </mat-option>
+            </ng-container>
+          </ng-container>
+        </mat-autocomplete>
+      </form>
+    </div>
+  </div>-->
+
+  <!--PREMIER LOG-->
+
+  <!--<div class="log">
+  <div style="width: 95%">
+    <div>
+      <h1>Connecter un client</h1>
+    </div>
+    <form class="form" [formGroup]="loginClientForm" (ngSubmit)="loginClient()">
+      <mat-form-field appearance="standard">
+        <mat-label style="padding-top: 13px">Identifiant</mat-label>
+        <input matInput type="text" formControlName="login" class="form-content" id="user-email"
+          (focusin)="inputFocused()"
+          (focusout)="inputFocused()">
+          <mat-error *ngIf="loginClientForm.get('login').invalid">Champ obligatoire</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="standard">
+          <mat-label style="padding-top: 13px">Mot de passe</mat-label>
+          <input matInput type="password" formControlName="password" class="form-content" id="user-password">
+          <mat-error *ngIf="loginClientForm.get('password').invalid">Champ obligatoire</mat-error>
+        </mat-form-field>
+        <div *ngIf="connectionFailure"><span>Échec de la connexion, l'identifiant et/ou le mot de passe ne correspondent pas.</span></div>
+        <button mat-raised-button class="btn-conn" [disabled]="loginClientForm.invalid">Se connecter</button>
+      </form>
+    </div>
+  </div>-->
+
+
+
+  <div class="log">
+    <div style="width: 95%">
+      <div>
+        <h1>Connecter un client</h1>
+      </div>
+      <form class="form" (ngSubmit)="loginClient()" [ngClass]="{ show: openSearch }">
+        <mat-form-field>
+          <mat-label style="padding-top: 13px">Identifiant</mat-label>
+          <input matInput type="text" [formControl]="logInput" class="form-content"
+            placeholder="Identifiant"
+            (focusin)="inputFocused()"
+            (focusout)="inputFocused()"
+            [matAutocomplete]="autoGroup"
+            (click)="autocomplete.openPanel()"
+            >
+            @if (logInput.invalid) {
+              <mat-error>Champ obligatoire</mat-error>
+            }
+          </mat-form-field>
+          @if (connectionFailure) {
+            <div><span>Échec de la connexion, l'identifiant et/ou le mot de passe ne correspondent pas.</span></div>
+          }
+          <button mat-raised-button class="btn-conn" [disabled]="logInput.invalid">Se connecter</button>
+          <mat-autocomplete #autoGroup="matAutocomplete" (optionSelected)="loginClient()" class="single-autocomplete">
+            @if (autoCompleteOptions$ | async; as options) {
+              @for (client of options.clients; track client) {
+                <mat-option [value]="client.code"><!-- .slice(7) -->
+                  CLIENT {{ start(client.code) }}@if (client.code.includes(searching)) {
+                  <span style="font-weight: bold;">{{ searching }}</span>
+                  }{{ end(client.code) }}
+                  <br>
+                    {{ start(client.designation) }}@if (client.designation.includes(searching)) {
+                    <span style="font-weight: bold;">{{ searching }}</span>
+                    }{{ end(client.designation) }}
+                  </mat-option>
+                }
+              }
+            </mat-autocomplete>
+          </form>
+        </div>
+      </div>
+
+
+

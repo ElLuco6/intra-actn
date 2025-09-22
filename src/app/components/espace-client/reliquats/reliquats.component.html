@@ -1,0 +1,154 @@
+<mat-card appearance="outlined" style="margin-bottom: 1em">
+  <mat-card-header><h1>Filtres</h1></mat-card-header>
+  <mat-card-content>
+    <form [formGroup]="filtreForm">
+      <div class="filtre-reliquat">
+        <mat-form-field>
+          <mat-label>N° Commande</mat-label>
+          <input formControlName="commande" matInput [ngModel]="saf.getFiltre('reliquat', 'numcommande', 'includes')"
+                 (keydown)="onSearch('numcommande', 'string', 'includes', $event)"/>
+          @if (filtreForm.value.commande) {
+            <button matSuffix mat-icon-button aria-label="Clear" (click)="resetOneFilters('commande')">
+              <mat-icon>close</mat-icon>
+            </button>
+          }
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Réf. Commande</mat-label>
+          <input formControlName="refCommande" matInput
+                 [ngModel]="saf.getFiltre('reliquat', 'referencecommande', 'includes')"
+                 (keydown)="onSearch('referencecommande', 'string', 'includes', $event)"/>
+          @if (filtreForm.value.refCommande) {
+            <button matSuffix mat-icon-button aria-label="Clear" (click)="resetOneFilters('refCommande')">
+              <mat-icon>close</mat-icon>
+            </button>
+          }
+        </mat-form-field>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>
+
+<span class="labels display-flex heavy-font">
+  <label class="grow">Réf. commande</label>
+  <label class="grow">N° de commande</label>
+  <label class="grow">Date</label>
+</span>
+<div class="separator"></div>
+
+<!-- NGFOR - RELIQUATS -->
+@if (tab) {
+  <div>
+    @if (tab.length == 0) {
+      <div class="no-result">Vous n'avez pas de reliquat</div>
+    }
+  </div>
+}
+@if (reliquat$ | async; as reliquats) {
+  @for (reliquat of tab; track reliquat; let i = $index) {
+    <div>
+      <div class="over floatClear">
+        <!-- ENTETE RELIQUAT -->
+        <div (click)="unrollDetails(i);" class="entete">
+          @if (!display[i]) {
+            <i class="unroll-button icon-plus raised-button"></i>
+          }
+          @if (display[i]) {
+            <i class="unroll-button icon-minus raised-button"></i>
+          }
+          <div class="reliquat display-flex">
+            <div class="refClient grow">{{ reliquat[0].referencecommande }}</div>
+            @if (!reliquat[0].pdfar) {
+              <div class="refACTN grow">{{ reliquat[0].numcommande }}</div>
+            } @else {
+              <a class="refACTN grow arpdflink"
+                 target="_blank"
+                 [href]="environment.apiUrlActn + '/document/generate_intra.php?document=AR/' + numClient + '/' + reliquat[0].numcommande">
+                {{ reliquat[0].numcommande }}
+                <fa-icon [icon]="faFilePdf"></fa-icon>
+              </a>
+            }
+            <label hidden>Date de Commande</label>
+            <div class="date grow">{{ reliquat[0].datecommande | date: 'dd/MM/yyyy' }}</div>
+          </div>
+        </div>
+        <!-- RELIQUAT DETAILS -->
+        @if (display[i]) {
+          <div class="reliquatDetails">
+            <hr>
+            <!-- ADRESSE -->
+            <div class="display-flex">
+              <div class="block">
+                <span class="heavy-font">Adresse de Livraison</span>
+                <div class="adresses">
+                  <span class="heavy-font">{{ reliquat[0].wnom }}</span>
+                  <br>
+                  <span>{{ reliquat[0].wadresse1 }}&nbsp;&nbsp;</span>
+                  <br>
+                  @if (reliquat[0].wadresse2) {
+                    <span>{{ reliquat[0].wadresse2 }}&nbsp;&nbsp;<br></span>
+                  }
+                  <span>{{ reliquat[0].wcodepostal }}&nbsp;&nbsp;</span>
+                  <span>{{ reliquat[0].wville }}</span>
+                  <br>
+                  <span>{{ (reliquat[0].pays ? reliquat[0].pays : "France") }}</span>
+                  <br>
+                </div>
+              </div>
+              <div class="block">
+                <span class="heavy-font">{{ reliquat[0].message }}</span>
+              </div>
+            </div>
+            <div class="block">
+              <span class="heavy-font">{{ reliquat[0].message }}</span>
+            </div>
+          </div>
+        }
+        <hr>
+        <!-- Produits -->
+        <span class="labels_produits detail-grid heavy-font1">
+                      <label>Marque</label>
+                      <label>Produit</label>
+                      <label class="designation">Désignation</label>
+                      <label>Qté Commandée</label>
+                      <label>Qté à Livrer</label>
+                      <label>Expédition Estimée</label>
+                    </span>
+        <!-- NGFOR - PRODUITS -->
+        @for (rel of reliquat; track rel) {
+          <div class="produits">
+            <div class="detail-grid ">
+              <label class="marque">{{ rel.marque }}</label>
+              <label><a (click)="linkToProduct(rel.prod)">{{ rel.prod }}</a></label>
+              <label class="designation-produit">{{ rel.designation }}</label>
+              <label>{{ rel.quantitecommande }}</label>
+              <label>{{ rel.quantitealivrer }}</label>
+              @if ((rel.datelivraisonprevu == '')) {
+                <label>N.C.</label>
+              } @else {
+                @if (rel.datelivraisonprevu != 'n.c.') {
+                  <label>{{ rel.datelivraisonprevu | date: 'dd/MM/yyyy' }}</label>
+                }
+              }
+              <ng-template #prod>
+                @if (rel.datelivraisonprevu != 'n.c.') {
+                  <label>{{ rel.datelivraisonprevu | date: 'dd/MM/yyyy' }}</label>
+                }
+              </ng-template>
+            </div>
+          </div>
+        }
+      </div>
+      <!-- DEMANDE DE DELAIS -->
+      <!-- <fa-icon class="prefix icon size-big" [icon]="['fas', 'plus-circle']"></fa-icon> -->
+      <!--<div class="demandeDeDelaisButton" [ngClass]="{ demandeDeDelaisButtonDeactivated: sentDelay.includes(i) }" (click)="envoiDemandeDeDelai(reliquat.numcommande, reliquat.referencecommande, reliquat.datecommande, i)">
+      <span class="texte" style="font-size: 1rem;"><fa-icon class="envelope" [icon]="['fas', 'envelope']"></fa-icon>&nbsp;&nbsp;Demande de délai</span>
+    </div>
+    <div *ngIf="delayInError == i" class="demandeDeDelaisFailure">Demande de delai échouée</div>
+    <div *ngIf="sentDelay.includes(i)" class="demandeDeDelaisSuccess">Demande de delai envoyée</div>
+    -->
+    </div>
+  }
+}
+
+

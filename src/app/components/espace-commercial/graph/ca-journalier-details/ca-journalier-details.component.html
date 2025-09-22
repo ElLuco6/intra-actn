@@ -1,0 +1,54 @@
+<app-title-w-line [title]="'Détails chiffres d\'affaires journalier ' + this.region"></app-title-w-line>
+
+@if(loading === false){
+  <div style="display: flex;justify-content: center;max-width: 900px;">
+
+  
+<mat-table [dataSource]="caArray" class="table">
+
+ 
+
+  <ng-container matColumnDef="Client">
+    <mat-header-cell *matHeaderCellDef class="text_end alignHeader" style="text-align: right;">Client</mat-header-cell>
+    <mat-cell *matCellDef="let item" (click)="redirect(item.nclient)" class="text_end"> {{item.nclient}} {{item.nomclient}} </mat-cell>
+  </ng-container>
+
+  
+  <ng-container matColumnDef="totalcommande">
+    <mat-header-cell *matHeaderCellDef class="text_end alignHeader blue" >Commandes livrées et Fac directs </mat-header-cell> 
+    <mat-cell *matCellDef="let item" class="text_end blue" > {{item.totalcommande}} </mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="enoprepa">
+    <mat-header-cell *matHeaderCellDef class="text_end alignHeader darkBlue">Commandes en préparation</mat-header-cell>
+    <mat-cell *matCellDef="let item" class="text_end darkBlue"> {{item.enoprepa}} </mat-cell>
+  </ng-container>
+  
+  <ng-container matColumnDef="Totalenccoursmoisanterieur">
+    <mat-header-cell *matHeaderCellDef class="text_end alignHeader green">En cours antérieur au mois</mat-header-cell>
+    <mat-cell *matCellDef="let item" class="text_end green"> {{item.Totalenccoursmoisanterieur}} </mat-cell>
+  </ng-container>
+
+  
+  
+  
+  <!-- Region Columns 
+  <ng-container *ngFor="let key of regionKeys; let i = index" [matColumnDef]="'region' + key">
+    <mat-header-cell *matHeaderCellDef> </mat-header-cell>
+    <mat-cell  class="text_end" *matCellDef="let item" [ngClass]="{'boldText': toggleBoldClass(i)}">
+         <ng-container class="text_end" *ngIf="item.region[key] && item.region[key] !== '0'" >
+        {{item.region[key]}} 
+      </ng-container> 
+    </mat-cell>
+  </ng-container>-->
+
+  <mat-header-row *matHeaderRowDef="displayedColumns" class="text_end"></mat-header-row> 
+  <mat-row  *matRowDef="let row; columns: displayedColumns;" class="my-row"></mat-row>
+</mat-table>
+</div>
+}@else{
+   
+        <h2 style="padding: 15px;">Chargement  <span class="dots"></span></h2> 
+      
+      
+}

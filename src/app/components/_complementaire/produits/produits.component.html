@@ -1,0 +1,24 @@
+<div
+  class="table-produit"
+  [ngClass]="{ vignettes: format === 'grid' }"
+  infiniteScroll
+  [infiniteScrollDistance]="2"
+  [infiniteScrollUpDistance]="4"
+  [infiniteScrollThrottle]="20"
+  (scrolled)="onScrollDown()"
+  (scrolledUp)="onScrollUp()"
+  >
+  @for (produit of produits | slice: 0:toDisplay; track produit; let i = $index) {
+    <app-produit-preview
+      [produit]="produit"
+      [format]="format"
+      [simple]="simple"
+      [displayRemoveProductFromFavorisButton]="isFavorisList"
+      >
+    </app-produit-preview>
+    @if (i%25 === 0 && i !== 0 && format !=='grid') {
+      <app-banniere emplacement="middle" [listMarque]="listMarque"></app-banniere>
+    }
+  }
+
+</div>

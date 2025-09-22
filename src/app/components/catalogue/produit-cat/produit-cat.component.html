@@ -1,0 +1,682 @@
+<div class="produit-main" (window:resize)="onResize($event)" *ngIf="produit.reference != null"
+     [ngClass]="{hide: isLoading}">
+
+  <!-- SECTION1 : ENTETE -->
+  <div class="section1 raised-1">
+    <div *ngIf="produit.codePromo != ''" class="info-statut">
+      <div class="status{{ produit.codePromo }}">{{ produit.libPromo }}</div>
+    </div>
+    <!-- IMAGE PRODUIT -->
+    <div class="image-produit-container">
+      <!-- STATUT -->
+      <div id="image" class="image-produit">
+        <div id="squareZoom" class="zoom">
+          <img [src]="imgUrl" (error)="imgUrl = produitDetailService.errorImg(produit)">
+        </div>
+        <img id="image-produit" *ngIf="imgUrl" class="image-produit" [src]="imgUrl"
+             (error)="imgUrl = produitDetailService.errorImg(produit)">
+      </div>
+      <app-sliding-liste class="galerie" type="galerie" [nbProduits]="produit.photos" [produit]="produit.photo"
+                         (select)="changePhoto($event)"></app-sliding-liste>
+    </div>
+
+    <!-- INFOS PRODUIT -->
+    <div class="info-produit">
+      <div class="info">
+        <!-- REFERENCE ACTN -->
+        <h2 class="reference-actn">
+          <div class="buttons">
+            <!-- PARTAGER -->
+            <app-share title="Partager" [textToClipboard]="document.URL" class="marge-button"></app-share>
+            <!-- FAVORIS -->
+            <app-favoris-button [produitReference]="produit.reference" class="marge-button"></app-favoris-button>
+            <!-- COMPARATEUR -->
+            <app-comparateur-button [produitReference]="produit.reference"
+                                    class="marge-button"></app-comparateur-button>
+            <!-- COTATION BUTTON -->
+            <a *ngIf="cotations" (click)="jumpToAnchor('cotation')">
+              <app-tooltip [type]="'cotation'" [hideDelay]="0" [showDelay]="0"
+                           text="Vous avez une cotation sur ce produit"></app-tooltip>
+            </a>
+            <!-- PRODUITS ASSOCIES -->
+            <a *ngIf="produitsAssocies && produitsAssocies.length > 0" (click)="jumpToAnchor('produitsAssocies')"
+               class="marge-button">
+              <app-tooltip [type]="'assos'" [hideDelay]="0" [showDelay]="0" text="Produits associés"></app-tooltip>
+            </a>
+            <!--PDFS-->
+            <ng-container *ngFor="let fiches of produit.pdfs">
+              <a [href]="environment.produitPdfUrl +'/'+ fiches.url+'.pdf'" target="_blank">
+                <app-tooltip class="marge-button" type="pdf" [text]="fiches.label"></app-tooltip>
+              </a>
+            </ng-container>
+          </div>
+          {{ produit.reference }}
+          <img [src]="environment.logoMarquesUrl70x30center + produit.marque + '.gif'" alt="{{produit.marque}}"/>
+
+          <!-- <img [src]="environment.logoMarquesCouleurs200x80 + produit-cat.marquelib + '.gif'" alt="{{produit-cat.marquelib}}" /> -->
+        </h2>
+        <div *ngIf="produitsRemplacement.length > 0" class="basic-chip" style="background-color: #fdc143"
+             (click)="jumpToAnchor('produitsRemplacement')">Voir les produits de remplacement
+        </div>
+
+        <div class="info-details">
+          <!-- REFERENCE CONSTRUCTEUR -->
+          <div class="info-details">
+            <p class="reference-constructeur weight-default size-smaller">Réf. constructeur
+              : {{ produit.reffournisseur }}</p>
+            <p *ngIf="produit.genCod" class="reference-constructeur weight-default size-smaller">ean
+              : {{ produit.genCod }}</p>
+          </div>
+        </div>
+        <!-- DESIGNATION -->
+        <p class="designation">{{ produit.designation }}</p>
+        <!-- ATTENTION -->
+        <span
+          *ngIf="descriptionMap.get('ATT')?.length > 0 && produitDetailService.fullString(descriptionMap.get('ATT')).length > 0"
+          class="attention">
+					<mat-icon class="icon-attention">warning</mat-icon>
+					<span>{{ produitDetailService.fullString(descriptionMap.get('ATT')) }}</span>
+				</span>
+      </div>
+      <!-- PRIX COMMERCIAL -->
+      <ng-container *ngIf="!this.authClient.currentClient; else prixClient">
+        <div class="details">
+          <div class="prix-details size-smaller">
+            <div class="prix-public">
+              <div class="libelle">prix public</div>
+              <div *ngIf="produit.prixPublic != 0; else NC" class="montant">
+                <div>{{ produit.prixPublic | currency:'EUR':'symbol':'1.2-2' }}<span
+                  class="size-smaller">&nbsp;HT</span></div>
+              </div>
+            </div>
+            <div class="ecopart" *ngIf="produit.prixD3E != 0">
+              <div class="libelle">écopart.</div>
+              <div class="montant">
+                <div>{{ produit.prixD3E | currency:'EUR':'symbol':'1.3-3' }}<span class="size-smaller">&nbsp;HT</span>
+                </div>
+              </div>
+            </div>
+            <!-- s'il y a une cotation, on affiche le prix cotation en plus du prix public -->
+            <ng-container
+              *ngIf="!(cartService.cart.items[produit.reference]?.cotation?.prixvente ?? 0); else prixWithCotation">
+              <div *ngIf="!produit.hasPriceByQte; else prixParQte" class="prix-pro">
+                <div class="libelle">prix standard</div>
+                <div *ngIf="produit.prixstd != 0; else NC2" class="montant size-big"
+                     [ngClass]="{minwidth: produit.prixPublic != 0 && produit.prixstd >= produit.prixPublic}">
+                  <div>{{ produit.prixstd | currency:'EUR':'symbol':'1.2-2' }}<span class="size-smaller">&nbsp;HT</span>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+            <!-- PRIX COTATION -->
+            <ng-template #prixWithCotation>
+              <div *ngIf="!produit.hasPriceByQte; else prixParQte" class="prix-public">
+                <div class="libelle">prix standard</div>
+                <div *ngIf="produit.prixstd != 0; else NC2" class="montant"
+                     [ngClass]="{minwidth: produit.prixPublic != 0 && produit.prixstd >= produit.prixPublic}">
+                  <div>{{ produit.prixstd | currency:'EUR':'symbol':'1.2-2':'fr' }}<span
+                    class="size-smaller">&nbsp;HT</span></div>
+                </div>
+              </div>
+              <div class="prix-pro">
+                <div class="libelle">prix cotation</div>
+                <div class="montant size-big">
+                  <div>{{ cartService.cart.items[produit.reference]?.cotation.prixvente | currency:'EUR':'symbol':'1.2-2':'fr' }}
+                    <span class="size-smaller">&nbsp;HT</span></div>
+                </div>
+              </div>
+            </ng-template>
+            <!-- PRIX PAR QUANTITÉ -->
+            <ng-template #prixParQte>
+              <ng-container *ngFor="let qtp of produit.qtePrice; let i = index;">
+                <div [ngClass]="(qtePriceAppliedIndex == i) ? 'prix-pro' : 'prix-public'">
+                  <div class="libelle">prix par {{ qtp.qte }}</div>
+                  <div class="montant">
+                    <div>{{ qtp.price | currency:'EUR':'symbol':'1.2-2':'fr' }}<span
+                      class="size-smaller">&nbsp;HT</span></div>
+                  </div>
+                </div>
+              </ng-container>
+            </ng-template>
+
+            <ng-template #NC>
+              <div class="montant">
+                NC
+              </div>
+            </ng-template>
+            <ng-template #NC2>
+              <div class="montant">
+                NC
+              </div>
+            </ng-template>
+          </div>
+
+          <div class="dispo size-smaller" *ngIf="produit.gabarit != 'V'; else demat">
+            <div [ngClass]="{active: produit.qteStock1 > 0, available: produit.qteStock1 > 0}">
+              <div class="state">
+                Disponible
+              </div>
+              <div class="state-value">{{ produit.qteStock1 | number: '1.0-0' }}</div>
+            </div>
+            <div [ngClass]="{ active: produit.qteStock2 > 0 }">
+              <div class="state">
+                Stock externe
+              </div>
+              <div class="state-value">{{ produit.qteStock2 | number: '1.0-0' }}</div>
+            </div>
+            <div [ngClass]="{ active: produit.qteEnReappro > 0 }">
+              <div class="state">
+                En réappro.
+                <ng-container *ngIf="produit.qteEnReappro > 0">
+                  <br/>
+                  Date réappro :
+                </ng-container>
+              </div>
+              <div class="state-value">
+                {{ produit.qteEnReappro | number: '1.0-0' }}
+                <ng-container *ngIf="produit.qteEnReappro > 0">
+                  <ng-container *ngIf="produit.dateConfReappro != ''; else NC">
+                    <p class="size-small">{{ produit.dateConfReappro }}</p>
+                  </ng-container>
+                  <ng-template #NC>
+                    N.C.
+                  </ng-template>
+                </ng-container>
+              </div>
+            </div>
+            <!-- <div *ngIf="produit-cat.qteStock1 <= 0 && produit-cat.delaisReappro > 0">
+              Produit disponible dans {{ produit-cat.delaisReappro }} jours
+            </div> -->
+          </div>
+          <ng-template #demat>
+            <p class="dispo">Produit dématérialisé</p>
+          </ng-template>
+        </div>
+
+        <div class="panier-pdf">
+          <div>
+            <ng-template [ngTemplateOutlet]="pdf"></ng-template>
+            <ng-template [ngTemplateOutlet]="cotation"></ng-template>
+            <ng-template [ngTemplateOutlet]="similaire"></ng-template>
+          </div>
+          <!-- PANIER -->
+          <div>
+            <app-add-to-cart-form [produit]="produit" [isDisabled]="produit.prix == 0" [cotation]="activeCotation"
+                                  direction="column"
+                                  (qtyInCart)="getQtePriceAppliedIndex()"></app-add-to-cart-form>
+          </div>
+        </div>
+
+      </ng-container>
+
+      <ng-template #prixClient>
+        <div class="details">
+          <div class="prix-details size-smaller">
+            <div class="prix-public">
+              <div class="libelle">prix public</div>
+              <div *ngIf="produit.prixPublic != 0; else NC" class="montant">
+                <div>{{ produit.prixPublic | currency:'EUR':'symbol':'1.2-2' }}<span
+                  class="size-smaller">&nbsp;HT</span></div>
+              </div>
+            </div>
+            <div class="ecopart" *ngIf="produit.prixD3E != 0">
+              <div class="libelle">écopart.</div>
+              <div class="montant">
+                <div>{{ produit.prixD3E | currency:'EUR':'symbol':'1.3-3' }}<span class="size-smaller">&nbsp;HT</span>
+                </div>
+              </div>
+            </div>
+            <div class="prix-std">
+              <div class="libelle">prix standard</div>
+              <div class="montant">
+                <div>{{ produit.prixstd | currency:'EUR':'symbol':'1.2-2' }}<span class="size-smaller">&nbsp;HT</span>
+                </div>
+              </div>
+            </div>
+            <!-- s'il y a une cotation, on affiche le prix cotation en plus du prix public -->
+            <ng-container
+              *ngIf="!(cartService.cart.items[produit.reference]?.cotation?.prixvente ?? 0); else prixWithCotation">
+              <div *ngIf="!produit.hasPriceByQte; else prixParQte" class="prix-pro">
+                <div class="libelle" style="display: flex;">
+                  prix client
+                  <ng-container *ngIf="produit.Prixlibelle">
+                    ({{ produit.Prixlibelle }})
+                  </ng-container>
+                </div>
+                <div *ngIf="produit.prix != 0; else NC2" class="montant size-big"
+                     [ngClass]="{minwidth: produit.prixPublic != 0 && produit.prix >= produit.prixPublic}">
+                  <div>
+                    {{ produit.prix | currency:'EUR':'symbol':'1.2-2' }}<span class="size-smaller">&nbsp;HT</span>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+            <!-- PRIX COTATION -->
+            <ng-template #prixWithCotation>
+              <div *ngIf="!produit.hasPriceByQte; else prixParQte" class="prix-public">
+                <div class="libelle">prix client</div>
+                <div *ngIf="produit.prix != 0; else NC2" class="montant"
+                     [ngClass]="{minwidth: produit.prixPublic != 0 && produit.prix >= produit.prixPublic}">
+                  <div>{{ produit.prix | currency:'EUR':'symbol':'1.2-2':'fr' }}<span
+                    class="size-smaller">&nbsp;HT</span></div>
+                </div>
+              </div>
+              <div class="prix-pro">
+                <div class="libelle">prix cotation</div>
+                <div class="montant size-big">
+                  <div>{{ cartService.cart.items[produit.reference]?.cotation.prixvente | currency:'EUR':'symbol':'1.2-2':'fr' }}
+                    <span class="size-smaller">&nbsp;HT</span></div>
+                </div>
+              </div>
+            </ng-template>
+            <!-- PRIX PAR QUANTITÉ -->
+            <ng-template #prixParQte>
+              <ng-container *ngFor="let qtp of produit.qtePrice; let i = index;">
+                <div [ngClass]="(qtePriceAppliedIndex == i) ? 'prix-pro' : 'prix-public'">
+                  <div class="libelle">prix par {{ qtp.qte }}</div>
+                  <div class="montant">
+                    <div>{{ qtp.price | currency:'EUR':'symbol':'1.2-2':'fr' }}<span
+                      class="size-smaller">&nbsp;HT</span></div>
+                  </div>
+                </div>
+              </ng-container>
+            </ng-template>
+
+            <ng-template #NC>
+              <div class="montant">
+                NC
+              </div>
+            </ng-template>
+            <ng-template #NC2>
+              <div class="montant">
+                NC
+              </div>
+            </ng-template>
+          </div>
+
+          <div class="dispo size-smaller" *ngIf="produit.gabarit != 'V'; else demat">
+            <div [ngClass]="{active: produit.qteStock1 > 0, available: produit.qteStock1 > 0}">
+              <div class="state">
+                Disponible
+              </div>
+              <div class="state-value">{{ produit.qteStock1 | number: '1.0-0' }}</div>
+            </div>
+            <div [ngClass]="{ active: produit.qteStock2 > 0 }">
+              <div class="state">
+                Stock externe
+              </div>
+              <div class="state-value">{{ produit.qteStock2 | number: '1.0-0' }}</div>
+            </div>
+            <div [ngClass]="{ active: produit.qteEnReappro > 0 }">
+              <div class="state">
+                En réappro.
+                <ng-container *ngIf="produit.qteEnReappro > 0">
+                  <br/>
+                  Date réappro :
+                </ng-container>
+              </div>
+              <div class="state-value">
+                {{ produit.qteEnReappro | number: '1.0-0' }}
+                <ng-container *ngIf="produit.qteEnReappro > 0">
+                  <ng-container *ngIf="produit.dateConfReappro != ''; else NC">
+                    <p class="size-small">{{ produit.dateConfReappro }}</p>
+                  </ng-container>
+                  <ng-template #NC>
+                    N.C.
+                  </ng-template>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+          <ng-template #demat>
+            <p class="dispo">Produit dématérialisé</p>
+          </ng-template>
+        </div>
+
+        <div class="panier-pdf">
+          <div>
+            <ng-template [ngTemplateOutlet]="pdf"></ng-template>
+            <ng-template [ngTemplateOutlet]="cotation"></ng-template>
+            <ng-template [ngTemplateOutlet]="similaire"></ng-template>
+          </div>
+          <!-- PANIER -->
+          <div>
+            <app-add-to-cart-form [produit]="produit" [isDisabled]="produit.prix == 0" [cotation]="activeCotation"
+                                  direction="column"
+                                  (qtyInCart)="getQtePriceAppliedIndex()"></app-add-to-cart-form>
+          </div>
+        </div>
+      </ng-template>
+
+      <ng-template #pdf>
+        <!-- PDF -->
+        <div class="info-pdf">
+          <div *ngIf="produit.pdfs.length===0">
+            <p>Pas de document disponible</p>
+          </div>
+          <!--Si  il y a un ou plusieurs pdf, il l'est affiche-->
+          <div *ngIf="produit.pdfs.length>0">
+            <div *ngFor="let fiches of produit.pdfs">
+              <a [href]="environment.produitPdfUrl +'/'+ fiches.url+'.pdf'" target="_blank">
+                <p class="espace-pdf">
+                  <mat-icon class="icon-pdf">picture_as_pdf</mat-icon>
+                  {{ fiches.label }}
+                </p>
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </ng-template>
+
+      <ng-template #cotation>
+        <!-- COTATION -->
+        <div class="info-pdf">
+          <a *ngIf="cotations" (click)="jumpToAnchor('cotation')" class="">
+            <p class="espace-pdf">
+              <mat-icon class="icon-pdf">euro</mat-icon>
+              Liste des cotations
+            </p>
+          </a>
+        </div>
+      </ng-template>
+
+      <ng-template #similaire>
+        <!-- PRODUITS SIMILAIRES -->
+        <div class="info-pdf">
+          <a *ngIf="true" (click)="produitDetailService.navigateToSimilar(produit)" class="">
+            <p class="espace-pdf">
+              <mat-icon class="icon-pdf">file_copy</mat-icon>
+              Voir des produits similaires
+            </p>
+          </a>
+        </div>
+      </ng-template>
+    </div>
+  </div> <!--  -->
+
+  <!-- NAVBAR -->
+  <div class="produit-navbar">
+    <!-- NAVBAR : DESCRIPTION -->
+    <div *ngIf="descriptionMap?.get('DES')?.length > 0" class="basic-chip" (click)="jumpToAnchor('description')">
+      Description
+    </div>
+    <!-- NAVBAR : FONCTIONS PRINCIPALES -->
+    <div *ngIf="descriptionMap?.get('SPE')?.length > 0" class="basic-chip"
+         (click)="jumpToAnchor('fontionsprincipales')">Fonctions principales
+    </div>
+    <!-- NAVBAR : LIVRE AVEC -->
+    <div *ngIf="descriptionMap?.get('PAC')?.length > 0" class="basic-chip" (click)="jumpToAnchor('accessoires')">Livré
+      avec
+    </div>
+    <!-- NAVBAR : IMAGES -->
+    <div *ngIf="descriptionMap?.get('PHO')?.length > 0" class="basic-chip" (click)="jumpToAnchor('photos')">Images</div>
+    <!-- NAVBAR : VIDEOS -->
+    <div *ngIf="descriptionMap?.get('VID')?.length > 0" class="basic-chip" (click)="jumpToAnchor('videos')">Vidéos</div>
+    <!-- NAVBAR : PRODUITS REMPLACEMENT -->
+    <div *ngIf="produitsRemplacement.length > 0" class="basic-chip" (click)="jumpToAnchor('produitsRemplacement')">
+      Produits de remplacement
+    </div>
+    <!-- NAVBAR : CARACTERISTIQUES -->
+    <div class="basic-chip" (click)="jumpToAnchor('caracteristiques')">Caractéristiques</div>
+    <!-- NAVBAR : PRODUITS RENOUVELLEMENT -->
+    <div *ngIf="produitsRenouvellement.length > 0" class="basic-chip" (click)="jumpToAnchor('produitsRenouvellement')">
+      Produits de renouvellement
+    </div>
+    <!-- NAVBAR : HORIZONDECOMMANDE -->
+    <div *ngIf="horizonCmd && horizonCmd.length > 0" class="basic-chip"
+      (click)="jumpToAnchor('horizon')">Horizon de commande
+    </div>
+    <!-- NAVBAR : PRODUITSASSOCIES -->
+    <div *ngIf="produitsAssocies && produitsAssocies.length > 0" class="basic-chip"
+         (click)="jumpToAnchor('produitsAssocies')">Produits associés
+    </div>
+    <!-- NAVBAR : PRODUITSSIMIMAIRES -->
+    <div *ngIf="produitsSimilaire" class="basic-chip" (click)="jumpToAnchor('produitsSimilaires')">Produits similaires
+    </div>
+  </div>
+
+
+  <!-- GRILLES TARIFAIRES -->
+  <div id="gille-tarif">
+    <app-title-w-line [title]="'Grilles tarifaires'" [size]="'small'" [collapsible]="true" [collapsed]="true"
+                      (click)="toggleCollapseDivById($event, 'gille-tarif')"></app-title-w-line>
+
+    <ng-container *ngIf="grilleTarif.length == 0; else grille">
+      <p class="collapsible" [@expandVertical]="collapsedIdsArray.includes('gille-tarif') ? 'closed' : 'open'"
+         [ngClass]="{ hide: collapsedIdsArray.includes('gille-tarif') }">Pas de grille spécifique</p>
+    </ng-container>
+    <ng-template #grille>
+      <table class="grille-tarif collapsible"
+             [@expandVertical]="collapsedIdsArray.includes('gille-tarif') ? 'closed' : 'open'"
+             [ngClass]="{ hide: collapsedIdsArray.includes('gille-tarif') }">
+        <tr>
+          <td class="weight-bold">Désignation</td>
+          <td class="weight-bold">Qte. par</td>
+          <td class="weight-bold">Prix</td>
+          <td class="weight-bold">CA d'égibilité</td>
+          <td class="weight-bold">Mini</td>
+          <td class="weight-bold">Maxi</td>
+          <td class="weight-bold">% Remis</td>
+          <td class="weight-bold">% Marge</td>
+        </tr>
+        <ng-container *ngFor="let tarif of grilleTarif">
+          <tr>
+            <td>{{ tarif.colonnedesignation }}</td>
+            <td *ngIf="tarif.borne != 0">{{ tarif.borne }}</td>
+            <td *ngIf="tarif.borne == 0">{{ ' ' }}</td>
+            <td>{{ tarif.colonneprix }}</td>
+
+            <td *ngIf="tarif.CAmini != 0">{{ tarif.CAmini }}</td>
+            <td *ngIf="tarif.CAmmaxi!= 0">{{ tarif.CAmmaxi }}</td>
+            <td *ngIf="tarif.remiseinfo!= 0">{{ tarif.remiseinfo }}</td>
+            <td *ngIf="tarif.margeinfo != 0">{{ tarif.margeinfo }}</td>
+          </tr>
+        </ng-container>
+      </table>
+    </ng-template>
+  </div>
+
+  <!-- COTATION -->
+  <div id="cotation" *ngIf="cotations && cotations.length > 0">
+    <app-title-w-line title="Cotation" size="small" collapsible="true"
+                      (click)="toggleCollapseDivById($event, 'cotation')"></app-title-w-line>
+    <div class="collapsible"
+         [@expandVertical]="collapsedIdsArray.includes('cotation') ? 'closed' : 'open'"
+         [ngClass]="{ hide: collapsedIdsArray.includes('cotation') }">
+      <app-cotation-row *ngIf="produit" [produit]="produit"
+                        (activeCotation)="changeActiveCotation($event)"></app-cotation-row>
+    </div>
+  </div>
+
+  <!-- DESCRIPTION -->
+  <div id="description" *ngIf="descriptionMap.get('DES')?.length > 0">
+    <app-title-w-line title="Description" size="small" collapsible="true"
+                      (click)="toggleCollapseDivById($event, 'description')"></app-title-w-line>
+    <p class="justify collapsible"
+       [@expandVertical]="collapsedIdsArray.includes('description') ? 'closed' : 'open'"
+       [ngClass]="{ hide: collapsedIdsArray.includes('description') }">
+      {{ produitDetailService.fullString(descriptionMap.get('DES')) }}
+    </p>
+  </div>
+
+  <!-- FONCTIONS PRINCIPALES -->
+  <div id="fontionsprincipales" *ngIf="descriptionMap.get('SPE')?.length > 0">
+    <app-title-w-line title="Fonctions principales" size="small" collapsible="true"
+                      (click)="toggleCollapseDivById($event, 'fonctionsprincipales')"></app-title-w-line>
+    <div class="collapsible"
+         [@expandVertical]="collapsedIdsArray.includes('fonctionsprincipales') ? 'closed' : 'open'"
+         [ngClass]="{ hide: collapsedIdsArray.includes('fonctionsprincipales') }">
+      <ng-container *ngIf="produitDetailService.shouldFormat(descriptionMap.get('SPE')); else noFormat">
+        <p class="fonction">{{ produitDetailService.fullString(descriptionMap.get('SPE')) }}</p>
+      </ng-container>
+    </div>
+    <ng-template #noFormat>
+      <div class="collapsible marginLeft20"
+           [@expandVertical]="collapsedIdsArray.includes('fonctionsprincipales') ? 'closed' : 'open'"
+           [ngClass]="{ hide: collapsedIdsArray.includes('fonctionsprincipales') }">
+        <ng-container *ngFor="let f of descriptionMap.get('SPE')"
+        >
+          <p class="fonction" *ngIf="f.trim().length > 0">{{ f }}</p>
+        </ng-container>
+      </div>
+    </ng-template>
+  </div>
+
+  <!-- LIVRE AVEC -->
+  <div id="accessoires" #accessoires *ngIf="descriptionMap.get('PAC')?.length > 0">
+    <app-title-w-line title="Livré avec" size="small" collapsible="true"
+                      (click)="toggleCollapseDivById($event, 'livreavec')"></app-title-w-line>
+    <div class="collapsible marginLeft20"
+         [@expandVertical]="collapsedIdsArray.includes('livreavec') ? 'closed' : 'open'"
+         [ngClass]="{ hide: collapsedIdsArray.includes('livreavec') }">
+      <ng-container *ngIf="produitDetailService.shouldFormat(descriptionMap.get('PAC')); else noFormat">
+        <p class="fonction">{{ produitDetailService.fullString(descriptionMap.get('PAC')) }}</p>
+      </ng-container>
+      <ng-template #noFormat>
+        <ng-container *ngFor="let f of descriptionMap.get('PAC')">
+          <p class="fonction" *ngIf="f.trim().length > 0">{{ f }}</p>
+        </ng-container>
+      </ng-template>
+    </div>
+  </div>
+
+  <!-- IMAGES SUPPLEMENTAIRES -->
+  <!-- PHOTOS -->
+  <div id="photos" *ngIf="descriptionMap.get('PHO')?.length > 0">
+    <!-- <app-title-w-line title="Images supplémentaires" size="small"></app-title-w-line> -->
+    <ng-container *ngFor="let pho of descriptionMap.get('PHO')">
+
+      <ng-container *ngIf="produitDetailService.isPhoto(pho); else isNotPhoto">
+        <img class="imgSupp" src="{{ environment.photoReel + pho }}">
+      </ng-container>
+
+      <ng-template #isNotPhoto>
+        <!-- TITLE -->
+        <app-title-w-line title="{{ pho }}" size="small"></app-title-w-line>
+      </ng-template>
+    </ng-container>
+  </div>
+
+
+  <!-- VIDEO -->
+  <div id="videos" *ngIf="descriptionMap.get('VID')?.length > 0">
+    <app-title-w-line [title]="'Vidéo de présentation'"></app-title-w-line>
+    <app-youtube [links]="descriptionMap.get('VID').slice(0)"></app-youtube>
+  </div>
+
+  <!-- PRODUIT REMPLACEMENT -->
+  <span id="produitsRemplacement"></span>
+  <ng-container *ngIf="produitsRemplacement.length > 0">
+    <app-title-w-line [title]="'Produits de remplacement'" size="small" collapsible="true"
+                      (click)="toggleCollapseDivById($event, 'produitsremplacement')"></app-title-w-line>
+    <div class="collapsible" style="padding: 0.5em;"
+         [@expandVertical]="collapsedIdsArray.includes('produitsremplacement') ? 'closed' : 'open'"
+         [ngClass]="{ hide: collapsedIdsArray.includes('produitsremplacement') }">
+      <app-produits [produits]="produitsRemplacement" [format]="formatProduitsRemplacementVente"
+                    [simple]="simpleProduitsRemplacementVente">
+      </app-produits>
+    </div>
+  </ng-container>
+
+  <!-- CARACTERISTIQUES -->
+  <div id="caracteristiques">
+    <app-title-w-line title="Caractéristiques" size="small" collapsible="true"
+                      (click)="toggleCollapseDivById($event, 'caracteristiques')"></app-title-w-line>
+    <table class="caracteristiques collapsible"
+           [@expandVertical]="collapsedIdsArray.includes('caracteristiques') ? 'closed' : 'open'"
+           [ngClass]="{ hide: collapsedIdsArray.includes('caracteristiques') }">
+      <ng-container *ngFor="let crit of produit.crits">
+        <tr *ngIf="crit.name != '' && crit.value != ''">
+          <td class="weight-bold">{{ crit.name }}</td>
+          <td>{{ crit.value }}</td>
+        </tr>
+      </ng-container>
+      <tr *ngIf="produit.poidsbrut > 0" class="critere">
+        <td class="weight-bold">Poids</td>
+        <td>{{ produitDetailService.formatProduitPoids(produit) }}</td>
+      </tr>
+      <ng-container *ngIf="descriptionMap.get('WEB')?.length > 0">
+        <tr *ngFor="let web of this.descriptionMap.get('WEB')">
+          <td class="weight-bold">{{ produitDetailService.formatWeb(web)[0] }}</td>
+          <td class="link"><a [href]="produitDetailService.formatWeb(web)[1]" target="_blank"
+                              rel="noopener">{{ produitDetailService.formatWeb(web)[1] }}</a></td>
+        </tr>
+      </ng-container>
+    </table>
+  </div>
+  @if(horizonCmd.length > 0){
+    <div id="horizon">
+      <app-title-w-line title="Horizon de commande" size="small" collapsible="true"
+                        (click)="toggleCollapseDivById($event, 'horizon')"></app-title-w-line>
+      <table class="horizon collapsible"
+             [@expandVertical]="collapsedIdsArray.includes('horizon') ? 'closed' : 'open'"
+             [ngClass]="{ hide: collapsedIdsArray.includes('horizon') }">
+        <tr>
+          <td class="weight-bold">Type</td>
+          <td class="weight-bold">Numéro</td>
+          <td class="weight-bold">Raison Sociale</td>
+          <td class="weight-bold">N°Commande</td>
+          <td class="weight-bold">Transaction</td>
+          <td class="weight-bold">Date Livr. théorique</td>
+          <td class="weight-bold">Date Livr. conf</td>
+          <td class="weight-bold">Qte Fournisseur</td>
+          <td class="weight-bold">Qte Client</td>
+        </tr>
+        @for(horizon of horizonCmd; track horizon.ncommande; let i = $index){
+          <tr>
+            <td>{{horizon.type | clientProspectFournisseur}}</td>
+            <td>{{horizon.numero}}</td>
+            <td>{{horizon.nom}}</td>
+            <td>{{horizon.ncommande}}</td>
+            <td>{{horizon.transaction}}</td>
+            <td>{{horizon.dateLivraisonTheorique}}</td>
+            <td>{{horizon.dateLivraisonConfirmee}}</td>
+            <td>{{horizon.qteFournisseur}}</td>
+            <td>{{horizon.qteClient}}</td>
+          </tr>
+
+        }
+      </table>
+    </div>
+  }
+
+  <!-- PRODUIT RENOUVELLEMENT -->
+  <span id="produitsRenouvellement"></span>
+  <ng-container *ngIf="produitsRenouvellement.length > 0">
+    <app-title-w-line [title]="'Produits de renouvellement'" size="small" collapsible="true"
+                      (click)="toggleCollapseDivById($event, 'produitsrenouvellement')"></app-title-w-line>
+    <div class="collapsible" style="padding: 0.5em;"
+         [@expandVertical]="collapsedIdsArray.includes('produitsrenouvellement') ? 'closed' : 'open'"
+         [ngClass]="{ hide: collapsedIdsArray.includes('produitsrenouvellement') }">
+      <app-produits [produits]="produitsRenouvellement" [format]="formatProduitsRenouvellementVente"
+                    [simple]="simpleProduitsRenouvellementVente">
+      </app-produits>
+    </div>
+  </ng-container>
+
+  <span id="produitsAssocies"></span>
+  <ng-container *ngIf="produitsAssocies">
+    <ng-container *ngIf="produitsAssocies.length > 0">
+      <app-title-w-line [title]="'Produits associés'" size="small" collapsible="true"
+                        (click)="toggleCollapseDivById($event, 'produitsassocies')"></app-title-w-line>
+      <div class="collapsible"
+           [@expandVertical]="collapsedIdsArray.includes('produitsassocies') ? 'closed' : 'open'"
+           [ngClass]="{ hide: collapsedIdsArray.includes('produitsassocies') }">
+        <div style="padding: 0.5em">
+          <app-produits [produits]="produitsAssocies" [format]="formatProduitsAssocieVente"
+                        [simple]="simpleProduitsAssocieVente">
+          </app-produits>
+        </div>
+      </div>
+    </ng-container>
+  </ng-container>
+
+  <span id="produitsSimilaires"></span>
+  <ng-container *ngIf="produitsSimilaire">
+    <app-title-w-line title="Produits similaires" size="small"></app-title-w-line>
+    <app-sliding-liste [produits]="produitsSimilaire" [title]="'Produits similaires'" [nbProduits]="15"
+                       [random]="true"></app-sliding-liste>
+  </ng-container>
+
+</div>

@@ -1,0 +1,223 @@
+<button type="button" (click)="addCont = true; cleanAddForm()" class="raised-button margeCote">Ajouter</button>
+
+<table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z3 table">
+  <ng-container matColumnDef="nom">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+      Nom
+    </th>
+    <td mat-cell *matCellDef="let element" (click)="updtContSetUp(element)"> {{ element.nom }} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="mail">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+      Adresse mail
+    </th>
+    <td mat-cell *matCellDef="let element" (click)="updtContSetUp(element)"> {{ element.mail }} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="telephone">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+      Téléphone
+    </th>
+    <td mat-cell *matCellDef="let element" (click)="updtContSetUp(element)"> {{ element.contactgsm }} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="fixe">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+      Tel Fixe
+    </th>
+    <td mat-cell *matCellDef="let element" (click)="updtContSetUp(element)"> {{ element.telephone }} </td>
+  </ng-container>
+
+  @if (!isProspect) {
+    <ng-container matColumnDef="identifiant">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        Identifiant
+      </th>
+      <td mat-cell *matCellDef="let element" (click)="updtContSetUp(element)"> {{ element.identifiant }} </td>
+    </ng-container>
+  }
+
+  <ng-container matColumnDef="role">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+      Role
+    </th>
+    <td mat-cell *matCellDef="let element" (click)="updtContSetUp(element)"> {{ element.role == 'A' ? 'Admin' : 'N' }} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="commande">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+      Droit commande
+    </th>
+    <td mat-cell *matCellDef="let element" (click)="updtContSetUp(element)"> {{ element.droitcommande == '' ? 'N' : element.droitcommande}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="fonction">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+      Fonction
+    </th>
+    <td mat-cell *matCellDef="let element" (click)="updtContSetUp(element)"> {{ element.fonction }} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="servicelib">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+      Service
+    </th>
+    <td mat-cell *matCellDef="let element" (click)="updtContSetUp(element)"> {{ element.servicelib }} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="mailing">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>
+      Mailing
+    </th>
+    <td mat-cell *matCellDef="let element" (click)="updtContSetUp(element)"> {{ element.mailing }} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="action">
+    <th mat-header-cell *matHeaderCellDef></th>
+    <td mat-cell *matCellDef="let element" (click)="updtContSetUp(element)"><button mat-button><mat-icon style="color: var(--color-secondary); margin:0">edit</mat-icon></button> </td>
+  </ng-container>
+
+  @if(isProspect){
+    <tr mat-header-row *matHeaderRowDef="columnsProspect"></tr>
+    <tr mat-row *matRowDef="let row; columns: columnsProspect;" ></tr>
+    }@else{
+    <tr mat-header-row *matHeaderRowDef="columns"></tr>
+    <tr mat-row *matRowDef="let row; columns: columns;" ></tr>
+  }
+
+</table>
+
+
+<div class="popUpActive" [ngClass]="{active: addCont || updtCont}">
+  <div class="popup-background" (click)="addCont ? addCont = false : updtCont = false; userWebTransform = false"></div>
+  <div class="popup-window" style="width: 50vw;">
+    <h1>{{ addCont ? 'Ajout d\'un contact' : 'Modification d\'un contact'}}</h1>
+    <form [formGroup]="addCont ? contForm : contFormUpdt">
+      <div class="form-contact evenly">
+        <mat-form-field>
+          <mat-label>Nom / Prénom</mat-label>
+          <input matInput type="text" [formControlName]="'nom'">
+          @if (contForm.get('nom').invalid || contFormUpdt.get('nom').invalid) {
+            <mat-error>*Veuillez insérer un nom (40 caractères max)</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Mail</mat-label>
+          <input matInput type="text" [formControlName]="'mail'">
+          @if (contForm.get('mail').invalid || contFormUpdt.get('mail').invalid) {
+            <mat-error>*Veuillez insérer un mail (70 caractères max)</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Téléphone</mat-label>
+          <input matInput type="text" [formControlName]="'gsm'">
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Fixe</mat-label>
+          <input matInput type="text" [formControlName]="'fixe'">
+        </mat-form-field>
+      </div>
+
+      <div class="form-contact" style="align-items: center" [ngClass]="{'evenly': userWebTransform, 'seultout': !userWebTransform}">
+
+        <mat-form-field [ngClass]="{'margin-a-gauche': userWebTransform}">
+          <mat-label>Fonction</mat-label>
+          <mat-select [formControlName]="'fonctioncode'">
+            @for (fonc of fonction; track fonc) {
+              <mat-option [value]="fonc.argument">{{ fonc.libelle }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        @if (addCont || isProspect) {
+          <mat-form-field>
+            <mat-label>Service</mat-label>
+            <mat-select [formControlName]="'service'">
+              @for (service of listService; track service) {
+                <mat-option [value]="service.argument" >{{ service.libelle }}</mat-option>
+              }
+            </mat-select>
+            @if (contForm.get('service').invalid) {
+              <mat-error>*Veuillez choisir un service</mat-error>
+            }
+          </mat-form-field>
+        }
+
+        @if (!userWebTransform && updtCont && !isProspect) {
+          @if (!individu.identifiant) {
+            <button class="raised-button button-web" type="button" (click)="userWebTransform = true">Transformer en utilisateur web</button>
+          }
+        }
+      </div>
+
+      @if (userWebTransform && !isProspect) {
+        <form [formGroup]="webForm" class="form-web">
+          @if (individu.identifiant){
+            <div class="form-contact evenly" style="width: 67%;">
+              <mat-form-field style="min-width: 47.8%;">
+                <mat-label>Identifiant</mat-label>
+                <input type="text" matInput [formControlName]="'id'" [readonly]="true">
+              </mat-form-field>
+              @if (updtCont && !isProspect) {
+                <a (click)="changePswrd()">Demande changement de mot de passe</a>
+              }
+            </div>
+            }@else{
+            <div class="form-contact evenly" style="width: 67%;">
+              <mat-form-field style="min-width: 47.8%;">
+                <mat-label>Identifiant</mat-label>
+                <input type="text" matInput [formControlName]="'id'">
+              </mat-form-field>
+              <mat-form-field style="min-width: 47.8%;">
+                <mat-label>Mot de passe</mat-label>
+                <input type="password" matInput [formControlName]="'mdp'">
+              </mat-form-field>
+            </div>
+          }
+        </form>
+      }
+
+      <div class="util-button" [ngClass]="{'edit':updtCont}">
+        <mat-slide-toggle [formControlName]="'mailing'">Autoriser ACTN à envoyer des offres et actualités </mat-slide-toggle>
+        @if (updtCont == true && condSuppr()) {
+          <button mat-raised-button (click)="supprCont(individu.mail); updtCont = false" style="background-color: var(--color-warn); color: white">Supprimer l'utilisateur</button>
+        }
+      </div>
+
+      @if (userWebTransform == true) {
+        <div class="auth">
+          <mat-radio-group [formControlName]="'commande'">
+            <mat-radio-button [value]="'O'" [checked]="contFormUpdt.value.commande === 'O'">Autorisation de commande</mat-radio-button>
+            <mat-radio-button [value]="'N'" [checked]="contFormUpdt.value.commande === 'N'">Devis et consultation</mat-radio-button>
+          </mat-radio-group>
+        </div>
+        <div class="role">
+          <mat-checkbox [formControlName]="'role'" >Profil administrateur</mat-checkbox>
+        </div>
+      }
+
+      @if (addCont && webForm.dirty && (webForm.value.id != '' && webForm.value.mdp != '')) {
+        <div class="auth">
+          <mat-radio-group [formControlName]="'commande'">
+            <mat-radio-button [value]="'O'">Autorisation de commande</mat-radio-button>
+            <mat-radio-button [value]="'N'" checked>Devis et consultation</mat-radio-button>
+          </mat-radio-group>
+        </div>
+        <div class="role">
+          <mat-checkbox [formControlName]="'role'" >Profil administrateur</mat-checkbox>
+        </div>
+      }
+
+      <div class="button-deco">
+        <button mat-raised-button style="background-color: var(--color-warn); color: white" (click)="addCont ? addCont = false : updtCont = false; userWebTransform = false; ">Annuler</button>
+        <button mat-raised-button style="background-color: var(--color-secondary); color: white"
+          (click)="addCont ? createCont() : onUpdtCont(); close()">
+          {{ addCont ? 'Valider' : 'Modifier' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

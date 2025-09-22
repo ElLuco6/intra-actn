@@ -1,0 +1,161 @@
+<mat-card class="mat-cardla">
+  <h2>Filtres</h2>
+  <form class="filtres">
+    @for (filtre of filtres; track filtre) {
+    <app-filter [filterName]="filtre.name" [filterControl]="filtreControls[filtre.control]"
+      [filterOptions]="filtre.options" [filterType]="filtre.type"></app-filter>
+    }
+  </form>
+</mat-card>
+
+<div class="labels display-flex heavy-font mat-elevation-z3 header-grid"
+  [ngClass]="{'fixed-header' : stickyHeader, 'connected' : logClientService.currentClient, 'disconnected': !logClientService.currentClient}">
+  <label class="grow">Réf. Cotation</label>
+  <label class="grow">N° Fournisseur - N° Cotation</label>
+  <label class="grow">N° Client</label>
+  <label class="grow">Groupe</label>
+  <label class="grow">Classe</label>
+  <label class="grow">Date Début</label>
+  <label class="grow">Date Fin</label>
+  <label class="grow">Exporter</label>
+</div>
+
+<mat-paginator [length]="cotations.filteredData.length" [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 20]"
+  (page)="onPageChange($event)">
+</mat-paginator>
+
+@for (cot of applyPagination(); track i; let i = $index) {
+<div class="over floatClear">
+  <!-- ENTETE RELIQUAT -->
+  <div class="entete">
+    @if (!display[i]) {
+    <i (click)="unrollDetails(i);" class="unroll-button icon-plus raised-button"></i>
+    }
+    @if (display[i]) {
+    <i (click)="unrollDetails(i);" class="unroll-button icon-minus raised-button"></i>
+    }
+    <div class="header-grid">
+      <div class="refClient grow"><a [href]="'/client-detail/' + cot.numcli + '?display=cotation'" target="_blank">{{
+          cot.refcot }}</a></div>
+      <div class="refClient grow"><a [href]="'/client-detail/' + cot.numcli + '?display=cotation'" target="_blank">
+        {{ cot.numfrs }} - {{ cot.numcotation }}</a></div>
+      <div class="refClient grow link"><a [href]="'/client-detail/' + cot.numcli" target="_blank">{{ cot.numcli |
+          removeZeros }} - {{ cot.produits[0].Nom }}</a></div>
+      <div class="refClient grow">{{ cot.groupe }}</div>
+      <div class="refClient grow"> {{ cot.classe }} </div>
+      <div class="date grow">{{ cot.datedeb | date : 'dd/MM/YYYY' }}</div>
+      <div class="date grow">{{ cot.datefin | date : 'dd/MM/YYYY' }}</div>
+      <button class="grow export" mat-button (click)="exportToExcel(cot);">
+        Exporter en xls
+        <mat-icon>file_copy</mat-icon>
+      </button>
+    </div>
+  </div>
+  <!-- RELIQUAT DETAILS -->
+  @if (display[i]) {
+  <div class="cotationDetails">
+    <div class="display-flex">
+      <div class="block">
+        @for (produit of cot.produits; track produit.produit) {
+        <mat-divider></mat-divider>
+        <div class="produit">
+          <!-- COTATION INFO PRODUIT -->
+          <div class="center-produit" (click)="produitService.goToProduitById(produit.produit, true)">
+            <div class="flex">
+              <p style="margin: 0 !important; align-self: center;"><strong>{{ produit.produit }}</strong></p>
+              <img class="image-produit"
+                [src]="environment.logoMarquesUrl +'70x30center/' + produit.marque  + '.gif'"
+                [default]="produitService.errorImg(produit.produit)" [alt]="produit.marque" />
+            </div>
+            <p style="margin: 0 !important">{{ produit.designation }}</p>
+          </div>
+          <!-- COTATION PRIX PRODUIT -->
+          <div class="prix-details">
+            <div class="votre-prix">
+              <div>prix cotation</div>
+              <div *ngIf="produit.prixvente !== 0; else NC2" class="montant">
+
+                <div>{{ produit.prixvente | currency:'EUR':'symbol':'1.2-2' }}<span class="size-smaller">HT</span></div>
+              </div>
+              <ng-template #NC2>
+                <div class="montant">
+                  NC
+                </div>
+              </ng-template>
+            </div>
+            <div class="votre-prix">
+              <div>prix standard</div>
+              <div>{{ produit.prixstd | currency:'EUR':'symbol':'1.2-2' }}<span class="size-smaller">HT</span></div>
+            </div>
+            <div class="votre-prix">
+              <div>quantité déjà commandée</div>
+              <div>
+                <!-- produit.qtemax -  -->{{ produit.qtecde }} /
+                {{ produit.qtecdemax }}
+              </div>
+            </div>
+          </div>
+          <!-- COTATION DISPONIBILITE PRODUIT -->
+          <div class="dispo">
+            <div [ngClass]="{
+						active: produit.qtestock > 0,
+						available: produit.qtestock > 0
+						}">
+              <div class="state">
+                Disponible
+              </div>
+              <div class="state-value">{{ produit.qtestock | number: '1.0-0' }}</div>
+            </div>
+            <div [ngClass]="{ active: produit.qtestockext > 0 }">
+              <div class="state">
+                Stock externe
+              </div>
+              <div class="state-value">{{ produit.qtestockext | number: '1.0-0' }}</div>
+            </div>
+            <div [ngClass]="{ active: produit.qtereappro > 0 }">
+              <div class="state">
+                En réappro
+                <ng-container *ngIf="produit.qtereappro > 0">
+                  <br />
+                  <p *ngIf="produit.dateconfcde != '' ; else NC" class="size-small">
+                    {{ produit.dateconfcdestatus | date:'shortDate' }}:</p>
+                  <ng-template #NC>
+                    Date non communiquée:
+                  </ng-template>
+                </ng-container>
+              </div>
+              <div class="state-value">
+                {{ produit.qtereappro | number: '1.0-0' }}
+                <ng-container *ngIf="produit.qtereappro > 0">
+                  <br />
+                  <ng-container *ngIf="produit.dateconfcde != '' ; else NC">
+                    <p class="size-small">{{ produit.dateconfcde | date:'shortDate' }}</p>
+                  </ng-container>
+                  <ng-template #NC>
+                    N.C.
+                  </ng-template>
+                </ng-container>
+              </div>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+  }
+  <!--Produits-->
+  <!--<span class="labels_produits detail-grid heavy-font1">
+                      <label>Prix cotation</label>
+                      <label>Prix standard</label>
+                      <label>Qté Commandée</label>
+                    </span>
+    <div class="produits">
+      <div class="detail-grid ">
+        <label><a >{{ cot.marquelib }}</a></label>
+        <label>{{ cot.marquelib }}</label>
+        <label>{{ cot.marquelib }}</label>
+      </div>
+    </div>-->
+</div>
+}

@@ -1,0 +1,385 @@
+<app-title-w-line title='Suivi CA' size="small"></app-title-w-line>
+<div class="page-layout">
+  <div [formGroup]="filtresForm">
+    <mat-card>
+      <h2>
+        <div class="filters-header">
+          <div>
+            Filtres
+          </div>
+          <button mat-icon-button class="save-filters" (click)="openSaveFiltersPopup()">
+            <mat-icon>save</mat-icon>
+          </button>
+        </div>
+      </h2>
+      <mat-form-field appearance="fill">
+        <mat-label>Années</mat-label>
+        <mat-select multiple formControlName="annees" [disableOptionCentering]="true"
+                    (selectionChange)="applyFilters(false)">
+          @for (year of years; track year) {
+            <mat-option [value]="year" [checked]="selectedYears.includes(year)">
+              <span class="option">{{ year }}</span></mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Régions</mat-label>
+        <mat-select multiple formControlName="regions" [disableOptionCentering]="true"
+                    (selectionChange)="applyFilters(true)">
+          <mat-checkbox [checked]="allSelected('regions')" [indeterminate]="someSelected('regions')"
+                        (change)="toggleAllSelection($event, 'regions')">Tout sélectionner
+          </mat-checkbox>
+          @for (region of regions; track region) {
+            <mat-option [value]="region">
+              <span class="option">{{ region }}</span></mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Catégories</mat-label>
+        <mat-select multiple formControlName="categories" [disableOptionCentering]="true"
+                    (selectionChange)="applyFilters(false)">
+          <mat-checkbox [checked]="allSelected('categories')" [indeterminate]="someSelected('categories')"
+                        (change)="toggleAllSelection($event, 'categories')">Tout sélectionner
+          </mat-checkbox>
+          @for (categorie of categories; track categorie) {
+            <mat-option [value]="categorie.id">
+              <span class="option">{{ categorie.label }}</span></mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Marques</mat-label>
+        <mat-select multiple formControlName="marques" [disableOptionCentering]="true"
+                    (selectionChange)="applyFilters(false)">
+          <mat-checkbox [checked]="allSelected('marques')" [indeterminate]="someSelected('marques')"
+                        (change)="toggleAllSelection($event, 'marques')">Tout sélectionner
+          </mat-checkbox>
+          @for (marque of marques; track marque) {
+            <mat-option [value]="marque.marquelib">
+              <span class="option">{{ marque.marquelib }}</span></mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Classes</mat-label>
+        <mat-select multiple formControlName="classes" [disableOptionCentering]="true"
+                    (selectionChange)="applyFilters(false)">
+          <mat-checkbox [checked]="allSelected('classes')" [indeterminate]="someSelected('classes')"
+                        (change)="toggleAllSelection($event, 'classes')">Tout sélectionner
+          </mat-checkbox>
+          @for (classe of classes; track classe) {
+            @if (classe.marque === '' && classe.classe === '') {
+              <mat-option [value]="'Sans classe'">
+                <span class="option">Sans classe</span></mat-option>
+            } @else {
+              <mat-option [value]="classe.marque + ' - ' + classe.classe">
+                <span class="option">{{ classe.marque + ' - ' + classe.classe }}</span></mat-option>
+            }
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Départements</mat-label>
+        <mat-select multiple formControlName="departements" [disableOptionCentering]="true"
+                    (selectionChange)="applyFilters(false)">
+          <mat-checkbox [checked]="allSelected('departements')" [indeterminate]="someSelected('departements')"
+                        (change)="toggleAllSelection($event, 'departements')">Tout sélectionner
+          </mat-checkbox>
+          @for (departement of departements; track departement) {
+            <mat-option [value]="departement">
+              <span class="option">{{ departement }}</span></mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>N° Client</mat-label>
+        <input matInput (input)="applyFilters(false)" placeholder="N° Client"
+               formControlName="num">
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Nom</mat-label>
+        <input matInput (input)="applyFilters(false)" placeholder="Nom"
+               formControlName="nom">
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Code Postal</mat-label>
+        <input matInput (input)="applyFilters(false)" placeholder="Code Postal"
+               formControlName="codepostal">
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Ville</mat-label>
+        <input matInput (input)="applyFilters(false)" placeholder="Ville"
+               formControlName="ville">
+      </mat-form-field>
+    </mat-card>
+    <br/>
+    <mat-card>
+      <h2>Évolution CA</h2>
+      <mat-form-field appearance="fill">
+        <mat-label>Années</mat-label>
+        <mat-select [disableOptionCentering]="true" formControlName="anneescomparees"
+                    (selectionChange)="resetMonths()">
+          @for (annees of anneesComparables; track annees) {
+            <mat-option [value]="annees">
+              <span class="option">{{ annees }}</span></mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <div class="mois">
+        <mat-form-field appearance="fill">
+          <mat-label>De...</mat-label>
+          <mat-select [disableOptionCentering]="true" formControlName="moisdebut"
+                      (selectionChange)="updateAvailableEndMonths()">
+            @for (mois of moisDebutDisponibles; track mois) {
+              <mat-option [value]="mois">
+                <span class="option">{{ mois }}</span></mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>À...</mat-label>
+          <mat-select [disableOptionCentering]="true" formControlName="moisfin"
+                      (selectionChange)="updateAvailableStartMonths()">
+            @for (mois of moisFinDisponibles; track mois) {
+              <mat-option [value]="mois">
+                <span class="option">{{ mois }}</span></mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <button class="bouton-appliquer" mat-raised-button [disabled]="!filtresForm.get('anneescomparees').value"
+              (click)="calculerEvolutionCA()">Appliquer
+      </button>
+    </mat-card>
+  </div>
+  <div>
+    <div class="chart-et-boutons">
+      <div class="buttons-container">
+        <div class="boutons-graphe">
+          <mat-form-field appearance="fill">
+            <mat-label>Filtrages sauvegardés</mat-label>
+            <mat-select [disableOptionCentering]="true" [(ngModel)]="selectedSavedFilter">
+              @for (filters of savedFilters ?? []; track filters) {
+                <mat-option [value]="filters" (click)="applySavedFilters(filters)">
+                  <span class="option">{{ filters.displayName }}</span>
+                </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          @if (selectedSavedFilter) {
+            <button mat-raised-button class="supprimer-filtrage" (click)="supprimerFiltrage()">
+              <mat-icon>delete</mat-icon>
+              <span class="texte">Supprimer</span>
+            </button>
+          }
+        </div>
+        <div class="boutons-graphe">
+          <button class="changer-graphe" mat-raised-button (click)="changeGraphType()">
+            Changer le type
+          </button>
+          <mat-form-field appearance="fill">
+            <mat-label>Donnée</mat-label>
+            <mat-select [disableOptionCentering]="true" [(ngModel)]="serie"
+                        (selectionChange)="updateChartSeries()">
+              @for (serie of Object.values(SERIES); track serie) {
+                <mat-option [value]="serie">
+                  <span class="option">{{ serie.displayName }}</span></mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+      <apx-chart #chart [series]="chartOptions.series" [chart]="chartOptions.chart" [xaxis]="chartOptions.xaxis"
+                 [yaxis]="chartOptions.yaxis" [grid]="chartOptions.grid" [title]="chartOptions.title"
+                 [dataLabels]="chartOptions.dataLabels"></apx-chart>
+    </div>
+    <mat-card>
+      <div class="boutons-et-paginator">
+        <div class="boutons">
+          @if (!selection.isEmpty()) {
+            <button mat-raised-button class="export" (click)="completeSelectionAndExportToExcel()">Exporter en
+              xls
+            </button>
+            <button mat-raised-button class="export" (click)="completeSelectionAndAddToCampaign()">Affecter à
+              une
+              campagne
+            </button>
+          } @else {
+            <button mat-raised-button class="export nope" [disabled]="true">Exporter en xls</button>
+            <button mat-raised-button class="export nope" [disabled]="true">Affecter à une campagne</button>
+          }
+        </div>
+        <mat-paginator [pageSizeOptions]="[25, 50, 75, 100]" aria-label="Select page of users"></mat-paginator>
+      </div>
+      <table mat-table [dataSource]="dataSource" matSort (matSortChange)="sortData()">
+        <br/>
+
+        <ng-container matColumnDef="select">
+          <th mat-header-cell *matHeaderCellDef>
+            <mat-checkbox (change)="$event ? toggleAllRows() : null"
+                          [checked]="selection.hasValue() && isAllSelected()"
+                          [indeterminate]="selection.hasValue() && !isAllSelected()" [aria-label]="checkboxLabel()">
+            </mat-checkbox>
+          </th>
+          <td mat-cell *matCellDef="let row">
+            <mat-checkbox (click)="$event.stopPropagation()"
+                          (change)="$event ? selection.toggle(row) : null" [checked]="selection.isSelected(row)"
+                          [aria-label]="checkboxLabel(row)">
+            </mat-checkbox>
+          </td>
+        </ng-container>
+
+        <!-- N° Client -->
+        <ng-container matColumnDef="num">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            N° Client
+          </th>
+          <td mat-cell *matCellDef="let row"> {{ row.num }}</td>
+        </ng-container>
+
+        <!-- Nom -->
+        <ng-container matColumnDef="nom">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            Nom
+          </th>
+          <td mat-cell *matCellDef="let row"> {{ row.nom }}</td>
+        </ng-container>
+
+        <!-- Département -->
+        <ng-container matColumnDef="departement">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            Département
+          </th>
+          <td mat-cell *matCellDef="let row"> {{ row.departement }}</td>
+        </ng-container>
+
+        <!-- Code Postal -->
+        <ng-container matColumnDef="codepostal">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            Code Postal
+          </th>
+          <td mat-cell *matCellDef="let row"> {{ row.codepostal }}</td>
+        </ng-container>
+
+        <!-- Ville -->
+        <ng-container matColumnDef="ville">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            Ville
+          </th>
+          <td mat-cell *matCellDef="let row"> {{ row.ville }}</td>
+        </ng-container>
+
+        <!-- CA Année 1 -->
+        <ng-container matColumnDef="caAnnee1">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            <span class="info-wrapper">
+              CA
+              {{ this.filtresForm.get('anneescomparees').value.split(' - ')[0] }}
+              <span class="info-icon"
+                    matTooltip="Le CA affiché ne concerne que les marques sélectionnées">i</span>
+            </span>
+          </th>
+          <td class="montant" mat-cell *matCellDef="let row">
+            {{ caAnnee1Map.get(row.num) | number:'1.0-0':'fr-FR' }} €
+          </td>
+        </ng-container>
+
+        <!-- CA Année 2 -->
+        <ng-container matColumnDef="caAnnee2">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            <span class="info-wrapper">
+              CA
+              {{ this.filtresForm.get('anneescomparees').value.split(' - ')[1] }}
+              <span class="info-icon"
+                    matTooltip="Le CA affiché ne concerne que les marques sélectionnées">i</span>
+            </span>
+          </th>
+          <td class="montant" mat-cell *matCellDef="let row">
+            {{ caAnnee2Map.get(row.num) | number:'1.0-0':'fr-FR' }} €
+          </td>
+        </ng-container>
+
+        <!-- Évolution brute -->
+        <ng-container matColumnDef="evolutionbrute">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            <span class="info-wrapper">
+              Évolution brute
+              <span class="info-icon"
+                    matTooltip="L'évolution affichée ne concerne que les marques sélectionnées">i</span>
+            </span>
+          </th>
+          <td class="montant"
+              [ngClass]="{'positif': evolutionBruteMap.get(row.num) > 0, 'negatif': evolutionBruteMap.get(row.num) < 0}"
+              mat-cell *matCellDef="let row">
+            {{ (evolutionBruteMap.get(row.num) >= 0 ? '+' : '') + (evolutionBruteMap.get(row.num) | number:'1.0-0':'fr-FR') }}
+            €
+          </td>
+        </ng-container>
+
+        <!-- Pourcentage d'évolution -->
+        <ng-container matColumnDef="prctevolution">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            <span class="info-wrapper">
+              % Évolution
+              <span class="info-icon"
+                    matTooltip="L'évolution affichée ne concerne que les marques sélectionnées">i</span>
+            </span>
+          </th>
+          <td mat-cell *matCellDef="let row">
+            <div class="prct-evolution">
+              <div class="montant"
+                   [ngClass]="{'positif': prctEvolutionMap.get(row.num) > 0, 'negatif': prctEvolutionMap.get(row.num) < 0}">
+                @if (prctEvolutionMap.get(row.num) === Infinity) {
+                  ∞ % (nouveau)
+                } @else if (prctEvolutionMap.get(row.num) === -Infinity) {
+                  -∞ %
+                } @else {
+                  {{ (prctEvolutionMap.get(row.num) >= 0 ? '+' : '') + prctEvolutionMap.get(row.num).toFixed(1) }}%
+                }
+              </div>
+              <div>
+                @if (prctEvolutionMap.get(row.num) > 0) {
+                  <mat-icon style="color: green">trending_up</mat-icon>
+                } @else if (prctEvolutionMap.get(row.num) < 0) {
+                  <mat-icon style="color: red">trending_down</mat-icon>
+                } @else {
+                  <mat-icon>trending_flat</mat-icon>
+                }
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Détail Transactions -->
+        <ng-container matColumnDef="detail-transactions">
+          <th mat-header-cell *matHeaderCellDef> Détail des transactions</th>
+          <td mat-cell *matCellDef="let row">
+            <button mat-button (click)="openDialog(row.num); $event.stopPropagation()">Voir détail
+              <mat-icon>open_in_new</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr class="ligne-cliquable small-font-size" mat-row (click)="openInNewWindow(row.num)"
+            *matRowDef="let row; columns: displayedColumns;">
+        </tr>
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell" [colspan]="displayedColumns.length">
+            Aucune donnée correspondante aux filtres
+          </td>
+        </tr>
+      </table>
+
+    </mat-card>
+  </div>
+</div>

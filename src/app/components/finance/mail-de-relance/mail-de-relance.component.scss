@@ -1,0 +1,26 @@
+.display-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.mat-chip-listbox-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(10rem, 1fr));
+  gap: 1rem;
+}
+
+.annuler {
+  background-color: var(--color-warn);
+  color: white;
+}
+
+.envoyer {
+  background-color: var(--color-secondary);
+  color: white;
+}
+
+.action-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}

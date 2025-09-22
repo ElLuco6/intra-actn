@@ -1,0 +1,25 @@
+.raised-1 > ul, ul.raised-1 {
+  display: grid !important;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.edit-button {
+  height: 3em;
+}
+
+.p-produit {
+  padding: 0 5px 5px 5px;
+  display: grid;
+  grid-template-columns: minmax(0, 250px) minmax(0, 230px) auto;
+  column-gap: 20px;
+  align-items: center;
+
+  > div {
+    display: flex;
+    align-items: center;
+
+    > *:not(:last-child) {
+      margin-right: 10px;
+    }
+  }
+}

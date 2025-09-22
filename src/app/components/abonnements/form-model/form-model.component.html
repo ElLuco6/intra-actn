@@ -1,0 +1,666 @@
+<div class="">
+  <!-- *ngIf="loading === true; else charge" -->
+  <button [disabled]="disabledBtn" class="raised-button" [routerLink]="['/abonnements/']">
+    Accueil Abonnements
+  </button>
+
+  <mat-stepper linear #stepper><!--  [disabled]="isEditable"  -->
+    <mat-step [completed]="isEditable">
+      <!-- [stepControl]="firstFormGroup" [stepControl]="addrForm" -->
+      <form [formGroup]="addrForm" #formRef>
+        <ng-template matStepLabel>Client</ng-template>
+
+        <!-- <p style="text-align: end; margin-right: 20px;">* : Champs obligatoires</p> -->
+        <h2>Revendeur</h2>
+        @if (mode == 'edit' && clientActuel) {
+        <div class="info-message">
+          <p>N'oubliez pas d'appuyer sur le bouton "Enregistrer" pour que vos modifications soient prises en compte.</p>
+
+          <p>Chaque bouton "Enregistrer" ne prend en compte que les informations de l'onglet actuel.</p>
+
+        </div>
+        <div class="revendeurField">
+          <h3>Siret : {{ clientActuel.revendeursiret }}</h3>
+          <h3>
+            Adresse complète :
+            {{
+            clientActuel.revendeuradresse +
+            " " +
+            clientActuel.revendeurville +
+            " " +
+            clientActuel.revendeurcpostal
+            }}
+          </h3>
+          <!--   <h2>Client Final</h2>
+            <h3>Siret : {{revendeurActuel.siren}}</h3>
+            <h3>Adresse complète : {{revendeurActuel.adresse1 +' '+ revendeurActuel.ville +' '+ revendeurActuel.codepostal}}</h3>    -->
+        </div>
+        }
+
+        <div class="revendeur">
+          <label>
+            <mat-form-field class="example-full-width">
+              <mat-label>N° de dossier :</mat-label>
+              <input class=" " formControlName="nDossier" matInput maxlength="30" name="nDossier"
+                placeholder="30 caractères max" required type="text" [disabled]="mode === 'edit'"
+                [readonly]="mode === 'edit'" />@if (mode == 'edit'){
+              <div matSuffix style="margin-right: 5px" class="nDossier rib_txt">
+                <mat-icon class="rib_icon" (click)="
+                    copyText(this.addrForm.value.nDossier); tooltip.show()
+                  ">file_copy</mat-icon>
+              </div>
+              } @if (addrForm.get('nDossier').invalid) {
+              <mat-error>30 caractères max parmi : Majuscules, minuscules, chiffres, accents, tirets
+              </mat-error>
+              }
+            </mat-form-field>
+          </label>
+          <label>
+            <mat-form-field class="example-full-width">
+              <mat-label>N° client ACTN : @if ( this.zukex.code !== undefined &&
+                this.zukex.designation !== undefined ) {
+                <span>{{
+                  this.zukex.code + " " + this.zukex.designation
+                  }}</span>
+                }</mat-label>
+              <input formControlName="nClientACTN" matInput maxlength="40" name="nClientACTN"
+                placeholder="40 caractères max" type="text" (focusin)="inputFocused()" (focusout)="inputFocused()"
+                [matAutocomplete]="autoGroup" (click)="autocomplete.openPanel()" [value]="preselectedValue" /><!--  -->
+              @if (addrForm.get('nClientACTN').invalid) {
+              <mat-error>
+                40 chiffres maximum
+              </mat-error>
+              }
+            </mat-form-field>
+
+            <mat-autocomplete #autoGroup="matAutocomplete" class="single-autocomplete" [displayWith]="displayClientCode"
+              (optionSelected)="loginClient($event.option.value)">
+              @if (autoCompleteOptions$ | async; as options) { @for (client of
+              options.clients; track client) {
+              <mat-option [value]="client">
+                {{ start(client.code) }}
+                @if (client.code.includes(searching)) {
+                <span style="font-weight: bold">{{ searching }}</span>
+                }{{ end(client.code) }}
+                <br />
+                {{ start(client.designation) }}@if
+                (client.designation.includes(searching)) {
+                <span style="font-weight: bold">{{ searching }}</span>
+                }{{ end(client.designation) }}
+              </mat-option>
+              } }
+            </mat-autocomplete>
+          </label>
+          <label>
+            <mat-form-field class="example-full-width">
+              <mat-label>Nom revendeur :</mat-label>
+              <input formControlName="nomRevendeur" matInput maxlength="30" name="nomRevendeur"
+                placeholder="30 caractères max" required type="text" />
+              @if (addrForm.get('nomRevendeur').invalid) {
+              <mat-error>
+                30 caractères max parmi : Majuscules, minuscules, chiffres, accents, tirets
+              </mat-error>
+              }
+            </mat-form-field>
+          </label>
+
+          <label>
+            <mat-form-field class="example-full-width">
+              <mat-label>Mail du revendeur :</mat-label>
+              <input formControlName="mailRevendeur" matInput maxlength="100" name="mailRevendeur"
+                placeholder="100 caractères max" required type="email" />
+              @if (addrForm.get('mailRevendeur').invalid) {
+              <mat-error>
+                100 caractères max parmi : Majuscules, minuscules,
+                chiffres, accents, tirets, points, underscores
+              </mat-error>
+              }
+            </mat-form-field>
+          </label>
+
+          <label>
+            <mat-form-field class="example-full-width">
+              <mat-label>N° de devis ACTN :</mat-label>
+
+              <input formControlName="nDevisActn" matInput maxlength="6" name="nDevisActn"
+                placeholder="6 caractères max" type="text" />
+
+              @if (addrForm.get('nDevisActn').invalid) {
+              <mat-error>6 chiffres maximum
+              </mat-error>
+              }
+            </mat-form-field>
+          </label>
+
+          <label>
+            <mat-form-field class="example-full-width">
+              <mat-label>Téléphone revendeur :</mat-label>
+
+              <input formControlName="telephoneRevendeur" matInput maxlength="20" name="telephoneRevendeur"
+                placeholder="20 caractères max" type="text" />
+              @if (addrForm.get('telephoneRevendeur').invalid) {
+              <mat-error>
+                20 chiffres maximum
+              </mat-error>
+              }
+            </mat-form-field>
+          </label>
+          <br />
+        </div>
+
+        <h2>Client Final</h2>
+        <div class="revendeur">
+          <mat-form-field class="example-full-width">
+            <mat-label>Nom du client final :</mat-label>
+            <input formControlName="nomClientFinal" matInput maxlength="40" name="nomClientFinal"
+              placeholder="40 caractères max" required type="text" />
+            @if (addrForm.get('nomClientFinal').invalid) {
+            <mat-error>
+              40 caractères max parmi : Majuscules, minuscules, chiffres, accents, tirets
+            </mat-error>
+            }
+            <mat-hint>Reprendre à l'identique la zone client final de
+              sewan.</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field class="example-full-width">
+            <mat-label>Adresse client final :</mat-label>
+
+            <input formControlName="adresseClientFinal" matInput maxlength="60" name="adresseClientFinal"
+              placeholder="60 caractères max" type="text" />
+            @if (addrForm.get('adresseClientFinal').invalid) {
+            <mat-error>
+              60 caractères max parmi : Majuscules, minuscules, chiffres, accents, tirets
+            </mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field class="example-full-width">
+            <mat-label>Code postal :</mat-label>
+
+            <input formControlName="codePostal" matInput maxlength="5" name="codePostal" placeholder="5 caractères max"
+              type="text" />
+            @if (addrForm.get('codePostal').invalid) {
+            <mat-error>5 chiffres maximum
+            </mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field class="example-full-width">
+            <mat-label>Ville :</mat-label>
+
+            <input formControlName="ville" matInput maxlength="60" name="ville" placeholder="60 caractères max"
+              type="text" />
+            @if (addrForm.get('ville').invalid) {
+            <mat-error>60 caractères max parmi : Majuscules, minuscules,
+              chiffres, accents, tirets
+            </mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field class="example-full-width">
+            <mat-label>Téléphone client final :</mat-label>
+
+            <input formControlName="telephoneClientFinal" matInput maxlength="20" name="telephone"
+              placeholder="20 caractères max" type="text" />
+            @if (addrForm.get('telephoneClientFinal').invalid) {
+            <mat-error>
+              20 chiffres maximum
+            </mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field class="example-full-width">
+            <mat-label>Votre référence :</mat-label>
+
+            <input formControlName="votreReference" matInput maxlength="30" name="votreReference"
+              placeholder="30 caractères max" type="text" />
+            @if (addrForm.get('votreReference').invalid) {
+            <mat-error>30 caractères max parmi : Majuscules, minuscules,
+              chiffres, accents, tirets
+            </mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field class="example-full-width">
+            <mat-label>Numéro SIRET :</mat-label>
+
+            <input formControlName="clientsiret" matInput maxlength="14" name="siret" placeholder="14 caractères max"
+              type="text" />
+            @if (addrForm.get('clientsiret').hasError('invalidSiret')) {
+            <mat-error> {{ addrForm.get('clientsiret')?.getError('invalidSiret') }}
+            </mat-error>
+            }
+          </mat-form-field>
+        </div>
+        <h2>Information Technique</h2>
+        <div class="revendeur">
+          <label>
+            <mat-form-field class="example-full-width">
+              <mat-label>Numéro de la ligne :</mat-label>
+
+              <input formControlName="numeroLigne" matInput maxlength="20" name="numéroLigne"
+                placeholder="20 caractères max" type="text" />
+              @if (addrForm.get('numeroLigne').invalid) {
+              <mat-error>20 chiffres maximum
+              </mat-error>
+              }
+            </mat-form-field>
+          </label>
+          <br />
+
+          <label>
+            <mat-form-field class="example-full-width">
+              <mat-label>Statut portabilité :</mat-label>
+              <mat-select formControlName="statut">
+                <mat-option [value]="'EN ATTENTE'">En attente</mat-option>
+                <mat-option [value]="'EN PRODUCTION'">En production</mat-option>
+                <mat-option [value]="'LIVREE'">Livrée</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </label>
+
+          <label>
+            <mat-form-field class="example-full-width">
+              <mat-label>Services demandés :</mat-label>
+
+              <input formControlName="services" matInput maxlength="40" name="services" placeholder="40 caractères max"
+                type="text" />
+
+              @if (addrForm.get('services').invalid) {
+              <mat-error>40 caractères max parmi : Majuscules, minuscules,
+                chiffres, accents, tirets
+              </mat-error>
+              }
+            </mat-form-field>
+          </label>
+          <br />
+
+          <label>
+            <mat-form-field class="example-full-width">
+              <mat-label>N°rio :</mat-label>
+
+              <input formControlName="nRio" matInput maxlength="20" name="nRio" placeholder="20 caractères max"
+                type="text" />
+
+              @if (addrForm.get('nRio').invalid) {
+              <mat-error>20 caractères max parmi : Majuscules, chiffres, +
+              </mat-error>
+              }
+            </mat-form-field>
+          </label>
+
+          <label>
+            <mat-form-field class="example-full-width">
+              <mat-label>Date de portabilite :</mat-label>
+
+              <input formControlName="datePortabilite" matInput maxlength="10" name="datePortabilite"
+                placeholder="10 caractères max" type="date" />
+              @if (addrForm.get('datePortabilite').invalid) {
+              <mat-error>La date de portabilité est requise</mat-error>
+              }
+            </mat-form-field>
+          </label>
+          <label>
+            <mat-form-field class="example-full-width">
+              <mat-label>Heure :</mat-label>
+
+              <mat-select formControlName="heure" matInput>
+                @for (heure of heures; track heure) {
+                <mat-option [value]="heure.value">
+                  {{ heure.heure }}
+                </mat-option>
+                }
+              </mat-select>
+              <!-- <span *ngIf="addrForm.addr2">&nbsp;{{ addrForm.addr2.length }}</span> -->
+              @if (addrForm.get('heure').invalid) {
+              <mat-error>Erreur
+              </mat-error>
+              }
+            </mat-form-field>
+          </label>
+
+          <label>
+            <mat-form-field class="example-full-width">
+              <mat-label>Login :</mat-label>
+
+              <input formControlName="login" matInput maxlength="30" name="login" placeholder="30 caractères max"
+                type="text" />
+
+              @if (addrForm.get('login').invalid) {
+              <mat-error>30 caractères max parmi : Majuscules, minuscules, chiffres,
+                accents, tirets, points, underscores, +, -
+              </mat-error>
+              }
+            </mat-form-field>
+          </label>
+          <label>
+            <mat-form-field class="example-full-width">
+              <mat-label>Mot de passe :</mat-label>
+
+              <input formControlName="mdp" matInput maxlength="30" name="mdp" placeholder="30 caractères max"
+                type="text" />
+              <!-- <span *ngIf="addrForm.addr2">&nbsp;{{ addrForm.addr2.length }}</span> -->
+              @if (addrForm.get('mdp').invalid) {
+              <mat-error>30 caractères max parmi : Majuscules, minuscules, chiffres, accents, tirets
+              </mat-error>
+              }
+            </mat-form-field>
+          </label>
+
+          <label>
+            <mat-form-field class="example-full-width">
+              <mat-label>IP publique :</mat-label>
+              <input formControlName="IpPublique" matInput maxlength="255" name="IpPublique"
+                placeholder="255 caractères max" type="text" />
+              @if (addrForm.get('IpPublique').invalid) {
+              <mat-error>
+                255 caractères max parmi : Chiffres, +, .
+              </mat-error>
+              }
+            </mat-form-field>
+          </label>
+          <label>
+            <mat-form-field class="example-full-width">
+              <mat-label>Nom de domaine :</mat-label>
+
+              <input formControlName="nomDomaine" matInput maxlength="200" name="nomDomaine"
+                placeholder="200 caractères max" type="text" />
+
+              @if (addrForm.get('nomDomaine').invalid) {
+              <mat-error>Le nom de domaine doit faire entre 1 et 200 caractères
+              </mat-error>
+              }
+            </mat-form-field>
+          </label>
+
+          <label>
+            <mat-form-field class="example-full-width">
+              <mat-label>N° de secours :</mat-label>
+              <input formControlName="nSecours" matInput maxlength="20" name="nSecours" placeholder="20 caractères max"
+                type="text" />
+
+              @if (addrForm.get('nSecours').invalid) {
+              <mat-error>20 chiffres maximum
+              </mat-error>
+              }
+            </mat-form-field>
+          </label>
+
+          <label>
+            <mat-form-field class="example-full-width">
+              <mat-label>Statut du service :</mat-label>
+              <mat-select formControlName="statutdemande">
+                <mat-option [value]="'ATTENTE'">En attente</mat-option>
+                <mat-option [value]="'EN COURS'">En cours</mat-option>
+                <mat-option [value]="'ACTIF'">Actif</mat-option>
+                <mat-option [value]="'ARRETE'">Arrêté</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </label>
+          <label>
+            <mat-form-field class="example-full-width">
+              <mat-label>Commentaire :</mat-label>
+
+              <input formControlName="commentaire" matInput maxlength="200" name="commentaire"
+                placeholder="200 caractères max" type="text" />
+              <!-- <span *ngIf="addrForm.addr2">&nbsp;{{ addrForm.addr2.length }}</span> -->
+              @if (addrForm.get('commentaire').invalid) {
+              <mat-error>Le commentaire doit faire entre 1 et 200 caractères</mat-error>
+              }
+            </mat-form-field>
+          </label>
+
+          <div></div>
+        </div>
+      </form>
+
+      <div class="supprimer">
+        <button (click)="openDeletePopup()" class="raised-button red">
+          Supprimer
+        </button>
+      </div>
+
+      <div class="formButtons justEnd">
+        <div class="btnBox">
+          <button [disabled]="disabledBtn" [routerLink]="['/abonnements']" class="raised-button red">
+            Annuler
+          </button>
+          <button [disabled]="disabledBtn" (click)="addAClientSimple()" class="raised-button">
+            Enregistrer
+          </button>
+
+          <!-- <button [disabled]="disabledBtn" (click)="addAClientSimple(true)" class="raised-button">
+                                                              Ajout produit
+                                                            </button> -->
+          <!--    @if (this.mode !== 'add') {
+          <button (click)="pass()" class="raised-button" style="background-color: #176d87;">
+            Passer cette étape
+          </button>
+          } -->
+        </div>
+        <div class="textBox">
+          <mat-checkbox [(ngModel)]="checked" class="example-margin">Prévenir le client que son dossier à été mis à
+            jour.
+          </mat-checkbox>
+        </div>
+
+        @if (formErr == true && addrForm.invalid) {
+        <mat-error>Le formulaire comporte une erreur. </mat-error>
+        }
+      </div>
+    </mat-step>
+    <mat-step label="Documents & Produits" [optional]="false" [completed]="isEditableProduct">
+
+      <div class="info-message">
+        <p>N'oubliez pas d'appuyer sur le bouton "Valider le dossier" pour que vos modifications soient prises en
+          compte.</p>
+
+        <p>Chaque bouton "Enregistrer" ne prend en compte que les informations de l'onglet actuel.</p>
+
+      </div>
+      @if (this.addrForm.value.nDossier) {
+      <div class="weight500">
+        <p>N° dossier: {{ this.addrForm.value.nDossier }}</p>
+        <p>N° ACTN: {{ this.addrForm.value.nClientACTN }}</p>
+        <p>Nom revendeur: {{ this.addrForm.value.nomRevendeur }}</p>
+        <p>Nom client final: {{ this.addrForm.value.nomClientFinal }}</p>
+      </div>
+      }
+      @if (this.addrForm.value.nClientACTN) {
+      <div>
+        <app-documents [idClient]="this.addrForm.value.nClientACTN"></app-documents>
+      </div>
+      }
+      <h2 style="margin-top: 30px">Abonnement & Facturation</h2>
+
+      <mat-card appearance="outlined">
+        @if (this.addrForm.value.nDossier) {
+        <div class="clientInfo">
+          <p>N° dossier: {{ this.addrForm.value.nDossier }}</p>
+          <p>N° ACTN: {{ this.addrForm.value.nClientACTN }}</p>
+          <p>Nom revendeur: {{ this.addrForm.value.nomRevendeur }}</p>
+          <p>Nom client final: {{ this.addrForm.value.nomClientFinal }}</p>
+        </div>
+        }
+        <mat-divider></mat-divider>
+        <!-- <ul class="raised-1 size-smaller devis-header"> -->
+
+        <!-- </ul> -->
+
+        <!--  [routerLink]="['/abonnements/']" -->
+
+        @if(formProductArray.length > 0 && loading == false){ @for (item of
+        formProductArray; track item; let i = $index) {
+        <div class="facturation">
+          <div [ngClass]="{ unsaved: formProductArray[i].clean }">
+            <form class="formContainer" [formGroup]="formProductArray[i]">
+              @if (this.mode !== 'add') {
+              <div>
+                <h2 class=" ">N°{{ this.formProductArray[i].value.ligne }}</h2>
+              </div>
+              }
+              <div class=" ">
+                <mat-form-field class="example-full-width">
+                  <mat-label>Produit :</mat-label>
+                  <mat-select formControlName="produit" for="produit{{ i }}" matInput>
+                    @for (produit of products; track produit) {
+                    <mat-option [value]="produit.reference">
+                      {{ produit.reference }}
+                    </mat-option>
+                    }
+                  </mat-select>
+                  @if (formProductArray[i].get('produit').invalid) {
+                  <mat-error>Le champ est requis </mat-error>
+                  }
+                  <!-- </mat-autocomplete> -->
+                </mat-form-field>
+              </div>
+              <div class=" ">
+                <mat-form-field class="example-full-width">
+                  <mat-label>Quantité :</mat-label>
+                  <input type="number" formControlName="quantite" for="quantite{{ i }}" matInput name="quantite"
+                    min="1" />
+                  @if (formProductArray[i].get('quantite').invalid) {
+                  <mat-error>Le champ est requis </mat-error>
+                  }
+                </mat-form-field>
+              </div>
+              <div class=" ">
+                <label>
+                  <mat-form-field class="example-full-width">
+                    <mat-label>Nature :</mat-label>
+                    <mat-select formControlName="nature" for="nature{{ i }}" matInput>
+                      <mat-option [value]="'NAT'">National</mat-option>
+                      <mat-option [value]="'INT'">International</mat-option>
+                      <mat-option [value]="'INT2'">International2</mat-option>
+                      <mat-option [value]="'COM'">Compteur</mat-option>
+                    </mat-select>
+                    @if (formProductArray[i].get('nature').invalid) {
+                    <mat-error>Le champ est requis </mat-error>
+                    }
+                  </mat-form-field>
+                </label>
+              </div>
+              <div class=" ">
+                <label>
+                  <mat-form-field class="example-full-width">
+                    <mat-label>Périodicite facturation :</mat-label>
+                    <mat-select formControlName="periodefac" for="periodefac{{ i }}">
+                      <mat-option [value]="'U'">Unique</mat-option>
+                      <mat-option [value]="'M'">Mensuel</mat-option>
+                      <mat-option [value]="'A'">Annuel</mat-option>
+                    </mat-select>
+                    @if (formProductArray[i].get('periodefac').invalid) {
+                    <mat-error>Le champ est requis </mat-error>
+                    }
+                  </mat-form-field>
+                </label>
+              </div>
+              <div class=" ">
+                <label>
+                  <mat-form-field class="example-full-width">
+                    <mat-label>Date début facturation :</mat-label>
+                    <input formControlName="datedeb" for="datedeb{{ i }}" matInput maxlength="20" name="datedeb"
+                      placeholder="20 caractères max" type="date" />
+                    @if (formProductArray[i].get('datedeb').invalid) {
+                    <mat-error>Le champ est requis </mat-error>
+                    }
+                  </mat-form-field>
+                </label>
+              </div>
+              <div class=" ">
+                <label>
+                  <mat-form-field class="example-full-width">
+                    <mat-label>Date dernière facturation :</mat-label>
+                    <input formControlName="datedernierefact" for="datedernierefact{{ i }}" matInput maxlength="20"
+                      name="datedernierefact" placeholder="20 caractères max" type="date" />
+                    @if (formProductArray[i].get('datedernierefact').invalid) {
+                    <mat-error>Le champ est requis </mat-error>
+                    }
+                  </mat-form-field>
+                </label>
+              </div>
+              <div class=" ">
+                <mat-form-field class="example-full-width">
+                  <mat-label>Actif :</mat-label>
+                  <mat-select formControlName="actif" for="actif{{ i }}" matInput maxlength="20" name="actif">
+                    <mat-option [value]="'O'">Oui</mat-option>
+                    <mat-option [value]="'N'">Non</mat-option>
+                  </mat-select>
+                  @if (formProductArray[i].get('actif').invalid) {
+                  <mat-error>Le champ est requis </mat-error>
+                  }
+                </mat-form-field>
+              </div>
+              <div class="poubelle">
+                <div class="dflex">
+                  <!-- <button
+                                                                        class="raised-button wauto"
+                                                                        (click)="this.facturationProduct(i)"
+                                                                        >
+                                                                        Enregistrer
+                                                                      </button> -->
+                  <!-- <mat-icon>check</mat-icon> -->
+                  <button [disabled]="disabledBtn" class="raised-button wauto red">
+                    <mat-icon class="delete" (click)="deleteProduct(i)">delete</mat-icon>
+                  </button>
+                </div>
+                <!-- <p class="raised-button" (click)="deleteProduct(i)">Supprimer</p> Ajouter un produit -->
+              </div>
+            </form>
+          </div>
+          <mat-divider></mat-divider>
+        </div>
+        } }@else if ( loading == true){
+
+        <h2 style="padding: 15px">Chargement <span class="dots"></span></h2>
+        }@else{
+        <div>
+          <h2>Il n'y a pas encore de produit enregistré pour ce client</h2>
+        </div>
+        }
+        <div class="formButtonsProduit">
+          <button class="left-button" [disabled]="disabledBtn" mat-button class="raised-button wauto addProduit"
+            (click)="addProduct()">
+            Ajouter un nouveau produit <mat-icon>add</mat-icon>
+          </button>
+
+          <div class="right-buttons">
+            <button mat-button matStepperPrevious class="raised-button annuler">
+              <mat-icon>cancel</mat-icon> Annuler
+            </button>
+            <div style="width: fit-content" [matTooltip]="
+              !areAllFormsValid()
+                ? 'Tous les formulaires ne sont pas valides, pensez à supprimez les lignes non utilisées'
+                : 'Les données saisies sont correctes.'
+            " [matTooltipPosition]="'right'">
+              <button [disabled]="!areAllFormsValid() || disabledBtn" mat-button class="raised-button valider"
+                (click)="sendAll()">
+
+                <mat-icon>check</mat-icon> Valider le dossier
+              </button>
+            </div>
+          </div>
+          <!-- <button class="raised-button" (click)="deleteLigne()">Supprimer</button> -->
+        </div>
+        <!-- lastStep -->
+      </mat-card>
+    </mat-step>
+
+    <!--  <mat-step label="Validation" [optional]="false">
+                                                      <h2>Le dossier a bien été mis à jour ! 👍</h2>
+
+                                                      <button class="raised-button" [routerLink]="['/abonnements/']">
+                                                        Accueil Abonnements
+                                                      </button>
+                                                    </mat-step>
+                                                    -->
+    <!--  addrForm.get('nDossier').invalid || addrForm.get('nClientACTN').invalid || addrForm.get('nomRevendeur').invalid|| addrForm.get('mailRevendeur').invalid || addrForm.get('nDevisActn').invalid || addrForm.get('telephoneRevendeur').invalid || addrForm.get('nomClientFinal').invalid || addrForm.get('adresseClientFinal').invalid || addrForm.get('codePostal').invalid || addrForm.get('ville').invalid || addrForm.get('telephoneClientFinal').invalid || addrForm.get('votreReference').invalid || addrForm.get('services').invalid || addrForm.get('nRio').invalid || addrForm.get('datePortabilite').invalid ||addrForm.get('heure').invalid || addrForm.get('login').invalid || addrForm.get('mdp').invalid ||addrForm.get('IpPublique').invalid || addrForm.get('nSecours').invalid || addrForm.get('debutAbo').invalid || addrForm.get('finAbo').invalid || addrForm.get('commentaire').invalid -->
+  </mat-stepper>
+</div>
+<!-- <ng-container #charge>
+
+                                                <h2 style="padding: 15px">Chargement <span class="dots"></span></h2>
+                                              </ng-container>
+                                              -->

@@ -1,0 +1,137 @@
+@if (type == 'cdeBloque') {
+  <app-title-w-line [title]="'Commandes bloquées sur encours'"></app-title-w-line>
+} @else {
+  <app-title-w-line [title]="'Commandes bloquées rupture produits'"></app-title-w-line>
+}
+
+<mat-card appearance="outlined" style="margin-bottom: 1em">
+  <mat-card-title><h1 style="padding: 16px">Filtres</h1></mat-card-title>
+  <mat-card-content>
+    <div class="filtreee">
+      <mat-form-field>
+        <mat-label>Rechercher</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Ex. Quercy" #input>
+      </mat-form-field>
+      <form [formGroup]="formFiltre" class="filtreee">
+        <mat-form-field>
+          <mat-label>N° Commande</mat-label>
+          <input formControlName="commande" matInput [ngModel]="saf.getFiltre('cdeBloque', 'clientCde.commande', 'includes')" (keydown)="onSearch('clientCde.commande', 'string', 'includes', $event)"/>
+          @if (formFiltre.value.commande) {
+            <button matSuffix mat-icon-button aria-label="Clear" (click)="resetOneFilters('commande')">
+              <mat-icon>close</mat-icon>
+            </button>
+          }
+        </mat-form-field>
+        <mat-form-field>
+          <mat-label>Region</mat-label>
+          <mat-select formControlName="region" [(ngModel)]="regionSelected"
+            (ngModelChange)="onSearch('region', 'array', 'includes', $event, 'regionSelected')" multiple>
+            @for (reg of region; track reg) {
+              <mat-option [value]="reg">{{ reg }}</mat-option>
+            }
+          </mat-select>
+          @if (formFiltre.value.region != '') {
+            <button matSuffix mat-icon-button aria-label="Clear"
+              (click)="resetOneFilters('region')">
+              <mat-icon>close</mat-icon>
+            </button>
+          }
+        </mat-form-field>
+      </form>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<table mat-table
+  [dataSource]="dataSource" multiTemplateDataRows matSort
+  class="mat-elevation-z3">
+  @for (column of columnsToDisplay; track column; let i = $index) {
+    <ng-container matColumnDef="{{column}}">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> {{columsName[i]}} </th>
+      <td [ngClass]="{'pointer': column != 'risqueGlobal'}"
+          (click)="handleRowClick(column, element.numclient)"
+        mat-cell *matCellDef="let element">
+        @switch (column) {
+          @case ('risqueGlobal') {
+            <div style="display: flex; flex-direction: column">
+              <p>Risque Global : {{ element.risqueGlobal }} €</p>
+              <p>Dont BL : {{ element.EncoursBL }} €</p>
+              <p>Limite crédit : {{ element.limiteCredit }} €</p>
+              @if (element.limiteCreditExceptionnel != '0') {
+                <p>Limite crédit excep : {{ element.limiteCreditExceptionnel }} €</p>
+              } @else {
+                <p>Pas de crédit exceptionnel</p>
+              }
+              <p>Bilan : {{ element.Bilan }}</p>
+            </div>
+          }
+          @case ('telephone') {
+            <a [href]="'tel:' + element[column].split(' ').join('')">{{element[column]}}</a>
+          }
+          @case ('adresse1') {
+            <p>{{ element.adresse1 + ', ' + element.codepostal + ', ' + element.ville}}</p>
+          }
+          @default {
+            {{element[column]}}
+          }
+        }
+      </td>
+    </ng-container>
+  }
+  <ng-container matColumnDef="expand">
+    <th mat-header-cell *matHeaderCellDef aria-label="row actions">&nbsp;</th>
+    <td mat-cell *matCellDef="let element">
+      <button mat-icon-button aria-label="expand row" (click)="(expandedElement = expandedElement === element ? null : element); $event.stopPropagation()">
+        @if (expandedElement !== element) {
+          <mat-icon>keyboard_arrow_down</mat-icon>
+        }
+        @if (expandedElement === element) {
+          <mat-icon>keyboard_arrow_up</mat-icon>
+        }
+      </button>
+    </td>
+  </ng-container>
+
+  <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+  <ng-container matColumnDef="expandedDetail">
+    <td mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplayWithExpand.length" style="background-color: #f4f4f4fa">
+      <div class="example-element-detail"
+        [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
+        <div class="client-commande">
+          <div></div>
+          <div class="je-suis-bg">
+            <div style="display: grid; justify-items: start">
+              <p>N° commande <strong style="font-weight: 500">{{ element.clientCde.commande }}</strong> du {{ element.clientCde.commandedate }} <br> ref client : <strong style="font-weight: 500">{{ element.clientCde.refclient }}</strong></p>
+            </div>
+            <div style="display: grid; justify-items: start">
+              <p>Montant HT : {{ element.clientCde.MtcdeHT }}€</p>
+              <p>Montant TTC : {{ element.clientCde.MtcdeTTC }}€</p>
+            </div>
+            <div style="display: grid; justify-items: center">
+
+            </div>
+            <div style="display: grid; justify-items: start; grid-template-rows: 1fr 1fr">
+
+            </div>
+            <div style="display: grid; justify-items: end">
+              <ng-container>
+                <button mat-raised-button class="mat-raised-button voir-cde" [routerLink]="['/commande-detail']"
+                [queryParams]="{client: element.numclient, commande: element.clientCde.commande}">Voir détail</button>
+              </ng-container>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="columnsToDisplayWithExpand"></tr>
+  <tr mat-row *matRowDef="let element; columns: columnsToDisplayWithExpand;"
+    class="example-element-row"
+    [class.example-expanded-row]="expandedElement === element"
+    (click)="expandedElement = expandedElement === element ? null : element">
+  </tr>
+  <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr>
+  <mat-paginator [pageSizeOptions]="[25, 50, 100]" aria-label="Select page of users"></mat-paginator>
+</table>

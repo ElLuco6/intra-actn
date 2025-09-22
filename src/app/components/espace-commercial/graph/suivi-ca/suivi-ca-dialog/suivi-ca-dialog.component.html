@@ -1,0 +1,45 @@
+<h2 mat-dialog-title>{{ "Client n°" + infosClient.num + " : " + infosClient.nom }}</h2>
+<mat-dialog-content>
+  <div class="infosClient">
+    <div class="colonneInfoClient">
+      <h4> Ville : {{ infosClient.ville }} </h4>
+      <h4> Téléphone : <a [href]="'tel:' + infosClient.telephone.split(' ').join('')">{{infosClient.telephone}}</a></h4>
+    </div>
+    <div class="colonneInfoClient">
+      <h4> Code Postal : {{ infosClient.codepostal }} </h4>
+      <h4> Département : {{ infosClient.departement }} </h4>
+    </div>
+  </div>
+  <br/>
+  <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start">
+    @for (yearData of transactionsClient; let i = $index; track i) {
+      <mat-tab [label]="i + data.firstYear">
+        <table mat-table [dataSource]="tableData[$index]" class="mat-elevation-z8">
+          <ng-container matColumnDef="marque">
+            <th mat-header-cell *matHeaderCellDef> Marque</th>
+            <td mat-cell *matCellDef="let element"> {{ element.marque }}</td>
+          </ng-container>
+
+          @for (mois of listeMois; let j = $index; track j) {
+            <ng-container [matColumnDef]="mois">
+              <th mat-header-cell *matHeaderCellDef> {{ mois }}</th>
+              <td class="montant" mat-cell *matCellDef="let element"> {{ element.caDuMois[j] }}</td>
+            </ng-container>
+          }
+
+          <ng-container matColumnDef="total">
+            <th mat-header-cell *matHeaderCellDef> Total</th>
+            <td class="montant" mat-cell *matCellDef="let element"> {{ element.total }}</td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+      </mat-tab>
+    }
+  </mat-tab-group>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button mat-dialog-close>Fermer</button>
+</mat-dialog-actions>

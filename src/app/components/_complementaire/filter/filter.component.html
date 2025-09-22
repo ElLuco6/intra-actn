@@ -1,0 +1,110 @@
+@if (filterType === 'select') {
+  <mat-form-field class="champ-filtre">
+    <mat-label>{{ filterName }}</mat-label>
+    <mat-select [formControl]="filterControl" multiple (openedChange)="onSelectOpened($event)">
+      <div class="input-select">
+        <span class="input-placeholder" *ngIf="searchText.length <= 0">Rechercher</span>
+        <input matInput [(ngModel)]="searchText" #searchInput class="input-field" autofocus>
+      </div>
+      <mat-divider></mat-divider>
+      @for (option of filterOptions | filter: searchText; track option) {
+        <mat-option [value]="option">{{ option }}</mat-option>
+      }
+    </mat-select>
+    @if (filterControl.value.length > 0) {
+      <button (click)="resetFilter()" matSuffix mat-icon-button aria-label="Clear">
+        <mat-icon>close</mat-icon>
+      </button>
+    }
+  </mat-form-field>
+}
+
+@if (filterType === 'input') {
+  <mat-form-field class="champ-filtre">
+    <mat-label>{{ filterName }}</mat-label>
+    <input matInput [formControl]="filterControl">
+    @if (filterControl.value.length > 0) {
+      <button (click)="resetFilter()" matSuffix mat-icon-button aria-label="Clear">
+        <mat-icon>close</mat-icon>
+      </button>
+    }
+  </mat-form-field>
+}
+
+@if (filterType.includes('date')) {
+  <mat-form-field class="champ-filtre">
+    <mat-label>{{ filterName }}</mat-label>
+    <input matInput [matDatepicker]="picker" [formControl]="filterControl">
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker [disabled]="false"></mat-datepicker>
+    @if (filterControl.value.toString().length > 0) {
+      <button (click)="resetFilter()" matSuffix mat-icon-button aria-label="Clear">
+        <mat-icon>close</mat-icon>
+      </button>
+    }
+  </mat-form-field>
+}
+
+@if (filterType === 'maj') {
+  <mat-form-field class="champ-filtre">
+    <mat-label>Maj</mat-label>
+    <mat-select [formControl]="filterControl" multiple>
+      <mat-option [value]="'#FB0224'">
+        <div class="filter-bouboule-triangle">
+          <div class="triangle" [style.border-bottom-color]="'#FB0224'"></div>
+          maj > 6 mois
+        </div>
+      </mat-option>
+      <mat-option [value]="'#FB5102'">
+        <div class="filter-bouboule-triangle">
+          <div class="triangle" [style.border-bottom-color]="'#FB5102'"></div>
+          maj 3 à 6 mois
+        </div>
+      </mat-option>
+      <mat-option [value]="'#2FFB02'">
+        <div class="filter-bouboule-triangle">
+          <div class="triangle" [style.border-bottom-color]="'#2FFB02'"></div>
+          maj < 3 mois
+        </div>
+      </mat-option>
+      <mat-option [value]="'#F6F3F3'">
+        <div class="filter-bouboule-triangle">
+          <div class="triangle" [style.border-bottom-color]="'#F6F3F3'"></div>
+          Jamais maj
+        </div>
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+}
+
+@if (filterType === 'actif') {
+  <mat-form-field class="champ-filtre">
+    <mat-label>Actif</mat-label>
+    <mat-select [formControl]="filterControl" multiple>
+      <mat-option [value]="'#FB0224'">
+        <div class="filter-bouboule-triangle">
+          <div class="bouboule" [style.background-color]="'#FB0224'"></div>
+          Actif > 6 mois
+        </div>
+      </mat-option>
+      <mat-option [value]="'#FB5102'">
+        <div class="filter-bouboule-triangle">
+          <div class="bouboule" [style.background-color]="'#FB5102'"></div>
+          Actif 3 à 6 mois
+        </div>
+      </mat-option>
+      <mat-option [value]="'#2FFB02'">
+        <div class="filter-bouboule-triangle">
+          <div class="bouboule" [style.background-color]="'#2FFB02'"></div>
+          Actif < 3 mois
+        </div>
+      </mat-option>
+      <mat-option [value]="'#F6F3F3'">
+        <div class="filter-bouboule-triangle">
+          <div class="bouboule" [style.background-color]="'#F6F3F3'"></div>
+          Jamais commandé
+        </div>
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+}

@@ -1,0 +1,38 @@
+.btn-dialog {
+  display: flex;
+  justify-content: end;
+}
+
+.select-campaign {
+  width: 100%;
+}
+
+.btn-campaign {
+  color: white;
+
+  &.oui {
+    background-color: var(--color-secondary);
+  }
+
+  &.non {
+    background-color: var(--color-warn);
+  }
+}
+
+.subtitle {
+  margin: 0px 25px;
+  font-size: 1rem;
+  color: #9b0037;
+  font-style: italic;
+}
+
+.campaign-details {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+
+  .label {
+    font-weight: bold;
+  }
+}

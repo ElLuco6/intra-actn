@@ -1,0 +1,47 @@
+.liste-produits {
+  margin-bottom: 20px;
+  @media screen and (max-width: 768px) {
+    padding: 10px;
+  }
+}
+
+.underline {
+  text-decoration: underline;
+}
+
+.action-row{
+  @media screen and (max-width:768px){
+    display: grid !important;
+  }
+}
+
+.col-2{
+  @media screen and (max-width:768px){
+    display: inline !important;
+    grid-template-columns: 1fr!important;
+  }
+
+}
+
+.teste-button {
+  @media screen and (max-width:768px){
+    padding:0px !important;
+    justify-content: space-around !important;
+  }
+
+}
+.liste-produits{
+  height: 100%;
+}
+
+.raised-button {
+  @media screen and (max-width:768px){
+    margin-bottom: 10px;
+  }
+}
+
+.lawful-checkbox{
+  @media screen and (max-width:768px){
+    display: grid !important;
+  }
+}

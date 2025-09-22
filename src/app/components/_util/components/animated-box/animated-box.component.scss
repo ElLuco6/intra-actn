@@ -1,0 +1,219 @@
+// VARIABLES
+@import "variables.scss";
+$transition-bg-color: background-color 400ms cubic-bezier(0.87, 0, 0.13, 1);
+
+// CLASSES
+.categories {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  column-gap: 25px;
+  row-gap: 30px;
+  max-height: 5000px;
+  padding: 10px;
+  overflow: hidden;
+
+  transition: max-height 600ms cubic-bezier(0.87, 0, 0.13, 1), padding 600ms cubic-bezier(0, 1, 0, 1);
+
+  &.hidden {
+    transition: max-height 600ms cubic-bezier(0.87, 0, 0.13, 1), padding 600ms cubic-bezier(1, 0, 1, 0);
+    max-height: 0px;
+    padding: 0px 10px;
+    margin-top: 0px;
+  }
+
+  @media screen and (min-width: 1650px) {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  @media screen and (max-width: 1100px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media screen and (max-width: 767.98px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.cat {
+  display: block;
+  position: relative;
+  text-align: left;
+  font-weight: bold;
+  text-decoration: none;
+  font-size: large;
+  z-index: 2;
+  text-align: center;
+  height: 280px;
+  overflow: visible;
+
+  cursor: pointer;
+
+  perspective: 1000px;
+
+  &.small {
+    height: calc(3.15em + 10px);
+  }
+
+  img {
+    z-index: 1;
+    max-width: 100%;
+    position: absolute;
+    width: 95%;
+    left: 2.5%;
+    // bottom: 5px;
+    object-fit: scale-down;
+    object-position: bottom center;
+    mix-blend-mode: multiply;
+    // margin-top: 50%;
+    // transform: translateY(-50%);
+  }
+
+  .inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    background: white;
+    padding: 5px 10px;
+    transition: transform 0.4s cubic-bezier(0.76, 0, 0.24, 1), $transition-bg-color;
+    transform-style: preserve-3d;
+    will-change: transform;
+    border-radius: 3px;
+  }
+
+  .front,
+  .back {
+    position: absolute;
+    width: calc(100% - 10px * 2);
+    height: calc(100% - 10px);
+    backface-visibility: hidden;
+    transition: $transition-bg-color;
+    // background: white;
+
+    .title {
+      font-size: 0.95em;
+      height: 2.5em;
+      // height: 3.15em;
+      line-height: 1.05em;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      // justify-content: flex-end;
+    }
+  }
+
+  .front {
+    transform: translateZ(0px);
+  }
+
+  .back {
+    // background: white;
+    transform: rotateY(180deg);
+    // overflow: hidden;
+  }
+
+  .description {
+    position: absolute;
+    margin-top: 5px;
+    top: 3.15em;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    color: black;
+    text-align: left;
+    font-weight: normal;
+    line-height: 1.5em;
+    overflow-y: auto;
+
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .front-img-container {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0px;
+    z-index: 1;
+
+    display: flex;
+    justify-content: space-around;
+    flex-direction: column;
+  }
+
+  &:hover {
+    .inner {
+      transition: transform 0.6s cubic-bezier(0.76, 0, 0.24, 1), $transition-bg-color;
+      background-color: #f2f2f2;
+    }
+
+    .front {
+      background: #f2f2f2;
+    }
+
+    &:not(.small) {
+      .inner {
+        transform: rotateY(180deg);
+      }
+    }
+  }
+
+  &.selected {
+    .inner,
+    .front,
+    .back {
+      background-color: #f2f2f2;
+    }
+
+    .inner {
+      border: 3px solid var(--color-primary-contrast);
+      padding: 2px 7px;
+    }
+
+    .front,
+    .back {
+      width: calc(100% - 7px * 2);
+      height: calc(100% - 4px);
+    }
+  }
+
+  &.first {
+    order: -1 !important;
+
+    .inner:not(:hover, .selected), .front:not(:hover, .selected) {
+
+    }
+  }
+}
+
+:host {
+  position: relative;
+}
+
+.login-barrier {
+  position:absolute;
+  z-index: 3;
+  background-color: #c2c4c366;
+  height: 100%;
+  width: calc(100% + 1px);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+
+  button {
+    margin: 0 auto 15px;
+  }
+}
+
+.marqueur {
+  position: absolute;
+  left: -10px;
+  top: -5px;
+  width: 0;
+  height: 0;
+  border-top: 30px solid transparent;
+  border-right: 30px solid transparent;
+  // border-top-color: var(--color-primary-second);
+}

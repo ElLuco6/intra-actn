@@ -1,0 +1,28 @@
+
+@if (notEmpty) {
+  <div class="comparateur-buttons">
+    <button class="raised-button comparateur-button" (click)="export()">
+      Exporter le comparateur en .xls
+    </button>
+    <button class="raised-button comparateur-button" (click)="clearF()">
+      Vider le comparateur
+    </button>
+  </div>
+  <app-sliding-liste type="comparateur" [nbProduits]="produitsCompare.length" [produits]="produitsCompare"></app-sliding-liste>
+} @else {
+  <hr>
+    <h3>Aucuns produits à comparer</h3>
+    <div class="tutoComparateur">
+      <div class="tutoBox">
+        <img class="tutoImg" src="/assets/img/HowToComparateur_1.png">
+        <div class="tutoText">Cliquez sur l'icone du comparateur d'un produit pour l'y ajouter.</div>
+      </div>
+      <div class="tutoBox">
+        <img class="tutoImg" src="/assets/img/HowToComparateur_2.png">
+        <div class="tutoText">Pour y acceder cliquez sur l'icone du comparateur qui apparait dans la barre de navigation, ou dans votre espace client.</div>
+      </div>
+    </div>
+  }
+
+
+

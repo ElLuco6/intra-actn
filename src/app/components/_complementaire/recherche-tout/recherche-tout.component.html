@@ -1,0 +1,91 @@
+
+<form
+  class="catalogue-search-form trop-swag"
+  [ngClass]="{ show: openSearch }"
+  (ngSubmit)="newSearch()"
+  >
+  <div class="search-bar">
+    <input
+      type="text"
+      [formControl]="searchInput"
+      placeholder="Rechercher un produit"
+      [matAutocomplete]="autoGroup"
+      (click)="autocomplete.openPanel()"
+      (tap)="autocomplete.openPanel()"
+      />
+      <button type="submit" class="text-button">
+        <mat-icon class="search-icon">search</mat-icon>
+      </button>
+    </div>
+   
+  <mat-autocomplete class="single-autocomplete" #autoGroup="matAutocomplete" classList="autocomplete" (optionSelected)="newSearch()">
+    @if (historique.length > 0) {
+      <mat-optgroup label="Historique">
+        @for (mot of historique; track mot) {
+          <mat-option [value]="mot">
+            {{ mot }}
+          </mat-option>
+        }
+      </mat-optgroup>
+    }
+    @if (autoCompleteOptions$ | async; as options) {
+      @if (options.produits.length) {
+        <mat-optgroup label="Produits">
+          @for (produit of options.produits; track produit) {
+            @if (produit.type == 'MARQUE') {
+              <mat-option
+                [value]="produit.reference"
+                >
+                {{ start(produit.reference) }}@if (produit.reference.includes(searching.toUpperCase())) {
+                <span style="font-weight: bold;">{{ searching.toUpperCase() }}</span>
+                }{{ end(produit.reference) }}
+                <br />
+                {{ start(produit.marque) }}@if (produit.marque.includes(searching.toUpperCase())) {
+                <span style="font-weight: bold;">{{ searching.toUpperCase() }}</span>
+                }{{ end(produit.marque) }}
+                {{ start(produit.designation) }}@if (produit.designation.includes(searching.toUpperCase())) {
+                <span style="font-weight: bold;">{{ searching.toUpperCase() }}</span>
+                }{{ end(produit.designation) }}
+              </mat-option>
+            }
+          }
+        </mat-optgroup>
+      }
+      @if (options.clients.length) {
+        <mat-optgroup label="Clients">
+          @for (client of options.clients; track client) {
+            @if (client.label == 'CLIENT') {
+              <mat-option
+                [value]="client.numeroClient.slice(7) + ' ' + client.designation"
+                >
+                {{ start(client.numeroClient) }}@if (client.numeroClient.includes(searching.toUpperCase())) {
+                <span style="font-weight: bold;">{{ searching.toUpperCase() }}</span>
+                }{{ end(client.numeroClient) }}
+                <br />
+                {{ start(client.designation) }}@if (client.designation.includes(searching.toUpperCase())) {
+                <span style="font-weight: bold;">{{ searching.toUpperCase() }}</span>
+                }{{ end(client.designation) }}
+              </mat-option>
+            }
+          }
+        </mat-optgroup>
+      }
+      @for (prospect of options.prospects; track prospect) {
+        @if (prospect.label == 'PROSPECT') {
+          <mat-optgroup label="Prospects">
+            <mat-option
+              [value]="prospect.designation"
+              >
+              {{ start('PROSPECT') }}@if (prospect.designation.includes(searching)) {
+              <span style="font-weight: bold;">PROSPECT {{prospect.label}}</span>
+              }<br>{{ end('PROSPECT') }}
+              {{ start(prospect.designation) }}@if (prospect.designation.includes(searching)) {
+              <span style="font-weight: bold;">{{ searching }}</span>
+              }{{ end(prospect.designation) }}
+            </mat-option>
+          </mat-optgroup>
+        }
+      }
+    }
+  </mat-autocomplete>
+</form>

@@ -1,0 +1,154 @@
+@if (clients) {
+}
+@if (clientCde) {
+}
+
+@if(clients){
+  <mat-card appearance="outlined" style="padding: 0;">
+    <div class="client-content" [routerLink]="['/client-detail/' + clients[0].numclient]">
+      <div style="display: grid; grid-auto-rows: 1fr; justify-items: start">
+        Client {{ clients[0].numclient }}
+        <p style="font-weight: 500">{{ clients[0].nom }}</p>
+        @if (clients[0].adresse1 != '') {
+          <p>{{ clients[0].adresse1 }}</p>
+        }
+        @if (clients[0].adresse2 != '') {
+          <p>{{ clients[0].adresse2 }}</p>
+        }
+        <p>{{ clients[0].codepostal }} {{ clients[0].ville }}</p>
+        <a [href]="'tel:' + clients[0].telephone">{{ clients[0].telephone }}</a>
+      </div>
+      <div style="display: grid; grid-auto-rows: 1fr; grid-template-columns:12.5em 1fr; justify-items: start">
+        <p>Limite crédit : </p>
+        <p style="font-weight: 500">{{ clients[0].limiteCredit }} €</p>
+        <p>Limite crédit exceptionnel : </p>
+        <p><strong style="font-weight: 500">{{ clients[0].limiteCreditExceptionnel }} €</strong> jusqu'au {{ clients[0].limiteCreditExceptionnelDate }}</p>
+        <p>Encours compta : </p>
+        <p>{{ clients[0].EncoursCompta }} €</p>
+        <p>Encours BL : </p>
+        <p>{{ clients[0].EncoursBL }} €</p>
+        <p>Risque global : </p>
+        <p>{{ clients[0].risqueGlobal }} €</p>
+      </div>
+      <div>
+        <div style="display: grid; grid-template-rows: repeat(5, 1fr); justify-items: left">
+          <p>Bilan : {{clients[0].Bilan}}</p>
+          <p>Note : {{clients[0].note}}</p>
+          <p>Siren : {{clients[0].siren}}</p>
+          <p>Naf : {{clients[0].naflibelle}}</p>
+          <p>Region : {{clients[0].region}}</p>
+        </div>
+      </div>
+      <div>
+
+      </div>
+    </div>
+    <div style="padding: 1em">
+      @for (contact of clients[1]; track contact) {
+        <div class="content-contact">
+          <p>{{ contact.fonction }}</p>
+          <p>{{ contact.nom }}</p>
+          <p>{{ contact.mail }}</p>
+          <p>{{ contact.service }}</p>
+          <p>{{ contact.telephone }}</p>
+          <p>{{ contact.ID }}</p>
+        </div>
+      }
+    </div>
+  </mat-card>
+  }@else if(clientCde){
+  <mat-card appearance="outlined" style="margin-bottom: 1em; padding: 0;">
+    <div class="client-content-cde">
+      <div style="display: grid; grid-auto-rows: 1fr; justify-items: start">
+        <a style="display: grid; align-items: center; justify-items: center"
+          [routerLink]="['/client-detail/' + clientCde[0].numclient]" routerLinkActive="router-link-active">
+          Client {{ clientCde[0].numclient }}
+        </a>
+        <p style="font-weight: 500">{{ clientCde[0].nom }}</p>
+        @if (clientCde[0].adresse1 != '') {
+          <p>{{ clientCde[0].adresse1 }}</p>
+        }
+        @if (clientCde[0].adresse2 != '') {
+          <p>{{ clientCde[0].adresse2 }}</p>
+        }
+        <p>{{ clientCde[0].codepostal }} {{ clientCde[0].ville }}</p>
+        <a [href]="'tel:' + clientCde[0].telephone">{{ clientCde[0].telephone }}</a>
+      </div>
+      <div style="display: grid; grid-auto-rows: 1fr; grid-template-columns:12.5em 40vw; justify-items: start">
+        <p>Risque global : </p>
+        <p>{{ clientCde[0].risqueGlobal }} €</p>
+        <p>Dont BL : </p>
+        <p>{{ clientCde[0].EncoursBL }} €</p>
+        <p>Limite crédit : </p>
+        <p style="font-weight: 500">{{ clientCde[0].limiteCredit }} €</p>
+        <p>Limite crédit exceptionnel : </p>
+        @if (clientCde[0].limiteCreditExceptionnel != '0') {
+          <p><strong style="font-weight: 500">{{ clientCde[0].limiteCreditExceptionnel }} €</strong> jusqu'au {{ clientCde[0].limiteCreditExceptionnelDate }}</p>
+        } @else {
+          <p>Pas de crédit exceptionnel</p>
+        }
+        <p>Bilan : </p>
+        <p>{{ clientCde[0].Bilan }}</p>
+        <p>Siren :</p>
+        <p>{{ clientCde[0].siren }}</p>
+      </div>
+    </div>
+    @for (cde of clientCde[1]; track cde) {
+      <div class="client-commande">
+        <div>
+        </div>
+        <div class="je-suis-bg">
+          <div style="display: grid; justify-items: start">
+            <p>N° commande <strong style="font-weight: 500">{{ cde.commande }}</strong> du {{ cde.commandedate }} <br> ref client : <strong style="font-weight: 500">{{ cde.refclient }}</strong></p>
+          </div>
+          <div style="display: grid; justify-items: start">
+            <p>Montant HT : {{ cde.MtcdeHT }} €</p>
+            <p>Montant TTC : {{ cde.MtcdeTTC }} €</p>
+          </div>
+          <div style="display: grid; justify-items: center">
+          </div>
+          <div style="display: grid; justify-items: start; grid-template-rows: 1fr 1fr">
+          </div>
+          <div style="display: grid; justify-items: end">
+          </div>
+        </div>
+      </div>
+    }
+  </mat-card>
+} @else {
+  <mat-card appearance="outlined" style="margin-bottom: 1em;padding: 0;">
+    <div class="client-content" [routerLink]="['/espace-commercial/prospects/detail/' + prospects[0].numclient]">
+      <div style="display: grid; grid-auto-rows: 1fr; justify-items: start">
+        Prospect
+        <p style="font-weight: 500">{{ prospects[0].nom }}</p>
+        @if (prospects[0].adresse1 != '') {
+          <p>{{ prospects[0].adresse1 }}</p>
+        }
+        @if (prospects[0].adresse2 != '') {
+          <p>{{ prospects[0].adresse2 }}</p>
+        }
+        <p>{{ prospects[0].codepostal }} {{ prospects[0].ville }}</p>
+        <a [href]="'tel:' + prospects[0].telephone">{{ prospects[0].telephone }}</a>D
+      </div>
+      <div>
+        <div style="display: grid; grid-template-rows: repeat(5, 1fr); justify-items: left">
+          <p>Siren : {{prospects[0].siren}}</p>
+          <p>Naf : {{prospects[0].naflibelle}}</p>
+          <p>Region : {{prospects[0].region}}</p>
+        </div>
+      </div>
+    </div>
+    <div style="padding: 1em">
+      @for (contact of prospects[1]; track contact) {
+        <div class="content-contact">
+          <p>{{ contact.fonction }}</p>
+          <p>{{ contact.nom }}</p>
+          <p>{{ contact.mail }}</p>
+          <p>{{ contact.service }}</p>
+          <p>{{ contact.telephone }}</p>
+          <p>{{ contact.ID }}</p>
+        </div>
+      }
+    </div>
+  </mat-card>
+}

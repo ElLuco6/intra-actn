@@ -1,0 +1,43 @@
+@if (ids$ | async; as videos) {
+  <div class="youtube">
+    @for (video of videos; track video) {
+      <div>
+        @switch (video.type) {
+          @case ('IFRAME') {
+            @if (gotowebinar) {
+              <iframe class="iframe" scrolling="no" width="640" height="360" [src]="video.link | safe"></iframe>
+            } @else {
+              <div class="placeholder">
+                <p>
+                  Ce contenu est hébergé par un site tiers (www.gotowebinar.com).
+                  En affichant ce contenu vous acceptez les <a class="text-link text-link--contrast" href="https://www.logmein.com/fr/legal/privacy" target="_blank" rel="noopener noreferrer">termes et conditions</a> de LogMeIn.
+                </p>
+                <button class="raised-button ghost-button" (click)="acceptGoToWebinar()" (tap)="acceptGoToWebinar()">Afficher le contenu externe</button>
+              </div>
+            }
+          }
+          @case ('TITLE') {
+            <app-title-w-line [title]="video.link" size="small"></app-title-w-line>
+          }
+          @case ('YT') {
+            <div class="teste">
+              @if (youtube) {
+                <iframe id="player" type="text/html" width="100%" height="360" [src]="youtubeLink(video.link) | safe" frameborder="0"></iframe>
+              } @else {
+                <div class="placeholder">
+                  <p>
+                    Ce contenu est hébergé par un site tiers (www.youtube.com).
+                    En affichant ce contenu vous acceptez les <a class="text-link text-link--contrast" href="https://policies.google.com/privacy?hl=fr" target="_blank" rel="noopener noreferrer">termes et conditions</a> de Google.
+                  </p>
+                  <button class="raised-button ghost-button" (click)="acceptYoutube()" (tap)="acceptYoutube()">Afficher le contenu externe</button>
+                </div>
+              }
+            </div>
+          }
+        }
+      </div>
+    }
+  </div>
+}
+
+

@@ -1,0 +1,60 @@
+.container {
+  position: fixed;
+  bottom: 10vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  z-index: 100;
+  pointer-events: none;
+
+  &--warning {
+    top: 50vh;
+    bottom: unset;
+  }
+}
+
+.snackbar {
+  pointer-events: auto;
+  position: relative;
+  max-width: 50%;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
+  @media screen and (max-width:768px) {
+    display: grid;
+  }
+  @media screen and (max-width:320px){
+    max-width: 90%;
+  }
+  background-color: var(--color-secondary);
+  color: white;
+  border-radius: 3px;
+
+  padding: 15px;
+
+  &--warning {
+    background-color: var(--color-warn);
+    color: white;
+  }
+
+  &--large {
+    padding: 15px 50px;
+  }
+
+  p {
+    white-space: pre-wrap;
+  }
+
+  button {
+    margin-left: 15px;
+    margin-top: 15px;
+  }
+
+  .close {
+    position: absolute;
+    right: 6px;
+    top: 3px;
+    cursor: pointer;
+  }
+}

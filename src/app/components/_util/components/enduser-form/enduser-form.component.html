@@ -1,0 +1,99 @@
+@if (ready) {
+  <h3>{{ title }}</h3>
+  <form class="formulaire size-bigger" [formGroup]="enduserForm">
+    <div>
+      <p>Société</p>
+      <mat-form-field class="size-default">
+        <mat-label>Raison sociale</mat-label>
+        <input matInput type="text" autocomplete="organization" formControlName="nom" [required]="isRequired('nom')" />
+        @if (enduserForm.get('nom').errors?.required) {
+          <mat-error>Champ obligatoire</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field class="size-default">
+        <mat-label>Mail</mat-label>
+        <input matInput type="email" autocomplete="email" formControlName="mail" [required]="isRequired('mail')" />
+        @if (enduserForm.get('mail').errors?.required) {
+          <mat-error>Champ obligatoire</mat-error>
+        }
+      </mat-form-field>
+      <div class="flex-input">
+        <mat-form-field class="size-default">
+          <mat-label>N° de TVA</mat-label>
+          <input matInput type="text" formControlName="numtva" [required]="isRequired('numtva')"/>
+          @if (enduserForm.get('numtva').errors?.IsTva) {
+            <mat-error>La saisie ne correspond pas à un numéro de TVA</mat-error>
+          }
+          @if (enduserForm.get('numtva').errors?.required) {
+            <mat-error>Champ obligatoire</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field class="size-default">
+          <mat-label>Téléphone</mat-label>
+          <input matInput type="tel" autocomplete="tel" formControlName="telephone" [required]="isRequired('telephone')" />
+          @if (enduserForm.get('telephone').errors?.required) {
+            <mat-error>Champ obligatoire</mat-error>
+          }
+        </mat-form-field>
+      </div>
+    </div>
+    <div>
+      <p>Adresse du client final</p>
+      <mat-form-field class="size-default">
+        <mat-label>N°, Type, Nom voie</mat-label>
+        <input matInput type="text" autocomplete="address-line1" formControlName="adresse1" [required]="isRequired('adresse1')" (input)="onAdresseChange($event)" [matAutocomplete]="auto" />
+        <mat-autocomplete #auto="matAutocomplete">
+          @if (adresses$ | async; as adresses) {
+            @for (adresse of adresses; track adresse) {
+              <mat-option [value]="adresse['properties']['name']" (click)="onAdresseSelected(adresse['properties'])" (tap)="onAdresseSelected(adresse['properties'])">
+                {{ adresse['properties']['label'] }}
+              </mat-option>
+            }
+          }
+        </mat-autocomplete>
+        @if (enduserForm.get('adresse1').errors?.required) {
+          <mat-error>Champ obligatoire</mat-error>
+        }
+      </mat-form-field>
+      <mat-form-field class="size-default">
+        <mat-label>Complément adresse</mat-label>
+        <input matInput type="text" autocomplete="address-line2" formControlName="adresse2" />
+      </mat-form-field>
+      <div class="cpvp">
+        <mat-form-field class="size-default">
+          <mat-label>Code postal</mat-label>
+          <input matInput type="text" autocomplete="postal-code" formControlName="codepostal" [required]="isRequired('codepostal')" />
+          @if (enduserForm.get('codepostal').errors?.required) {
+            <mat-error>Champ obligatoire</mat-error>
+          }
+        </mat-form-field>
+        <mat-form-field class="size-default">
+          <mat-label>Ville</mat-label>
+          <input matInput type="text" autocomplete="address-level2" formControlName="ville" [required]="isRequired('ville')" />
+        </mat-form-field>
+        <mat-form-field class="size-default">
+          <mat-label>Pays</mat-label>
+          <mat-select formControlName="pays" [required]="isRequired('pays')">
+            @if (pays$ | async; as pays) {
+              @for (unPays of pays; track unPays) {
+                <mat-option [value]="unPays['alpha2Code']">{{ adresseService.getNameOfCountry(unPays) }}</mat-option>
+              }
+            }
+          </mat-select>
+          @if (enduserForm.get('pays').errors?.required) {
+            <mat-error>Champ obligatoire</mat-error>
+          }
+        </mat-form-field>
+      </div>
+    </div>
+    @if (serialNumber.mandatory) {
+      <div>
+        <p>Information concernant la licence</p>
+        <mat-form-field class="size-default">
+          <mat-label>{{ serialNumber.name }}</mat-label>
+          <input matInput type="text" formControlName="serie" required />
+        </mat-form-field>
+      </div>
+    }
+  </form>
+}

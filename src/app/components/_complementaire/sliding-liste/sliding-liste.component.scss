@@ -1,0 +1,189 @@
+@import "variables.scss";
+@import "src/app/components/comparateur/comparateur.component.scss";
+
+$arrow-size: 40px;
+
+#slider {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+#slider-container {
+  display: flex;
+  flex-wrap: nowrap;
+  padding: 5px;
+  width: 800%;
+  transition: all 0.75s ease 0s;
+
+  @media screen and (max-width:425px){
+    width: 100%;
+  }
+  &.comparateur {
+    transition: all 0.3s ease 0s;
+  }
+}
+
+.item {
+  margin-right: 15px;
+  display: inline-block;
+  transition: all 0.15s ease-in-out;
+
+  &:hover:not(.actu, .comparateur, .galerie) {
+    margin-top: -3px;
+  }
+
+  &.actu {
+    $height: 500px;
+    min-height: $height;
+    max-height: $height;
+    display: inline-flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: flex-start;
+
+    img {
+      height: 300px;
+      max-height: 300px;
+      width: 100%;
+      object-fit: scale-down;
+      object-position: top center;
+    }
+
+    .bottom {
+      align-self: flex-end;
+      margin-bottom: 10px;
+      > * {
+        display: inline-block;
+      }
+    }
+
+    .date {
+      color: var(--color-primary-second);
+    }
+
+    .description {
+      height: 100px;
+      overflow: hidden;
+      display: flex;
+      flex-wrap: wrap;
+      align-content: flex-start;
+      justify-content: flex-start;
+      flex-direction: column;
+    }
+
+    h3 {
+      margin: 0 0 10px 0;
+    }
+
+    > * {
+      display: block;
+
+      &:not(:first-child) {
+        width: 100%;
+        padding: 0 10px;
+      }
+    }
+  }
+
+  &.galerie {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid lightgray;
+
+    img {
+      transition: opacity 200ms ease-in-out;
+      width: 100%;
+      max-width: 100%;
+      min-height: 64px;
+      max-height: 64px;
+      object-fit: scale-down;
+      object-position: center;
+      opacity: 0.3;
+      @media screen and (max-width:425px){
+        min-height: 34px;
+      }
+
+      &.selected {
+        opacity: 1;
+      }
+
+      &:hover {
+        opacity: 1;
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+.buttons {
+  position: relative;
+  box-sizing: border-box;
+  //max-width: 95vw;
+  width: calc(100% + #{$arrow-size} * 2);
+  height: 0px;
+  left: 50%;
+  transform: translate(-50%, 0%);
+  display: flex;
+  justify-content: space-between;
+  z-index: 2;
+
+  &:not(:first-child) > .button {
+    &.comparateur {
+      margin-top: 700px !important;
+    }
+  }
+
+  .button {
+    width: $arrow-size;
+    height: $arrow-size * 1.5;
+    border: 0;
+    margin-top: 125px;
+    padding: 0;
+    transition-duration: 0.15s;
+    z-index: 2;
+    cursor: pointer;
+
+    background: url("../../../../assets/img/arrow-right.png");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 100%;
+    opacity: 0.8;
+
+    &.previous {
+      transform: rotate(180deg);
+    }
+
+    &.actu {
+      margin-top: 220px !important;
+    }
+
+    &.comparateur {
+      margin-top: 200px !important;
+    }
+
+    &.galerie {
+      margin-top: 16px !important;
+      width: 30px;
+      height: 45px;
+      @media screen and (max-width:320px){
+        margin-top:1px !important;
+      }
+    }
+  }
+
+  .button:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+
+  .button:hover:enabled {
+    opacity: 1;
+    transform: scale(1, 0.9);
+
+    &.previous {
+      transform: rotate(180deg) scale(1, 0.9);
+    }
+  }
+}

@@ -1,0 +1,289 @@
+<app-title-w-line [title]="'Liste des prospects'"></app-title-w-line>
+
+
+<mat-card appearance="outlined" class="card-filter">
+  <form [formGroup]="formSearch" class="filter">
+    <mat-form-field >
+      <mat-label>Rechercher</mat-label>
+      <input matInput (keyup)="applyFilter($event)" placeholder="Rechercher" #input>
+    </mat-form-field>
+
+    <mat-form-field class="champ-filtre">
+      <mat-label>Region</mat-label>
+      <mat-select formControlName="regionFiltre" multiple>
+        @for (region of listOfRegion; track region) {
+          <mat-option [value]="region">{{ region }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="champ-filtre">
+      <mat-label>Maj</mat-label>
+      <mat-select formControlName="majcolor" multiple>
+        <mat-option [value]="'#FB0224'">
+          <div class="filter-bouboule-triangle">
+            <div class="triangle" [style.border-bottom-color]="'#FB0224'"></div>
+            > 1 an
+          </div>
+        </mat-option>
+        <mat-option [value]="'#FB5102'">
+          <div class="filter-bouboule-triangle">
+            <div class="triangle" [style.border-bottom-color]="'#FB5102'"></div>
+            > 6 mois
+          </div>
+        </mat-option>
+        <mat-option [value]="'#2FFB02'">
+          <div class="filter-bouboule-triangle">
+            <div class="triangle" [style.border-bottom-color]="'#2FFB02'"></div>
+            Mis à jour
+          </div>
+        </mat-option>
+        <mat-option [value]="'#F6F3F3'">
+          <div class="filter-bouboule-triangle">
+            <div class="triangle" [style.border-bottom-color]="'#F6F3F3'"></div>
+            Jamais màj
+          </div>
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="champ-filtre">
+      <mat-label>Actif</mat-label>
+      <mat-select formControlName="actifcolor" multiple>
+        <mat-option [value]="'#FB0224'">
+          <div class="filter-bouboule-triangle">
+            <div class="bouboule" [style.background-color]="'#FB0224'"></div>
+            > 6 mois
+          </div>
+        </mat-option>
+        <mat-option [value]="'#FB5102'">
+          <div class="filter-bouboule-triangle">
+            <div class="bouboule" [style.background-color]="'#FB5102'"></div>
+            < 6 mois
+          </div>
+        </mat-option>
+        <mat-option [value]="'#2FFB02'">
+          <div class="filter-bouboule-triangle">
+            <div class="bouboule" [style.background-color]="'#2FFB02'"></div>
+            Actif
+          </div>
+        </mat-option>
+        <mat-option [value]="'#F6F3F3'">
+          <div class="filter-bouboule-triangle">
+            <div class="bouboule" [style.background-color]="'#F6F3F3'"></div>
+            Jamais commandé
+          </div>
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </form>
+</mat-card>
+
+<div class="mat-elevation-z3" style="border-radius: 10px;">
+  <div style="display: flex; padding: 10px; gap: 1rem;
+  align-items: center;">
+    <button mat-raised-button [routerLink]="['/espace-commercial/prospects/add']" class="export">Ajouter un prospect</button>
+    @if(!selection.isEmpty()){
+      <button mat-raised-button class="export" (click)="campagnesService.openCampaignDialog(selection)">Affecter à une campagne</button>
+      <button mat-raised-button class="export" (click)="this.export()">Exporter en xls</button>
+      }@else{
+      <button mat-raised-button class="export nope" [disabled]="true">Affecter à une campagne</button>
+      <button mat-raised-button class="export nope" [disabled]="true">Exporter en xls</button>
+    }
+
+    <p class="nb">Nombre de prospects trouvés {{ nbProspect }} </p>
+  </div>
+  <table mat-table [dataSource]="dataSource" matSort
+    matSortActive="nom"  matSortDirection="asc">
+    <ng-container matColumnDef="select">
+      <th mat-header-cell *matHeaderCellDef>
+        <mat-checkbox (change)="$event ? toggleAllRows() : null"
+          [checked]="selection.hasValue() && isAllSelected()"
+          [indeterminate]="selection.hasValue() && !isAllSelected()"
+          [aria-label]="checkboxLabel()">
+        </mat-checkbox>
+      </th>
+      <td mat-cell *matCellDef="let row">
+        <mat-checkbox (click)="$event.stopPropagation()"
+          (change)="$event ? selection.toggle(row) : null"
+          [checked]="selection.isSelected(row)"
+          [aria-label]="checkboxLabel(row)">
+        </mat-checkbox>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="activite">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Activité </th>
+      <td mat-cell *matCellDef="let row">
+        <div class="bouboule-triangle">
+          <div class="triangle" [style.border-bottom-color]="row.majcolor" [matTooltip]="row.majTxt"></div>
+          <div class="bouboule" [style.background-color]="row.actifcolor" [matTooltip]="row.actifTxt"></div>
+        </div>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="siret">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Siret </th>
+      <td mat-cell *matCellDef="let row">
+        <a [href]="'https://www.societe.com/cgi-bin/search?champs='+row.numprospect" target="_blank" style="text-decoration: underline;">{{row.siret}}</a>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="nom">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Entreprise </th>
+      <td mat-cell *matCellDef="let row"
+          [routerLink]="['/espace-commercial/prospects/detail/', row.numprospect]"> {{row.nom}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="adresse1">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Adresse </th>
+      <td mat-cell *matCellDef="let row"
+      [routerLink]="['/espace-commercial/prospects/detail/', row.numprospect]"> {{row.adresse1}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="codepostal">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Code Postal </th>
+      <td mat-cell *matCellDef="let row"
+      [routerLink]="['/espace-commercial/prospects/detail/', row.numprospect]"> {{row.codepostal}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="ville">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Ville </th>
+      <td mat-cell *matCellDef="let row"
+      [routerLink]="['/espace-commercial/prospects/detail/', row.numprospect]"> {{row.ville}} </td>
+    </ng-container>
+    <ng-container matColumnDef="region">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Région </th>
+      <td mat-cell *matCellDef="let row">{{row.region}}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="telephone">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Téléphone </th>
+      <td mat-cell *matCellDef="let row"><a [href]="'tel:' + row.telephone">{{row.telephone}}</a></td>
+    </ng-container>
+
+    <ng-container matColumnDef="action">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> </th>
+      <td mat-cell *matCellDef="let row">
+        <button mat-button class="button-edit" (click)="setUpdateForm(row)"><mat-icon>edit</mat-icon></button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+    <!-- Row shown when there is no matching data. -->
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell" colspan="4">Pas de résultat</td>
+    </tr>
+  </table>
+  <mat-paginator [pageSizeOptions]="[25, 50, 100]" aria-label="Select page of users"></mat-paginator>
+</div>
+
+
+<div class="popup" [ngClass]="{active: popUpModif}">
+  <div class="popup-background" (click)="popUpModif = false" (tap)="popUpModif = false"></div>
+  <div class="popup-window size-default raised-3">
+    <form [formGroup]="formUpdateProspect">
+      <div class="input-add">
+        <h2>Infos société</h2>
+        <div class="brrrrt">
+          <mat-form-field>
+            <mat-label>N° SIRET</mat-label>
+            <input matInput formControlName="numSiret" disabled>
+            @if (!formUpdateProspect.get('numSiret').valid) {
+              <mat-error>Le numéro de SIRET doit faire entre 9 et 14
+              caractères. Caractères autorisés : Chiffres</mat-error>
+            }
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Nom société</mat-label>
+            <input matInput formControlName="nomSociete">
+            @if (!formUpdateProspect.get('nomSociete').valid) {
+              <mat-error>Obligatoire</mat-error>
+            }
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Activité</mat-label>
+            <input matInput formControlName="activite">
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>N° APE</mat-label>
+            <input matInput formControlName="numApe">
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>N° Téléphone</mat-label>
+            <input matInput formControlName="numTelephone">
+            @if (!formUpdateProspect.get('numTelephone').valid) {
+              <mat-error>Le numéro de téléphone doit faire entre 1 et 15
+              caractères, exemple : 0000000000. Caractères autorisés : Chiffres, +</mat-error>
+            }
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Adresse</mat-label>
+            <input matInput formControlName="adresse">
+          </mat-form-field>
+        </div>
+        <div class="brrrrt">
+          <mat-form-field appearance="fill" class="largeur-input-binome">
+            <mat-label>Code postal</mat-label>
+            <input matInput formControlName="codePostal">
+            @if (!formUpdateProspect.get('codePostal').valid) {
+              <mat-error>Doit faire 5 caractères et que des chiffres de 0 à 9</mat-error>
+            }
+          </mat-form-field>
+          <mat-form-field appearance="fill" class="largeur-input-binome">
+            <mat-label>Ville</mat-label>
+            <input matInput formControlName="ville">
+            @if (!formUpdateProspect.get('ville').valid) {
+              <mat-error>Ne doit pas contenir de caractères spéciaux</mat-error>
+            }
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Site web</mat-label>
+            <input matInput formControlName="siteWeb">
+          </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Secteur représentant</mat-label>
+            <mat-select formControlName="region">
+              @for (reg of prospectService.region; track reg){
+                <mat-option [value]="reg">
+                  {{reg}}
+                </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+      <h2>Infos complémentaires</h2>
+      <div class="brrrrt-colonne">
+        <mat-form-field class="size-default zazizou" appearance="fill" >
+          <mat-label>Date de recrutement</mat-label>
+          <input matInput [max]="this.maxDate" [matDatepicker]="picker" formControlName="dateRecrutement" [value]="formUpdateProspect.value.dateRecrutement" readonly>
+          <mat-hint>DD/MM/YYYY</mat-hint>
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker [disabled]="false"></mat-datepicker>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Commentaire</mat-label>
+          <textarea matInput #comm formControlName="commentaire"
+            cdkTextareaAutosize
+            [maxLength]="2000"
+            #autosize="cdkTextareaAutosize"
+            cdkAutosizeMinRows="1"
+          cdkAutosizeMaxRows="5"></textarea>
+          <mat-hint align="end">{{comm.value?.length || 0}}/2000</mat-hint>
+        </mat-form-field>
+        <p style="color: red">* Champs obligatoires</p>
+      </div>
+      <div class="button-action">
+        <button mat-raised-button class="button-enregistrer" (click)="updateProspect()">
+          Enregistrer
+        </button>
+        <button mat-raised-button class="button-annuler" (click)="popUpModif = false">
+          Annuler
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

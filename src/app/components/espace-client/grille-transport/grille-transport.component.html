@@ -1,0 +1,82 @@
+<!-- <ng-container *ngIf='grilleTransport'>
+<div class="labels">
+  <div class="grow1">Description + montant minimal + montant franco</div>
+  <div class="grow1">
+    <div class="petiteLigne">
+      <label class="grow1BC">Poids maximal</label>
+      <label class="grow1BC">Montant</label>
+    </div>
+  </div>
+</div> -->
+<!-- <div ng-include="'/assets/grilles-transport.html'"></div> -->
+<app-title-w-line title="Frais de livraison" size="small" ></app-title-w-line>
+
+<div [innerHtml]="htmlTransportInfos"></div>
+
+<div class="grilles-container">
+  @for (type of typeTransport; track type) {
+    <div class="grille-transport">
+      <!-- TITLE -->
+      <div class="grille-box grille-title strong">{{ type }}</div>
+      <!-- ENTETES -->
+      <div class="grille-ligne">
+        <div class="grille-box">POIDS</div>
+        <div class="grille-box">MONTANT</div>
+      </div>
+      <!-- LINES -->
+      @for (ligne of trierType(grilleTransport, type); track ligne) {
+        <div class="grille-ligne">
+          <div class="grille-box">
+            @if (ligne.kgmax < weightCap) {
+              < {{ ligne.kgmax | number }} kg
+            } @else {
+              Au-delà
+            }
+            <ng-template #audela>Au-delà</ng-template>
+          </div>
+          <div class="grille-box">{{ ligne.kgmt | currency:'EUR':'symbol':'1.2-2' }}</div>
+        </div>
+      }
+      <!-- FRANCO -->
+      <div class="grille-box strong">
+        @if (( (getMontant(grilleTransport, type, 'mtfranco') < francoCap) && (getMontant(grilleTransport, type, 'mtfranco') != 0) )) {
+          Montant franco : {{ getMontant(grilleTransport, type, 'mtfranco') | currency:'EUR':'symbol':'1.2-2' }}
+        } @else {
+          Pas de franco
+        }
+        <ng-template #noFranco>Pas de franco</ng-template>
+      </div>
+    </div>
+  }
+</div>
+
+
+
+<!-- <div class="wrapper">
+<div class="case center grille-titles">Description + montant minimal + montant franco</div>
+<div class="case borderLeft center grille-titles">Valeur de tranche maximale en KG</div>
+<div class="case borderLeft center grille-titles">Montant</div>
+<ng-container *ngFor='let type of typeTransport'>
+  <div class="case">
+    Description: {{ type }}
+    <br>
+      Montant minimal: {{ getMontant(grilleTransport, type, 'mtfraismini') }} €
+      <br>
+        Montant franco: <ng-container *ngIf="getMontant(grilleTransport, type, 'mtfranco') < francoCap; else noFranco">{{ getMontant(grilleTransport, type, 'mtfranco') }} €</ng-container> <ng-template #noFranco>Pas de franco</ng-template>
+      </div>
+      <div class="wrapper2">
+        <ng-container *ngFor='let ligne of trierType(grilleTransport, type)'>
+          <div class="case right grille-kg">
+            <ng-container *ngIf="ligne.kgmax < weightCap; else audela">{{ ligne.kgmax }}</ng-container> <ng-template #audela>Au-delà</ng-template>
+          </div>
+        </ng-container>
+      </div>
+      <div class="wrapper2">
+        <ng-container *ngFor='let ligne of trierType(grilleTransport, type)'>
+          <div class="case right grille-mt">
+            {{ ligne.kgmt }} €
+          </div>
+        </ng-container>
+      </div>
+    </ng-container>
+  </div> -->

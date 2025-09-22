@@ -1,0 +1,144 @@
+<app-title-w-line [title]="'Suivi web client n°'+ nclient" size="small"></app-title-w-line>
+
+<div class="filters raised-1">
+  <h2>Filtres</h2>
+  <div class="filter" [formGroup]="filtresForm">
+    <mat-form-field class="example-full-width">
+      <mat-label>Catégorie</mat-label>
+      <input matInput formControlName="nivlib1" [(ngModel)]="nivlib1Selected" (keyup)="onSearch('nivlib1', 'string', 'includes', $event ,'nivlib1Selected')">
+      @if (filtresForm.value.nivlib1 != '') {
+        <button
+          matSuffix
+          mat-icon-button
+          aria-label="Clear"
+          (click)="resetOneFilters('nivlib1'); $event.stopPropagation()"
+          >
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </mat-form-field>
+
+    <mat-form-field class="example-full-width">
+      <mat-label>Famille</mat-label>
+      <input matInput formControlName="nivlib2" [(ngModel)]="nivlib2Selected" (keyup)="onSearch('nivlib2', 'string','includes', $event,'nivlib2Selected')">
+      @if (filtresForm.value.nivlib2 != '') {
+        <button
+          matSuffix
+          mat-icon-button
+          aria-label="Clear"
+          (click)="resetOneFilters('nivlib2'); $event.stopPropagation()"
+          >
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </mat-form-field>
+    <mat-form-field class="example-full-width">
+      <mat-label>Sous-famille</mat-label>
+      <input matInput formControlName="nivlib3" [(ngModel)]="nivlib3Selected" (keyup)="onSearch('nivlib3', 'string', 'includes',$event,'nivlib3Selected')">
+      @if (filtresForm.value.nivlib3 != '') {
+        <button
+          matSuffix
+          mat-icon-button
+          aria-label="Clear"
+          (click)="resetOneFilters('nivlib3'); $event.stopPropagation()"
+          >
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </mat-form-field>
+    <mat-form-field class="example-full-width">
+      <mat-label>Marque</mat-label>
+      <input matInput formControlName="marque" [(ngModel)]="marqueSelected" (keyup)="onSearch('marque', 'string','includes', $event,'marqueSelected')">
+      @if (filtresForm.value.marque != '') {
+        <button
+          matSuffix
+          mat-icon-button
+          aria-label="Clear"
+          (click)="resetOneFilters('marque'); $event.stopPropagation()"
+          >
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </mat-form-field>
+    <mat-form-field class="example-full-width">
+      <mat-label>Saisie en recherche</mat-label>
+      <input matInput formControlName="recherche" [(ngModel)]="rechercheSelected" (keyup)="onSearch('recherche', 'string', 'includes', $event,'rechercheSelected')">
+      @if (filtresForm.value.recherche != '') {
+        <button
+          matSuffix
+          mat-icon-button
+          aria-label="Clear"
+          (click)="resetOneFilters('recherche'); $event.stopPropagation()"
+          >
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </mat-form-field>
+
+
+    <!-- <mat-form-field class="example-form-field">
+    <mat-label>Date échéance</mat-label>
+    <mat-date-range-input
+      [formGroup]="campaignTwo"
+      [rangePicker]="campaignTwoPicker">
+      <input matStartDate placeholder="Début" formControlName="start" >
+      <input matEndDate placeholder="Fin" formControlName="end"
+        (dateChange)="filtrer(campaignTwo.value.start + ',' + campaignTwo.value.end, 'date', 'date')">
+      </mat-date-range-input>
+      <button *ngIf="campaignTwo.value.end" matSuffix mat-icon-button aria-label="Clear" (click)="campaignTwo.reset();filtrer(campaignTwo.value.end, 'date', 'date')">
+        <mat-icon>close</mat-icon>
+      </button>
+      <mat-datepicker-toggle matIconSuffix [for]="campaignTwoPicker"></mat-datepicker-toggle>
+      <mat-date-range-picker #campaignTwoPicker></mat-date-range-picker>
+    </mat-form-field> -->
+  </div>
+</div>
+
+<div>
+
+  <!--     <button (click)="test()">clientArray</button>
+  -->
+  @for (date of dataSource.data; track date; let i = $index) {
+    <mat-expansion-panel expanded="true" class="panel"> <!-- .reverse() -->
+      <mat-expansion-panel-header>
+        {{date[0]?.date}}
+      </mat-expansion-panel-header>
+      <table  mat-table [dataSource]="date" matSort id="clientTable" class="table">
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Heure</th>
+          <td mat-cell *matCellDef="let row">{{row.heure}} </td>
+        </ng-container>
+        <ng-container matColumnDef="nivlib1">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Catégorie</th>
+          <td mat-cell *matCellDef="let row" >{{row.nivlib1 }}</td>
+        </ng-container>
+        <ng-container matColumnDef="nivlib2">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Famille</th>
+          <td mat-cell *matCellDef="let row" >{{row.nivlib2 }}</td>
+        </ng-container>
+        <ng-container matColumnDef="nivlib3">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Sous-famille</th>
+          <td mat-cell *matCellDef="let row" >{{row.nivlib3 }}</td>
+        </ng-container>
+        <ng-container matColumnDef="marque">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Marque</th>
+          <td mat-cell *matCellDef="let row" >{{row.marque }}</td>
+        </ng-container>
+        <ng-container matColumnDef="recherche">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Saisie en moteur de recherche</th>
+          <td mat-cell *matCellDef="let row" >{{row.recherche }}</td>
+        </ng-container>
+        <ng-container matColumnDef="nbresultat">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre de résultats</th>
+          <td mat-cell *matCellDef="let row" >{{row.nbresultat }}</td>
+        </ng-container>
+        <tr  mat-header-row *matHeaderRowDef="displayedColumnsRecherche" class="bgGreen"></tr>
+        <tr mat-row  *matRowDef="let row; columns: displayedColumnsRecherche" ></tr>
+      </table>
+    </mat-expansion-panel>
+  }
+
+
+
+</div>
+
