@@ -86,7 +86,7 @@ export class CompteRenduComponent implements OnInit {
 
 
     this.filteredEmailOptions = this.mailForm.controls.to.valueChanges.pipe(
-      startWith(''), 
+      startWith(''),
       map(value => this._filter(value || '')),
     );
 

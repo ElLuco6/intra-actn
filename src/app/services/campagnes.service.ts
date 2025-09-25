@@ -27,7 +27,7 @@ export class CampagnesService {
   private peopleSource = new BehaviorSubject([]);
   currentPeople = this.peopleSource.asObservable();
 
-  private campagneSource = new BehaviorSubject(new Campagne('', '', '', '', '', '', '', '', '', ''));
+  private campagneSource = new BehaviorSubject(new Campagne('', '', '', '', '', '', '', '', '', '', 0));
   currentCampagne = this.campagneSource.asObservable();
 
   actionCampaign: Action[] = [];
@@ -265,7 +265,6 @@ export class CampagnesService {
       let todayDate = new Date().toLocaleDateString('fr-FR');
       date = todayDate.split('/');
     }
-
     const url = environment.apiUrl + (isClient ? '/clientsVisites.php' : '/ProspectVisites.php');
 
     return this.http.get(url, {

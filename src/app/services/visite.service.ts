@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {environment} from "@env/environment";
 import {CompteRenduVisite} from "@models/compteRenduVisite";
@@ -19,17 +19,7 @@ import {forkJoin, Observable} from "rxjs";
 export class VisiteService {
 
   constructor(private http: HttpClient,
-              private auth: AuthenticationService) { }
-
-  private uniqueVisitesCount: number;
-
-  get visitesCount(): number {
-    return this.uniqueVisitesCount;
-  }
-
-  set visitesCount(arr: any[]) {
-    const uniqueArr = arr.filter((v,i,a)=>a.findIndex(t=>(t.numclient === v.numclient))===i);
-    this.uniqueVisitesCount = uniqueArr.length;
+              private auth: AuthenticationService) {
   }
 
   /**
@@ -46,7 +36,7 @@ export class VisiteService {
    * @param {number} id - The ID of the client or prospect.
    * @returns {Observable<CompteRenduVisite[]>} - An observable that resolves to an array of visit reports.
    */
-  getVisites(isClient: boolean, id: number): Observable<CompteRenduVisite[]>{
+  getVisites(isClient: boolean, id: number): Observable<CompteRenduVisite[]> {
     this.isClient = isClient;
     return this.http.get<CompteRenduVisite[]>(`${environment.apiUrl}/${isClient ? 'clientsVisites.php' : 'ProspectVisites.php'}`, {
       params: {
@@ -120,7 +110,7 @@ export class VisiteService {
    * @param {Contact[]} contactsList - The list of contacts related to the client or prospect.
    * @returns {Observable} - An observable that represents the HTTP request to add the visit report.
    */
-  addCompteRendu(form: FormGroup, id: number, contactsList: Contact[]): Observable<any>{
+  addCompteRendu(form: FormGroup, id: number, contactsList: Contact[]): Observable<any> {
     let date = new Date(form.get('date').value).toLocaleDateString('fr-FR');
     let dateFormatted = date.split('/');
     let index: Array<number> = form.get('contact').value;
@@ -128,13 +118,13 @@ export class VisiteService {
 
     let tel = '', mail = '', nom = '', resContacts: string;
 
-    if(contact != undefined) {
+    if (contact != undefined) {
       tel = contact.gsm;
       mail = contact.mail;
       nom = contact.nom;
     }
 
-    if(dateFormatted[0] == 'Invalid Date'){
+    if (dateFormatted[0] == 'Invalid Date') {
       let todayDate = new Date().toLocaleDateString('fr-FR');
       dateFormatted = todayDate.split('/');
     }
@@ -192,7 +182,7 @@ export class VisiteService {
    * @param form
    * @return {Observable} - An Observable that makes a HTTP GET request to update the compte rendu.
    */
-  editCompteRendu(id: number, form: FormGroup): Observable<any>{
+  editCompteRendu(id: number, form: FormGroup): Observable<any> {
     let dateParts = this.dateParted(form.value.date);
     let dateFormatted = `${dateParts[2]}${dateParts[0]}${dateParts[1]}`;
 
@@ -220,10 +210,10 @@ export class VisiteService {
    */
   sendMail(toRegion: boolean, form: FormGroup, client: Client, prospect: Prospect): Observable<any> {
     let commercial = '';
-    if(toRegion){
-      if(client){
+    if (toRegion) {
+      if (client) {
         commercial = client.commercialMail
-      }else{
+      } else {
         commercial = prospect.commercialMail1
       }
     }
@@ -231,7 +221,7 @@ export class VisiteService {
     const estUnClient = client ? true : false;
 
     return this.http.get(`${environment.apiUrl}/envoieCompteRendu.php`, {
-      params : {
+      params: {
         compteRendu: form.get('compteRendu').value,
         mail: form.get('to').value,
         cc: form.get('cc').value,

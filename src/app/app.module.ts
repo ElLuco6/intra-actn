@@ -34,29 +34,18 @@ import {OutilsComponent} from "@/components/outils/outils.component";
 import {registerLocaleData} from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 import {MatDatepickerModule} from '@angular/material/datepicker';
-import {MAT_DATE_LOCALE, MatNativeDateModule} from "@angular/material/core";
+import {MatNativeDateModule} from "@angular/material/core";
 import {EspaceClientModule} from "@components/espace-client/espace-client.module";
 import {AbonnementsModule} from '@components/abonnements/abonnements.module';
 import {EspaceCommercialModule} from "@components/espace-commercial/espace-commercial.module";
 import {HeartbeatSensorComponent} from "@components/heartbeat-sensor/heartbeat-sensor.component";
-import {MAT_FORM_FIELD_DEFAULT_OPTIONS, MatFormFieldModule} from "@angular/material/form-field";
+import {MAT_FORM_FIELD_DEFAULT_OPTIONS} from "@angular/material/form-field";
 import {MatSortModule} from "@angular/material/sort";
 import {CustomPaginator} from "@/class/CustomPaginatorConfiguration";
 import {MatPaginatorIntl} from "@angular/material/paginator";
 import {IncidentsModule} from "@components/incidents/incidents.module";
 
 registerLocaleData(localeFr);
-import {
-  IPublicClientApplication,
-  PublicClientApplication,
-  BrowserCacheLocation
-} from '@azure/msal-browser';
-import {
-  MsalModule,
-  MsalService,
-  MSAL_INSTANCE
-} from '@azure/msal-angular';
-import {OAuthSettings} from "@models/oauth";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {AlertsComponent} from "@components/alerts/alerts.component";
 import {GrilleTarifMarqueComponent} from "@components/grille-tarif-marque/grille-tarif-marque.component";
@@ -66,24 +55,6 @@ import {FinanceComponent} from "@components/finance/finance.component";
 import {MatBadge} from "@angular/material/badge";
 import {BreadcrumbComponent} from "@components/breadcrumb/breadcrumb.component";
 import {MailDeRelanceComponent} from "@components/finance/mail-de-relance/mail-de-relance.component";
-
-let msalInstance: IPublicClientApplication | undefined = undefined;
-
-export function MSALInstanceFactory(): IPublicClientApplication {
-  msalInstance = msalInstance ?? new PublicClientApplication({
-    auth: {
-      clientId: OAuthSettings.appId,
-      redirectUri: OAuthSettings.redirectUri,
-      postLogoutRedirectUri: OAuthSettings.redirectUri
-    },
-    cache: {
-      cacheLocation: BrowserCacheLocation.LocalStorage,
-    }
-  });
-
-  return msalInstance;
-}
-
 
 @NgModule({
   declarations: [
@@ -129,7 +100,6 @@ export function MSALInstanceFactory(): IPublicClientApplication {
     InfiniteScrollModule,
     AbonnementsModule,
     NgbModule,
-    MsalModule,
     MatDatepickerModule,
     MatNativeDateModule,
     EspaceClientModule,
@@ -148,9 +118,7 @@ export function MSALInstanceFactory(): IPublicClientApplication {
     {provide: LOCALE_ID, useValue: 'fr-FR'},
     {provide: LocationStrategy, useClass: PathLocationStrategy},
     {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'fill'}},
-    {provide: MatPaginatorIntl, useValue: CustomPaginator()},
-    {provide: MSAL_INSTANCE, useFactory: MSALInstanceFactory},
-    MsalService
+    {provide: MatPaginatorIntl, useValue: CustomPaginator()}
   ],
   bootstrap: [AppComponent],
 })

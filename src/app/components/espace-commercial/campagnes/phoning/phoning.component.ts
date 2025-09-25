@@ -1,9 +1,7 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {CampagnesService} from "@services/campagnes.service";
 import {PeopleOfCampaign} from "@models/peopleOfCampaign";
 import {ActivatedRoute, Router} from "@angular/router";
-import {ClientsService} from "@services/clients.service";
-import {Contact} from "@models/contact";
 import {Campagne} from "@models/campagne";
 import {MatDialog} from "@angular/material/dialog";
 import {
@@ -11,7 +9,6 @@ import {
 } from "@components/espace-commercial/campagnes/phoning/phoning-comm-dialog/phoning-comm-dialog.component";
 import {VisiteService} from "@services/visite.service";
 import {CompteRenduVisite} from "@models/compteRenduVisite";
-import {ChartComponent} from "ng-apexcharts";
 import {
   ApexNonAxisChartSeries,
   ApexPlotOptions,
@@ -45,13 +42,10 @@ export class PhoningComponent implements OnInit {
   currentPeople: PeopleOfCampaign;
   idClient: string;
   visiteOfCampaignByPeople: CompteRenduVisite[] = [];
-  countVisiteByCampaign: number;
-  @ViewChild("chart") chart: ChartComponent;
   public chartOptions: Partial<ChartOptions>;
 
   constructor(private campagneService: CampagnesService,
               private activatedRoute: ActivatedRoute,
-              private clientService: ClientsService,
               public dialog: MatDialog,
               private visiteService: VisiteService,
               private router: Router) {
@@ -76,7 +70,8 @@ export class PhoningComponent implements OnInit {
             campagne.user1,
             campagne.user2,
             campagne.user3,
-            campagne.user4));
+            campagne.user4,
+            campagne.nbrSocietes));
         });
       } else {
         this.currentCampagne = campagne;
@@ -84,8 +79,11 @@ export class PhoningComponent implements OnInit {
     });
 
     this.campagneService.currentPeople.pipe(take(1)).subscribe(people => {
-      const phoningSelection = JSON.parse(localStorage.getItem('phoningSelection')) || [];
-      const selectedIds = phoningSelection.find(selection => selection.idCampagne === this.activatedRoute.snapshot.params['id']).ids;
+      let selectedIds = this.activatedRoute.snapshot.params['idClient'];
+      if (!selectedIds) {
+        const phoningSelection = JSON.parse(localStorage.getItem('phoningSelection')) || [];
+        selectedIds = phoningSelection.find(selection => selection.idCampagne === this.activatedRoute.snapshot.params['id']).ids;
+      }
       const sorting = JSON.parse(localStorage.getItem('filtresCampagnes')).find(selection => selection.idCampagne === this.activatedRoute.snapshot.params['id']).sorting;
       if (people.length === 0) {
         this.campagneService.getPeopleByCampaign(this.activatedRoute.snapshot.params['id']).subscribe((peoples) => {
@@ -169,23 +167,29 @@ export class PhoningComponent implements OnInit {
   }
 
   chartUpdate() {
-    let completion = (this.currentIndex + 1) / this.peoples.length * 100
-    this.chartOptions = {
-      series: [Math.round(completion * 100) / 100],
-      chart: {
-        height: 350,
-        type: "radialBar"
-      },
-      plotOptions: {
-        radialBar: {
-          hollow: {
-            size: "70%"
-          }
-        }
-      },
-      colors: ["#006d3c"],
-      labels: ["Progression campagne"]
-    };
+    let numerateur = 0;
+    let denominateur = this.currentCampagne.nbrSocietes;
+    this.visiteService.countVisiteByCampaign(this.currentCampagne.campagne).subscribe((data) => {
+        numerateur = this.campagneService.groupCompteRendu([...data.clients, ...data.prospects]).length;
+        let completion = Math.ceil((numerateur / denominateur) * 100);
+        this.chartOptions = {
+          series: [Math.round(completion * 100) / 100],
+          chart: {
+            height: 350,
+            type: "radialBar"
+          },
+          plotOptions: {
+            radialBar: {
+              hollow: {
+                size: "70%"
+              }
+            }
+          },
+          colors: ["#006d3c"],
+          labels: ["Progression campagne"]
+        };
+      }
+    );
   }
 
   openDialogCompteRendu(people: PeopleOfCampaign) {
@@ -195,7 +199,8 @@ export class PhoningComponent implements OnInit {
         people: people,
         numPeople: this.currentPeople.numero,
         campagne: this.currentCampagne,
-        actions: this.campagneService.actionCampaign
+        actions: this.campagneService.actionCampaign,
+        type: this.currentPeople.type
       },
     });
     this.dialog.afterAllClosed.subscribe(() => {

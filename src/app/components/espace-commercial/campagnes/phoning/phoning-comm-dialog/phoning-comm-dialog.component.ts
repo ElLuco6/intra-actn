@@ -31,7 +31,7 @@ export class PhoningCommDialogComponent {
     this.type = data['type'];
     this.compteRenduForm = new FormGroup({
       date: new FormControl({value: new Date(), disabled: true}),
-      commentaire: new FormControl('', Validators.required),
+      commentaire: new FormControl(''),
       action: new FormControl('', Validators.required),
       numPeople: new FormControl(data['numPeople'])
     });

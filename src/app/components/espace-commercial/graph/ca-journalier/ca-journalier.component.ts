@@ -1,4 +1,3 @@
-import { CAjournalier, GraphService } from '@/services/graph.service';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
@@ -17,7 +16,6 @@ export class CaJournalierComponent implements OnInit {
 
   constructor(
     public http: HttpClient,
-    public graphService: GraphService,
     public router: Router
   ) {}
 
@@ -100,5 +98,12 @@ export class CaJournalierComponent implements OnInit {
     } else {
       return false;
     }
+  }
+}
+
+export interface CAjournalier {
+  jour: string;
+  region: {
+    [key: string]: string | number;
   }
 }

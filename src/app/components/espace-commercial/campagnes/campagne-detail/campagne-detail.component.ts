@@ -84,7 +84,7 @@ export class CampagneDetailComponent {
               private filterService: FilterService,
               private cdr: ChangeDetectorRef,
               private xlsFormatterService: XlsFormatterService) {
-      route.params.subscribe(params => {
+    route.params.subscribe(params => {
       this.idCampagne = params['id'];
     });
     forkJoin({
@@ -102,12 +102,13 @@ export class CampagneDetailComponent {
         user1,
         user2,
         user3,
-        user4
+        user4,
+        nbrSocietes
       } = campagneArr[0];
-      this.campagne = new Campagne(campagneName, datedeb, datefin, libelle, texte, user, user1, user2, user3, user4);
+      this.campagne = new Campagne(campagneName, datedeb, datefin, libelle, texte, user, user1, user2, user3, user4, nbrSocietes);
       this.campagnesService.changeCampaign(this.campagne);
       this.renduCampaign = new MatTableDataSource(this.campagnesService.groupCompteRendu([...renduCampaign.clients, ...renduCampaign.prospects]));
-      this.visiteService.visitesCount = this.renduCampaign.data;
+      //this.visiteService.calculerNbSocietesContactees(this.renduCampaign.data);
 
       const groupedContacts = Object.values(this.campagnesService.groupContacts(peoples));
 

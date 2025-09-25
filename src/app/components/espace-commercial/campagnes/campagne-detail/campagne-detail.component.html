@@ -1,280 +1,296 @@
 <app-title-w-line [title]="'Campagne : ' + idCampagne"></app-title-w-line>
-@if(campagne){
-<div class="unebitsurlepaule">
-  <div class="left">
-    <div class="touti">
-      <div class="btns">
-        @if(affichageDoc){
-        <button mat-raised-button class="btntest btn--action clients" (click)="affichageDocChange('doc')">
-          <span [attr.data-content]="'Clients'"><mat-icon class="pdemerde">list</mat-icon></span>
-        </button>
-        }@else{
-        <button mat-raised-button class="btntest btn--action doss" (click)="affichageDocChange('doc')">
-          <span [attr.data-content]="'Documents'"><mat-icon class="pdemerde">folder</mat-icon></span>
-        </button>
-        }
-        <button mat-raised-button class="btn-modif btntest btn--action edit"
-          [routerLink]="['/espace-commercial/campagne/' + idCampagne + '/modifier']">
-          <span [attr.data-content]="'Modifier'"><mat-icon class="pdemerde">edit</mat-icon></span>
-        </button>
-        <button mat-raised-button class="btn-delete btntest btn--action delete-hehe" (click)="openDialog()">
-          <span [attr.data-content]="'Supprimer'"><mat-icon class="pdemerde">delete</mat-icon></span>
-        </button>
-      </div>
-
-      <div class="date">
-        <h3>Libelle</h3>
-        <p>{{ campagne.libelle }}</p>
-      </div>
-      <div class="date">
-        <h3>Auteur</h3>
-        <p>{{ campagne.user }}</p>
-      </div>
-      <div class="usr">
-        <h3>Utilisateurs</h3>
-        <div class="usr-auth">
-          <p>{{ campagne.user1 }}</p>
-          <p>{{ campagne.user2 }}</p>
-          <p>{{ campagne.user3 }}</p>
-          <p>{{ campagne.user4 }}</p>
+@if (campagne) {
+  <div class="unebitsurlepaule">
+    <div class="left">
+      <div class="touti">
+        <div class="btns">
+          @if (affichageDoc) {
+            <button mat-raised-button class="btntest btn--action clients" (click)="affichageDocChange('doc')">
+              <span [attr.data-content]="'Clients'"><mat-icon class="pdemerde">list</mat-icon></span>
+            </button>
+          } @else {
+            <button mat-raised-button class="btntest btn--action doss" (click)="affichageDocChange('doc')">
+              <span [attr.data-content]="'Documents'"><mat-icon class="pdemerde">folder</mat-icon></span>
+            </button>
+          }
+          <button mat-raised-button class="btn-modif btntest btn--action edit"
+                  [routerLink]="['/espace-commercial/campagne/' + idCampagne + '/modifier']">
+            <span [attr.data-content]="'Modifier'"><mat-icon class="pdemerde">edit</mat-icon></span>
+          </button>
+          <button mat-raised-button class="btn-delete btntest btn--action delete-hehe" (click)="openDialog()">
+            <span [attr.data-content]="'Supprimer'"><mat-icon class="pdemerde">delete</mat-icon></span>
+          </button>
         </div>
-      </div>
 
-      <div class="date">
-        <h3>Date</h3>
-        <p>Du {{ campagne.datedeb }} au {{ campagne.datefin }}</p>
-      </div>
-      <h3>Texte de présentation / story board</h3>
-      <p>{{ campagne.texte }}</p>
-    </div>
-
-    <mat-divider></mat-divider>
-    @if(affichageCompteRendu){
-    <div class="phoning">
-      <button mat-raised-button (click)="affichageDocChange('cpmtRendu')">Liste des clients
-        <mat-icon>list</mat-icon>
-      </button>
-    </div>
-    }@else{
-    <div class="phoning">
-      <button mat-raised-button (click)="affichageDocChange('cpmtRendu')">Compte rendu de visite
-        <mat-icon>list</mat-icon>
-      </button>
-    </div>
-    }
-    <div class="phoning">
-      <button mat-raised-button (click)="commencerLePhoning()">Commencer la campagne
-        <mat-icon>phone</mat-icon>
-      </button>
-    </div>
-    <div class="phoning">
-      <button mat-raised-button (click)="openImporterProspectsNonQualifiesDialog()">Importer des prospects non qualifiés
-        <mat-icon>upload</mat-icon>
-      </button>
-    </div>
-    <div class="phoning">
-      <button mat-raised-button (click)="exportContactsToExcel()">
-        Exporter les contacts
-        <mat-icon>file_copy</mat-icon>
-      </button>
-    </div>
-    <div class="phoning">
-      <button mat-raised-button (click)="exportVisitesToExcel()">
-        Exporter les comptes rendus
-        <mat-icon>file_copy</mat-icon>
-      </button>
-    </div>
-  </div>
-
-  <div class="right">
-    @if(affichageDoc){
-    <app-documents [campagne]="campagne.campagne"></app-documents>
-    } @else if (affichageCompteRendu) {
-    <mat-card>
-      <mat-card-content class="filtres-people">
-        @for (filtre of filtresCompteRendu; track filtre) {
-        <app-filter [filterName]="filtre.name" [filterControl]="filtreControlsCompteRendu[filtre.control]"
-          [filterOptions]="filtre.options" [filterType]="filtre.type"></app-filter>
-        }
-      </mat-card-content>
-    </mat-card>
-    <div class="container-cmpt-rendu">
-      @for(rendu of renduCampaign.filteredData; track rendu.numclient){
-      @for(e of rendu.rendus; track e.texte){
-      <mat-card class="cmpt-rendu">
-        <mat-card-subtitle style="padding: 1rem; align-items: center">
-          <div style="display: grid; grid-template-columns: 1fr 100px">
-            <div style="display:flex">
-              @if (rendu.type === 'CLIENT') {
-              <p>Client {{ rendu.numclient + ' - ' + e.nom }}</p>
-              } @else {
-                <p>Prospect {{ rendu.siret + ' - ' + e.nom }}</p>
-              }
-              <span class="subtitle"> {{ e.date ? 'le ' + e.date : '' }} {{ e.user ? 'par ' + e.user : '' }}</span>
-            </div>
-            @if (e.appellib === 'A rappeler') {
-            <p class="hihi"><a [href]="'tel:'+e.gsm.split(' ').join('')">{{e.appellib}}</a></p>
-            } @else {
-            <p class="hihi">{{ e.appellib == 'Répondeur ou message secretari' ? 'Répondeur' : e.appellib}}</p>
-            }
+        <div class="date">
+          <h3>Libelle</h3>
+          <p>{{ campagne.libelle }}</p>
+        </div>
+        <div class="date">
+          <h3>Auteur</h3>
+          <p>{{ campagne.user }}</p>
+        </div>
+        <div class="usr">
+          <h3>Utilisateurs</h3>
+          <div class="usr-auth">
+            <p>{{ campagne.user1 }}</p>
+            <p>{{ campagne.user2 }}</p>
+            <p>{{ campagne.user3 }}</p>
+            <p>{{ campagne.user4 }}</p>
           </div>
-          <mat-divider style="margin-top: .5rem"></mat-divider>
-        </mat-card-subtitle>
-        <mat-card-content>
-          <span [appHighlight]="e.texte" [searchText]="filtreControlsCompteRendu['texte'].value"></span>
-        </mat-card-content>
-      </mat-card>
+        </div>
+
+        <div class="date">
+          <h3>Date</h3>
+          <p>Du {{ campagne.datedeb }} au {{ campagne.datefin }}</p>
+        </div>
+        <h3>Texte de présentation / story board</h3>
+        <p>{{ campagne.texte }}</p>
+      </div>
+
+      <mat-divider></mat-divider>
+      @if (affichageCompteRendu) {
+        <div class="phoning">
+          <button mat-raised-button (click)="affichageDocChange('cpmtRendu')">Liste des clients
+            <mat-icon>list</mat-icon>
+          </button>
+        </div>
+      } @else {
+        <div class="phoning">
+          <button mat-raised-button (click)="affichageDocChange('cpmtRendu')">Compte rendu de visite
+            <mat-icon>list</mat-icon>
+          </button>
+        </div>
       }
-      }
+      <div class="phoning">
+        <button mat-raised-button (click)="commencerLePhoning()">Commencer la campagne
+          <mat-icon>phone</mat-icon>
+        </button>
+      </div>
+      <div class="phoning">
+        <button mat-raised-button (click)="openImporterProspectsNonQualifiesDialog()">Importer des prospects non
+          qualifiés
+          <mat-icon>upload</mat-icon>
+        </button>
+      </div>
+      <div class="phoning">
+        <button mat-raised-button (click)="exportContactsToExcel()">
+          Exporter les contacts
+          <mat-icon>file_copy</mat-icon>
+        </button>
+      </div>
+      <div class="phoning">
+        <button mat-raised-button (click)="exportVisitesToExcel()">
+          Exporter les comptes rendus
+          <mat-icon>file_copy</mat-icon>
+        </button>
+      </div>
     </div>
-    } @else {
-    <button class="reset-button" mat-raised-button (click)="resetFiltresEtSelection()">
-      Réinitialiser les filtres et la sélection
-    </button>
-    <mat-card>
-      <mat-card-content class="filtres-people">
-        @for (filtre of filtres; track filtre) {
-        <app-filter [filterName]="filtre.name" [filterControl]="filtreControls[filtre.control]"
-          [filterOptions]="filtre.options" [filterType]="filtre.type"></app-filter>
-        }
-      </mat-card-content>
-    </mat-card>
 
-    <mat-card style="margin-top: 1rem">
-      <mat-card-content>
-        <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" aria-label="Select page of users"></mat-paginator>
-        <table mat-table [dataSource]="peoples" multiTemplateDataRows matSort>
-          <ng-container matColumnDef="select">
-            <th mat-header-cell *matHeaderCellDef>
-              <mat-checkbox (change)="$event ? toggleAllRows() : null"
-                [checked]="selection.hasValue() && isAllSelected()"
-                [indeterminate]="selection.hasValue() && !isAllSelected()" [aria-label]="checkboxLabel()">
-              </mat-checkbox>
-            </th>
-            <td mat-cell *matCellDef="let row">
-              <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
-                [checked]="selection.isSelected(row)" [aria-label]="checkboxLabel(row)">
-              </mat-checkbox>
-            </td>
-          </ng-container>
-          <ng-container matColumnDef="raisonSociale">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Raison sociale </th>
-            <td mat-cell *matCellDef="let element" style="cursor: pointer"
-              (click)="goToClientDetail(element.numero, element.type)"> {{element.raisonSociale}} </td>
-          </ng-container>
-          <ng-container matColumnDef="type">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Type </th>
-            <td mat-cell *matCellDef="let element" style="cursor: pointer"
-              (click)="goToClientDetail(element.numero, element.type)"> {{element.type | clientProspectFournisseur}}
-            </td>
-          </ng-container>
-          <ng-container matColumnDef="appel">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Statut </th>
-            <td mat-cell *matCellDef="let element" style="cursor: pointer"
-              (click)="goToClientDetail(element.numero, element.type)"> {{element.appel}} </td>
-          </ng-container>
-          <ng-container matColumnDef="numero">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Numero </th>
-            <td mat-cell *matCellDef="let element" style="cursor: pointer"
-              (click)="goToClientDetail(element.numero, element.type)"> {{element.numero}} </td>
-          </ng-container>
-          <ng-container matColumnDef="adresse">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Adresse </th>
-            <td mat-cell *matCellDef="let element" style="cursor: pointer"
-              (click)="goToClientDetail(element.numero, element.type)"> {{element.adresse1}} </td>
-          </ng-container>
-          <ng-container matColumnDef="codepostal">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Code postal </th>
-            <td mat-cell *matCellDef="let element" style="cursor: pointer"
-              (click)="goToClientDetail(element.numero, element.type)"> {{element.codepostal}} </td>
-          </ng-container>
-          <ng-container matColumnDef="ville">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Ville </th>
-            <td mat-cell *matCellDef="let element" style="cursor: pointer"
-              (click)="goToClientDetail(element.numero, element.type)"> {{element.ville}} </td>
-          </ng-container>
-          <ng-container matColumnDef="region">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Region </th>
-            <td mat-cell *matCellDef="let element" style="cursor: pointer"
-              (click)="goToClientDetail(element.numero, element.type)"> {{element.region}} </td>
-          </ng-container>
-          <ng-container matColumnDef="steAppel">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Action </th>
-            <td mat-cell *matCellDef="let element" style="cursor: pointer"
-              (click)="goToClientDetail(element.numero, element.type)"> {{element.steAppel}} </td>
-          </ng-container>
-          <ng-container matColumnDef="phoning">
-            <th mat-header-cell *matHeaderCellDef> Phoning </th>
-            <td mat-cell *matCellDef="let element" style="cursor: pointer" (click)="goToPhoning(element.numero)">
-              <button mat-raised-button><mat-icon style="margin: 0;">call</mat-icon></button>
-            </td>
-          </ng-container>
-          <ng-container matColumnDef="expand">
-            <th mat-header-cell *matHeaderCellDef aria-label="row actions">&nbsp;</th>
-            <td mat-cell *matCellDef="let element">
-              <button mat-icon-button aria-label="expand row"
-                (click)="(expandedElement = expandedElement === element ? null : element); $event.stopPropagation()">
-                @if (expandedElement === element) {
-                <mat-icon>keyboard_arrow_up</mat-icon>
-                } @else {
-                <mat-icon>keyboard_arrow_down</mat-icon>
-                }
-              </button>
-            </td>
-          </ng-container>
+    <div class="right">
+      @if (affichageDoc) {
+        <app-documents [campagne]="campagne.campagne"></app-documents>
+      } @else if (affichageCompteRendu) {
+        <mat-card>
+          <mat-card-content class="filtres-people">
+            @for (filtre of filtresCompteRendu; track filtre) {
+              <app-filter [filterName]="filtre.name" [filterControl]="filtreControlsCompteRendu[filtre.control]"
+                          [filterOptions]="filtre.options" [filterType]="filtre.type"></app-filter>
+            }
+          </mat-card-content>
+        </mat-card>
+        <div class="container-cmpt-rendu">
+          @for (rendu of renduCampaign.filteredData; track rendu.numclient) {
+            @for (e of rendu.rendus; track e.texte) {
+              <mat-card class="cmpt-rendu">
+                <mat-card-subtitle style="padding: 1rem; align-items: center">
+                  <div style="display: grid; grid-template-columns: 1fr 100px">
+                    <div style="display:flex">
+                      @if (rendu.type === 'CLIENT') {
+                        <p>Client {{ rendu.numclient + ' - ' + e.nom }}</p>
+                      } @else {
+                        <p>Prospect {{ rendu.siret + ' - ' + e.nom }}</p>
+                      }
+                      <span
+                        class="subtitle"> {{ e.date ? 'le ' + e.date : '' }} {{ e.user ? 'par ' + e.user : '' }}</span>
+                    </div>
+                    @if (e.appellib === 'A rappeler') {
+                      <p class="hihi"><a [href]="'tel:'+e.gsm.split(' ').join('')">{{ e.appellib }}</a></p>
+                    } @else {
+                      <p
+                        class="hihi">{{ e.appellib == 'Répondeur ou message secretari' ? 'Répondeur' : e.appellib }}</p>
+                    }
+                  </div>
+                  <mat-divider style="margin-top: .5rem"></mat-divider>
+                </mat-card-subtitle>
+                <mat-card-content>
+                  <span [appHighlight]="e.texte" [searchText]="filtreControlsCompteRendu['texte'].value"></span>
+                </mat-card-content>
+              </mat-card>
+            }
+          }
+        </div>
+      } @else {
+        <button class="reset-button" mat-raised-button (click)="resetFiltresEtSelection()">
+          Réinitialiser les filtres et la sélection
+        </button>
+        <mat-card>
+          <mat-card-content class="filtres-people">
+            @for (filtre of filtres; track filtre) {
+              <app-filter [filterName]="filtre.name" [filterControl]="filtreControls[filtre.control]"
+                          [filterOptions]="filtre.options" [filterType]="filtre.type"></app-filter>
+            }
+          </mat-card-content>
+        </mat-card>
 
-          <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
-          <ng-container matColumnDef="expandedDetail">
-            <td mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplayWithExpand.length">
-              <div class="example-element-detail"
-                [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
-                <table mat-table [dataSource]="element.contacts">
-                  <ng-container matColumnDef="nom">
-                    <th mat-header-cell *matHeaderCellDef> Nom </th>
-                    <td mat-cell *matCellDef="let contact">{{contact.nom}}
-                    </td>
-                  </ng-container>
-                  <ng-container matColumnDef="email">
-                    <th mat-header-cell *matHeaderCellDef> Email </th>
-                    <td mat-cell *matCellDef="let contact"><a [href]="'mailto:' + contact.email">{{contact.mail}}</a>
-                    </td>
-                  </ng-container>
-                  <ng-container matColumnDef="gsm">
-                    <th mat-header-cell *matHeaderCellDef> Téléphone portable </th>
-                    <td mat-cell *matCellDef="let contact"><a [href]="'tel:' + contact.gsm.split(' ').join('')">{{contact.gsm}}</a></td>
-                  </ng-container>
-                  <ng-container matColumnDef="telephone">
-                    <th mat-header-cell *matHeaderCellDef> Téléphone fixe </th>
-                    <td mat-cell *matCellDef="let contact"> <a
-                        [href]="'tel:' + element.telephone.split(' ').join('')">{{element.telephone}}</a></td>
-                  </ng-container>
-                  <ng-container matColumnDef="service">
-                    <th mat-header-cell *matHeaderCellDef> Service </th>
-                    <td mat-cell *matCellDef="let contact"> {{contact.service}} </td>
-                  </ng-container>
-                  <ng-container matColumnDef="statut">
-                    <th mat-header-cell *matHeaderCellDef> Statut </th>
-                    <td mat-cell *matCellDef="let contact"> {{contact.appel}} </td>
-                  </ng-container>
-                  <tr mat-header-row *matHeaderRowDef="displayedColumns2"></tr>
-                  <tr mat-row *matRowDef="let row; columns: displayedColumns2;"></tr>
-                </table>
-              </div>
-            </td>
-          </ng-container>
+        <mat-card style="margin-top: 1rem">
+          <mat-card-content>
+            <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" aria-label="Select page of users"></mat-paginator>
+            <table mat-table [dataSource]="peoples" multiTemplateDataRows matSort>
+              <ng-container matColumnDef="select">
+                <th mat-header-cell *matHeaderCellDef>
+                  <mat-checkbox (change)="$event ? toggleAllRows() : null"
+                                [checked]="selection.hasValue() && isAllSelected()"
+                                [indeterminate]="selection.hasValue() && !isAllSelected()"
+                                [aria-label]="checkboxLabel()">
+                  </mat-checkbox>
+                </th>
+                <td mat-cell *matCellDef="let row">
+                  <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
+                                [checked]="selection.isSelected(row)" [aria-label]="checkboxLabel(row)">
+                  </mat-checkbox>
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="raisonSociale">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Raison sociale</th>
+                <td mat-cell *matCellDef="let element" style="cursor: pointer"
+                    (click)="goToClientDetail(element.numero, element.type)"> {{ element.raisonSociale }}
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="type">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Type</th>
+                <td mat-cell *matCellDef="let element" style="cursor: pointer"
+                    (click)="goToClientDetail(element.numero, element.type)"> {{ element.type | clientProspectFournisseur }}
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="appel">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Statut</th>
+                <td mat-cell *matCellDef="let element" style="cursor: pointer"
+                    (click)="goToClientDetail(element.numero, element.type)"> {{ element.appel }}
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="numero">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Numero</th>
+                <td mat-cell *matCellDef="let element" style="cursor: pointer"
+                    (click)="goToClientDetail(element.numero, element.type)"> {{ element.numero }}
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="adresse">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Adresse</th>
+                <td mat-cell *matCellDef="let element" style="cursor: pointer"
+                    (click)="goToClientDetail(element.numero, element.type)"> {{ element.adresse1 }}
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="codepostal">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Code postal</th>
+                <td mat-cell *matCellDef="let element" style="cursor: pointer"
+                    (click)="goToClientDetail(element.numero, element.type)"> {{ element.codepostal }}
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="ville">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Ville</th>
+                <td mat-cell *matCellDef="let element" style="cursor: pointer"
+                    (click)="goToClientDetail(element.numero, element.type)"> {{ element.ville }}
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="region">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Region</th>
+                <td mat-cell *matCellDef="let element" style="cursor: pointer"
+                    (click)="goToClientDetail(element.numero, element.type)"> {{ element.region }}
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="steAppel">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Action</th>
+                <td mat-cell *matCellDef="let element" style="cursor: pointer"
+                    (click)="goToClientDetail(element.numero, element.type)"> {{ element.steAppel }}
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="phoning">
+                <th mat-header-cell *matHeaderCellDef> Phoning</th>
+                <td mat-cell *matCellDef="let element" style="cursor: pointer">
+                  <button mat-raised-button (click)="goToPhoning(element.numero)">
+                    <mat-icon style="margin: 0;">call</mat-icon>
+                  </button>
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="expand">
+                <th mat-header-cell *matHeaderCellDef aria-label="row actions">&nbsp;</th>
+                <td mat-cell *matCellDef="let element">
+                  <button mat-icon-button aria-label="expand row"
+                          (click)="(expandedElement = expandedElement === element ? null : element); $event.stopPropagation()">
+                    @if (expandedElement === element) {
+                      <mat-icon>keyboard_arrow_up</mat-icon>
+                    } @else {
+                      <mat-icon>keyboard_arrow_down</mat-icon>
+                    }
+                  </button>
+                </td>
+              </ng-container>
 
-          <tr mat-header-row *matHeaderRowDef="columnsToDisplayWithExpand"></tr>
-          <tr mat-row *matRowDef="let element; columns: columnsToDisplayWithExpand;" class="example-element-row"
-            [class.example-expanded-row]="expandedElement === element"
-            (click)="expandedElement = expandedElement === element ? null : element">
-          </tr>
-          <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr>
-        </table>
-      </mat-card-content>
-    </mat-card>
-    }
+              <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+              <ng-container matColumnDef="expandedDetail">
+                <td mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplayWithExpand.length">
+                  <div class="example-element-detail"
+                       [@detailExpand]="element == expandedElement ? 'expanded' : 'collapsed'">
+                    <table mat-table [dataSource]="element.contacts">
+                      <ng-container matColumnDef="nom">
+                        <th mat-header-cell *matHeaderCellDef> Nom</th>
+                        <td mat-cell *matCellDef="let contact">{{ contact.nom }}
+                        </td>
+                      </ng-container>
+                      <ng-container matColumnDef="email">
+                        <th mat-header-cell *matHeaderCellDef> Email</th>
+                        <td mat-cell *matCellDef="let contact"><a
+                          [href]="'mailto:' + contact.email">{{ contact.mail }}</a>
+                        </td>
+                      </ng-container>
+                      <ng-container matColumnDef="gsm">
+                        <th mat-header-cell *matHeaderCellDef> Téléphone portable</th>
+                        <td mat-cell *matCellDef="let contact"><a
+                          [href]="'tel:' + contact.gsm.split(' ').join('')">{{ contact.gsm }}</a></td>
+                      </ng-container>
+                      <ng-container matColumnDef="telephone">
+                        <th mat-header-cell *matHeaderCellDef> Téléphone fixe</th>
+                        <td mat-cell *matCellDef="let contact"><a
+                          [href]="'tel:' + element.telephone.split(' ').join('')">{{ element.telephone }}</a></td>
+                      </ng-container>
+                      <ng-container matColumnDef="service">
+                        <th mat-header-cell *matHeaderCellDef> Service</th>
+                        <td mat-cell *matCellDef="let contact"> {{ contact.service }}</td>
+                      </ng-container>
+                      <ng-container matColumnDef="statut">
+                        <th mat-header-cell *matHeaderCellDef> Statut</th>
+                        <td mat-cell *matCellDef="let contact"> {{ contact.appel }}</td>
+                      </ng-container>
+                      <tr mat-header-row *matHeaderRowDef="displayedColumns2"></tr>
+                      <tr mat-row *matRowDef="let row; columns: displayedColumns2;"></tr>
+                    </table>
+                  </div>
+                </td>
+              </ng-container>
 
+              <tr mat-header-row *matHeaderRowDef="columnsToDisplayWithExpand"></tr>
+              <tr mat-row *matRowDef="let element; columns: columnsToDisplayWithExpand;" class="example-element-row"
+                  [class.example-expanded-row]="expandedElement === element"
+                  (click)="expandedElement = expandedElement === element ? null : element">
+              </tr>
+              <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr>
+            </table>
+          </mat-card-content>
+        </mat-card>
+      }
+
+    </div>
   </div>
-</div>
 
 }

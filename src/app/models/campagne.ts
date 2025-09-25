@@ -9,8 +9,9 @@ export class Campagne {
   public user3: string;
   public user4: string;
   public campagne: string;
+  public nbrSocietes: number;
 
-  constructor(campagne: string, datedeb: string, datefin: string, libelle: string, texte: string, user: string, user1: string, user2: string, user3: string, user4: string) {
+  constructor(campagne: string, datedeb: string, datefin: string, libelle: string, texte: string, user: string, user1: string, user2: string, user3: string, user4: string, nbrSocietes: number) {
     this.campagne = campagne;
     this.datedeb = datedeb;
     this.datefin = datefin;
@@ -21,5 +22,6 @@ export class Campagne {
     this.user2 = user2;
     this.user3 = user3;
     this.user4 = user4;
+    this.nbrSocietes = nbrSocietes;
   }
 }
