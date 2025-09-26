@@ -23,19 +23,12 @@
 <div class="mat-elevation-z3">
   <table mat-table [dataSource]="dataSource" matSort>
     @if (this.onlyActiveCampaigns) {
-      @if (this.chartOptions) {
-        <ng-container matColumnDef="completion">
-          <mat-header-cell *matHeaderCellDef mat-sort-header></mat-header-cell>
-          <mat-cell *matCellDef="let element">
-            <apx-chart
-              [series]="[completionCampagnesMap.get(element.campagne) || 0]"
-              [chart]="chartOptions.chart"
-              [plotOptions]="chartOptions.plotOptions"
-              [colors]="chartOptions.colors">
-            </apx-chart>
-          </mat-cell>
-        </ng-container>
-      }
+      <ng-container matColumnDef="completion">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> %</mat-header-cell>
+        <mat-cell *matCellDef="let element">
+          {{ completionCampagnesMap.get(element.campagne) || 0 }} %
+        </mat-cell>
+      </ng-container>
     }
     <ng-container matColumnDef="campagne">
       <mat-header-cell *matHeaderCellDef mat-sort-header> Campagne</mat-header-cell>

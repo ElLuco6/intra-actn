@@ -24,7 +24,6 @@ export class ListeCampagnesComponent implements OnInit {
   onlyActiveCampaigns = true;
   campagnes = [];
   completionCampagnesMap = new Map<string, number>();
-  chartOptions;
   campagnesActives = [];
 
   constructor(
@@ -35,7 +34,6 @@ export class ListeCampagnesComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.initializeChartOptions();
     this.campagnesService.getCampagnes().subscribe((campagnes) => {
       const today = new Date();
       for (const campagne of campagnes) {
@@ -89,35 +87,5 @@ export class ListeCampagnesComponent implements OnInit {
       }
     });
   }
-
-  initializeChartOptions() {
-    this.chartOptions = {
-      chart: {
-        height: 80,
-        type: "radialBar"
-      },
-      plotOptions: {
-        radialBar: {
-          hollow: {
-            size: "50%"
-          },
-          track: {
-            strokeWidth: "100%"
-          },
-          dataLabels: {
-            name: {
-              show: false
-            },
-            value: {
-              offsetY: 5,
-              fontSize: "12px",
-            }
-          }
-        }
-      },
-      colors: ["#006d3c"]
-    };
-  }
-
 
 }
